@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Movie Management System</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config from Style Guidance -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-surface": "#1b1c1c",
+                        "primary-container": "#f5d6da",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f5f3f3",
+                        "secondary-fixed": "#e5e2e1",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "inverse-primary": "#ddbfc3",
+                        "surface-container": "#efeded",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e3e2e2",
+                        "on-surface-variant": "#4e4445",
+                        "inverse-surface": "#303031",
+                        "surface-container-high": "#e9e8e7",
+                        "surface-bright": "#fbf9f9",
+                        "on-secondary-fixed-variant": "#474646",
+                        "surface-variant": "#e3e2e2",
+                        "background": "#fbf9f9",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "secondary-container": "#e5e2e1",
+                        "primary-fixed-dim": "#ddbfc3",
+                        "inverse-on-surface": "#f2f0f0",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#e2e2e2",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#735b5f",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#5f5e5e",
+                        "on-tertiary-container": "#606161",
+                        "outline-variant": "#d2c3c4",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "on-background": "#1b1c1c",
+                        "primary-fixed": "#fadbdf",
+                        "surface": "#fbf9f9",
+                        "primary": "#70585c",
+                        "on-secondary-container": "#656464",
+                        "outline": "#807475",
+                        "tertiary-container": "#dddddd",
+                        "tertiary": "#5d5f5f",
+                        "surface-tint": "#70585c",
+                        "surface-dim": "#dbdad9",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#574145",
+                        "on-primary-fixed": "#28171a",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        "stack-md": "16px",
+                        "margin-mobile": "20px",
+                        "unit": "4px",
+                        "stack-lg": "24px",
+                        "margin-desktop": "40px",
+                        "gutter": "16px",
+                        "stack-sm": "8px"
+                    },
+                    fontFamily: {
+                        "label-md": ["Be Vietnam Pro"],
+                        "headline-lg-mobile": ["Be Vietnam Pro"],
+                        "body-lg": ["Be Vietnam Pro"],
+                        "headline-lg": ["Be Vietnam Pro"],
+                        "label-lg": ["Be Vietnam Pro"],
+                        "headline-md": ["Be Vietnam Pro"],
+                        "body-md": ["Be Vietnam Pro"]
+                    },
+                    fontSize: {
+                        "label-md": ["14px", { lineHeight: "20px", fontWeight: "500" }],
+                        "headline-lg-mobile": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+                        "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.02em", fontWeight: "600" }],
+                        "label-lg": ["16px", { lineHeight: "24px", fontWeight: "500" }],
+                        "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.surface'); color: theme('colors.on-surface'); }
+        /* Ambient shadow utility as per guidance */
+        .ambient-shadow { box-shadow: 0 4px 40px rgba(0, 0, 0, 0.04); }
+        /* Custom scrollbar for inner panes */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: theme('colors.outline-variant'); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: theme('colors.outline'); }
+    </style>
+</head>
+<body class="font-body-md antialiased overflow-hidden flex h-screen">
+<!-- Shared Component: SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest z-20 flex flex-col p-4 border-r border-outline-variant shadow-sm transition-colors duration-200 ease-in-out">
+<div class="mb-8 mt-2 px-2">
+<h2 class="font-headline-md text-headline-md font-bold text-primary">Rental Manager</h2>
+<p class="font-label-md text-label-md text-on-surface-variant mt-1">Hệ thống quản lý băng đĩa</p>
+</div>
+<nav class="flex-1 space-y-2">
+<!-- Index 0 -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-lg text-label-lg">Bảng điều khiển</span>
+</a>
+<!-- Index 1 (Active based on context: Movie Management) -->
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">movie</span>
+<span class="font-label-lg text-label-lg">Quản lý phim</span>
+</a>
+<!-- Index 2 -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-lg text-label-lg">Quản lý khách hàng</span>
+</a>
+<!-- Index 3 -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-lg text-label-lg">Giao dịch</span>
+</a>
+<!-- Index 4 -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-lg text-label-lg">Cài đặt</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-outline-variant">
+<button class="w-full flex items-center justify-center gap-2 bg-surface text-primary border border-outline-variant hover:bg-surface-container-high px-4 py-3 rounded-lg font-label-lg text-label-lg transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined">add</span>
+                Thêm phim mới
+            </button>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col ml-64 relative min-w-0">
+<!-- Shared Component: TopAppBar -->
+<header class="flex justify-between items-center w-full h-16 pl-6 pr-margin-desktop bg-surface z-10 border-b border-outline-variant/50 sticky top-0">
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-full text-label-md font-label-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-64 transition-all" placeholder="Search movies..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container overflow-hidden border border-outline-variant">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a professional system administrator in a brightly lit modern office setting. The lighting is soft and neutral, enhancing a clean, light-mode interface aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPJq6JbJEsN92YnWd9T5Z662e5cO7caqqGz62DUAvGZdWhFmMdm2YmK7_0eG5X4FiVlmet-yjHZv1g8V1Bnb0nx3Eiixy0sQRWZP7EaLWInYH2kigE4SY9Ec683LRDBwv6NbcLW1OebjcS4Fmgo9OYp5_N2ljM3_sED7nLynVJCC_t7Nb71KZxCGh3CXmWvBi-7ISxpRJMMwTkCGhAV7Bn-if-1hddbsEIzKuQ8htR5RuMmWUlUFS6XTMQNIPRlfWGedW8JpsxJiVv"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 p-margin-desktop overflow-hidden flex flex-col bg-background">
+<!-- Content Header -->
+<div class="flex justify-between items-end mb-stack-lg flex-shrink-0">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Movie Catalog</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage your rental inventory and details.</p>
+</div>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-lg font-label-lg text-label-lg hover:opacity-90 transition-opacity ambient-shadow">
+<span class="material-symbols-outlined">add_circle</span>
+                    Add Movie
+                </button>
+</div>
+<!-- Split View Layout -->
+<div class="flex-1 flex bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden ambient-shadow min-h-0">
+<!-- Left Pane: Master List -->
+<div class="w-[340px] flex flex-col border-r border-outline-variant bg-surface flex-shrink-0">
+<div class="p-4 border-b border-outline-variant/50 bg-surface-container-lowest sticky top-0 z-10">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">248 items</span>
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined size-5">filter_list</span>
+</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto">
+<!-- List Item 1 (Selected) -->
+<div class="p-4 border-b border-outline-variant/30 cursor-pointer bg-primary-container/20 border-l-4 border-l-primary hover:bg-primary-container/30 transition-colors">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-label-lg text-label-lg text-on-surface font-semibold line-clamp-1">Blade Runner 2049</h3>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-md text-[10px] uppercase tracking-wider">Sci-Fi</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-md text-sm">
+<span>2017</span>
+<span>•</span>
+<span class="flex items-center gap-1 text-primary"><span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span> Available</span>
+</div>
+</div>
+<!-- List Item 2 -->
+<div class="p-4 border-b border-outline-variant/30 cursor-pointer hover:bg-surface-container-low transition-colors border-l-4 border-l-transparent">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-label-lg text-label-lg text-on-surface line-clamp-1">Dune: Part Two</h3>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-md text-[10px] uppercase tracking-wider">Sci-Fi</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-md text-sm">
+<span>2024</span>
+<span>•</span>
+<span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-error inline-block"></span> Rented out</span>
+</div>
+</div>
+<!-- List Item 3 -->
+<div class="p-4 border-b border-outline-variant/30 cursor-pointer hover:bg-surface-container-low transition-colors border-l-4 border-l-transparent">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-label-lg text-label-lg text-on-surface line-clamp-1">Oppenheimer</h3>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-md text-[10px] uppercase tracking-wider">Drama</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-md text-sm">
+<span>2023</span>
+<span>•</span>
+<span class="flex items-center gap-1 text-primary"><span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span> Available</span>
+</div>
+</div>
+<!-- List Item 4 -->
+<div class="p-4 border-b border-outline-variant/30 cursor-pointer hover:bg-surface-container-low transition-colors border-l-4 border-l-transparent">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-label-lg text-label-lg text-on-surface line-clamp-1">Parasite</h3>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-md text-[10px] uppercase tracking-wider">Thriller</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-md text-sm">
+<span>2019</span>
+<span>•</span>
+<span class="flex items-center gap-1 text-primary"><span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span> Available</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Pane: Detail Form -->
+<div class="flex-1 flex flex-col bg-surface-container-lowest overflow-hidden">
+<div class="p-8 overflow-y-auto flex-1">
+<form>
+<div class="flex items-center gap-6 mb-8">
+<div class="w-24 h-36 bg-surface-container-high rounded-md border border-outline-variant flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm relative group">
+<img class="w-full h-full object-cover" data-alt="A minimalist and sleek movie poster design featuring abstract neon geometry on a dark background. The lighting is dramatic but clean, suitable for a modern UI interface displaying a movie asset." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWvArIjXwgmK6MMaJc-7eBKp3XmmaXoOVY2XV9p88697MIEbBclVsbVb1Bt2p0oZcHXHpQ4oQlzkqPRIcdIBGy7V49b8SHPtyNs6tgP9Qf9lB5KWOQ5SC6_nykNgcFzVXX8aWgV73_VvSDyRkqVVIqMyzIq0VFL5ih5vRBDCSuFKV-LbVzitZf1nN9Kz3R-DhLy5CrVq25-mp8cu1ic4-kcOxnE_mGTNvlHIxF_ND3UxuczePUFloM0H1YkFZsCkv6fHrhnCELCtfm"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined text-white">edit</span>
+</div>
+</div>
+<div class="flex-1">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2">Edit Details</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Update the metadata for the selected movie. Changes will reflect across the catalog immediately.</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-x-gutter gap-y-stack-md">
+<!-- Name -->
+<div class="col-span-2">
+<label class="block font-label-md text-label-md text-on-surface mb-stack-sm">Movie Title</label>
+<input class="w-full bg-surface border border-outline-variant rounded-md px-4 py-3 font-body-lg text-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" type="text" value="Blade Runner 2049"/>
+</div>
+<!-- Year -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-stack-sm">Release Year</label>
+<input class="w-full bg-surface border border-outline-variant rounded-md px-4 py-3 font-body-lg text-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" type="number" value="2017"/>
+</div>
+<!-- Duration -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-stack-sm">Duration (mins)</label>
+<input class="w-full bg-surface border border-outline-variant rounded-md px-4 py-3 font-body-lg text-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" type="number" value="164"/>
+</div>
+<!-- Genre -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-stack-sm">Genre</label>
+<select class="w-full bg-surface border border-outline-variant rounded-md px-4 py-3 font-body-lg text-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors appearance-none">
+<option>Action</option>
+<option>Comedy</option>
+<option>Drama</option>
+<option selected="">Sci-Fi</option>
+<option>Thriller</option>
+</select>
+</div>
+<!-- Origin -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-stack-sm">Origin/Country</label>
+<input class="w-full bg-surface border border-outline-variant rounded-md px-4 py-3 font-body-lg text-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" type="text" value="United States"/>
+</div>
+<!-- Status -->
+<div class="col-span-2">
+<label class="block font-label-md text-label-md text-on-surface mb-stack-sm">Inventory Status</label>
+<div class="flex gap-4">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="text-primary focus:ring-primary h-4 w-4 border-outline-variant" name="status" type="radio"/>
+<span class="font-body-md text-on-surface">Available</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="text-primary focus:ring-primary h-4 w-4 border-outline-variant" name="status" type="radio"/>
+<span class="font-body-md text-on-surface">Rented Out</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="text-primary focus:ring-primary h-4 w-4 border-outline-variant" name="status" type="radio"/>
+<span class="font-body-md text-on-surface">Maintenance</span>
+</label>
+</div>
+</div>
+<!-- Synopsis (Extra detail for realism) -->
+<div class="col-span-2 mt-2">
+<label class="block font-label-md text-label-md text-on-surface mb-stack-sm">Synopsis</label>
+<textarea class="w-full bg-surface border border-outline-variant rounded-md px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-none" rows="4">Young Blade Runner K's discovery of a long-buried secret leads him to track down former Blade Runner Rick Deckard, who's been missing for thirty years.</textarea>
+</div>
+</div>
+</form>
+</div>
+<!-- Action Footer -->
+<div class="p-6 border-t border-outline-variant/50 bg-surface flex justify-between items-center">
+<button class="flex items-center gap-2 text-error hover:bg-error-container hover:text-on-error-container px-4 py-2 rounded-md font-label-md text-label-md transition-colors">
+<span class="material-symbols-outlined size-5">delete</span>
+                            Delete Movie
+                        </button>
+<div class="flex gap-4">
+<button class="px-6 py-2 rounded-md font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                                Cancel
+                            </button>
+<button class="bg-primary-container text-on-primary-container px-8 py-2 rounded-md font-label-lg text-label-lg font-semibold hover:bg-[#ebcbd0] transition-colors ambient-shadow">
+                                Save Changes
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
