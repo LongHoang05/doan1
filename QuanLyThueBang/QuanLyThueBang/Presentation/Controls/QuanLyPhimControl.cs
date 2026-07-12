@@ -73,15 +73,29 @@ namespace QuanLyThueBang.Presentation.Controls
             var pnlActionRight = new Panel
             {
                 Dock = DockStyle.Right,
-                Width = 210,
+                Width = 370,
                 BackColor = Color.Transparent
             };
+
+            var btnExportExcel = new Button
+            {
+                Text = "📊 Xuất Excel",
+                Size = new Size(130, 42),
+                Location = new Point(10, 21),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(25, 135, 84),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnExportExcel.FlatAppearance.BorderSize = 0;
+            btnExportExcel.Click += (s, e) => QuanLyThueBang.Helpers.ExportHelper.ExportDataGridViewToExcel(dgvPhim, "DanhSachPhim");
 
             btnAddMovie = new Button
             {
                 Text = "+ Thêm Phim Mới",
-                Size = new Size(165, 42),
-                Location = new Point(20, 21),
+                Size = new Size(210, 42),
+                Location = new Point(150, 21),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(184, 123, 125), // Tone màu hồng đất sang trọng
                 ForeColor = Color.White,
@@ -90,6 +104,7 @@ namespace QuanLyThueBang.Presentation.Controls
             };
             btnAddMovie.FlatAppearance.BorderSize = 0;
             btnAddMovie.Click += BtnAddMovie_Click;
+            pnlActionRight.Controls.Add(btnExportExcel);
             pnlActionRight.Controls.Add(btnAddMovie);
 
             var lblTitle = new Label
@@ -250,6 +265,8 @@ namespace QuanLyThueBang.Presentation.Controls
                 BorderStyle = BorderStyle.None,
                 CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
                 ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
+                ColumnHeadersHeight = 46,
+                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
                 EnableHeadersVisualStyles = false,
                 RowHeadersVisible = false,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
@@ -258,7 +275,7 @@ namespace QuanLyThueBang.Presentation.Controls
                 AllowUserToAddRows = false,
                 AllowUserToDeleteRows = false,
                 AllowUserToResizeRows = false,
-                RowTemplate = { Height = 42 }
+                RowTemplate = { Height = 44 }
             };
 
             dgvPhim.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
@@ -267,7 +284,7 @@ namespace QuanLyThueBang.Presentation.Controls
                 ForeColor = Color.FromArgb(73, 80, 87),
                 Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
                 Alignment = DataGridViewContentAlignment.MiddleLeft,
-                Padding = new Padding(10, 8, 10, 8)
+                Padding = new Padding(8, 4, 8, 4)
             };
 
             dgvPhim.DefaultCellStyle = new DataGridViewCellStyle
@@ -289,39 +306,45 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 DataPropertyName = nameof(PhimDTO.MaPhim),
                 HeaderText = "Mã Phim",
-                Width = 110
+                Width = 130,
+                MinimumWidth = 115
             });
             dgvPhim.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = nameof(PhimDTO.TuaDe),
                 HeaderText = "Tựa Đề Phim",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                MinimumWidth = 200
             });
             dgvPhim.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = nameof(PhimDTO.TenTheLoai),
                 HeaderText = "Thể Loại",
-                Width = 150
+                Width = 165,
+                MinimumWidth = 140
             });
             dgvPhim.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = nameof(PhimDTO.NamPhatHanh),
                 HeaderText = "Năm PH",
-                Width = 100,
+                Width = 120,
+                MinimumWidth = 105,
                 DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
             dgvPhim.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = nameof(PhimDTO.DoDaiPhut),
-                HeaderText = "Thời Lượng (phút)",
-                Width = 150,
+                HeaderText = "Thời Lượng",
+                Width = 140,
+                MinimumWidth = 125,
                 DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
             dgvPhim.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = nameof(PhimDTO.SoLuongBanSao),
                 HeaderText = "Băng Trong Kho",
-                Width = 140,
+                Width = 165,
+                MinimumWidth = 145,
                 DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
 
@@ -332,7 +355,7 @@ namespace QuanLyThueBang.Presentation.Controls
                 HeaderText = "Hành Động",
                 Text = "✏️ Sửa",
                 UseColumnTextForButtonValue = true,
-                Width = 90,
+                Width = 155,
                 FlatStyle = FlatStyle.Flat,
                 DefaultCellStyle = { ForeColor = Color.FromArgb(13, 110, 253), BackColor = Color.White, Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
@@ -344,7 +367,7 @@ namespace QuanLyThueBang.Presentation.Controls
                 HeaderText = "",
                 Text = "🗑️ Xóa",
                 UseColumnTextForButtonValue = true,
-                Width = 90,
+                Width = 105,
                 FlatStyle = FlatStyle.Flat,
                 DefaultCellStyle = { ForeColor = Color.FromArgb(220, 53, 69), BackColor = Color.White, Alignment = DataGridViewContentAlignment.MiddleCenter }
             });

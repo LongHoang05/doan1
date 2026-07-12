@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using QuanLyThueBang.BLL;
+using QuanLyThueBang.Helpers;
 using QuanLyThueBang.Presentation.Controls;
 
 namespace QuanLyThueBang.Presentation.Forms
@@ -96,28 +97,48 @@ namespace QuanLyThueBang.Presentation.Forms
 
             int topPos = 5;
 
-            // Nhóm 1: TRANG CHỦ
-            AddSectionHeader(pnlMenu, "TỔNG QUAN", ref topPos);
-            topPos = AddMenuButton(pnlMenu, "🏠 Bảng điều khiển", topPos, (s, e) => ShowComingSoon("Bảng điều khiển"));
+            string username = AppSession.CurrentUser?.TenDangNhap?.ToLower() ?? "";
+            string vaiTro = AppSession.CurrentUser?.VaiTro?.TenVaiTro ?? "";
+            bool isAdmin = AppSession.IsAdmin || username == "admin";
+            bool isQuanLy = vaiTro.Contains("Quản lý", StringComparison.OrdinalIgnoreCase) || username == "quanly";
 
-            // Nhóm 2: QUẢN LÝ DANH MỤC & KHO
-            AddSectionHeader(pnlMenu, "QUẢN LÝ PHIM & KHO", ref topPos);
-            topPos = AddMenuButton(pnlMenu, "🎬 Quản lý Phim", topPos, BtnMenuPhim_Click, isDefaultActive: true);
-            topPos = AddMenuButton(pnlMenu, "🏷️ Quản lý Danh mục", topPos, BtnMenuDanhMuc_Click);
-            topPos = AddMenuButton(pnlMenu, "📼 Quản lý Bản sao", topPos, BtnMenuBanSao_Click);
-            topPos = AddMenuButton(pnlMenu, "🏪 Quản lý Cửa hàng", topPos, BtnMenuCuaHang_Click);
+            // Nhóm 1: TRANG CHỦ (Dashboard)
+            AddSectionHeader(pnlMenu, "TỔNG QUAN", ref topPos);
+            topPos = AddMenuButton(pnlMenu, "📊 Bảng điều khiển", topPos, BtnMenuDashboard_Click, isDefaultActive: true);
+
+            // Nhóm 2: QUẢN LÝ DANH MỤC & KHO (Chỉ Admin hoặc Quản lý)
+            if (isAdmin || isQuanLy)
+            {
+                AddSectionHeader(pnlMenu, "QUẢN LÝ PHIM & KHO", ref topPos);
+                topPos = AddMenuButton(pnlMenu, "🎬 Quản lý Phim", topPos, BtnMenuPhim_Click);
+                topPos = AddMenuButton(pnlMenu, "🏷️ Quản lý Danh mục", topPos, BtnMenuDanhMuc_Click);
+                topPos = AddMenuButton(pnlMenu, "📼 Quản lý Bản sao", topPos, BtnMenuBanSao_Click);
+                if (isAdmin)
+                {
+                    topPos = AddMenuButton(pnlMenu, "🏪 Quản lý Cửa hàng", topPos, BtnMenuCuaHang_Click);
+                }
+            }
 
             // Nhóm 3: QUẢN LÝ NGHIỆP VỤ
             AddSectionHeader(pnlMenu, "NGHIỆP VỤ THUÊ BĂNG", ref topPos);
             topPos = AddMenuButton(pnlMenu, "👥 Quản lý Khách hàng", topPos, BtnMenuKhachHang_Click);
-            topPos = AddMenuButton(pnlMenu, "🧑‍💼 Quản lý Nhân viên", topPos, BtnMenuNhanVien_Click);
-            topPos = AddMenuButton(pnlMenu, "🔄 Mượn - Trả Băng", topPos, (s, e) => ShowComingSoon("Giao dịch Mượn - Trả"));
-
-            // Nhóm 4: HỆ THỐNG
-            AddSectionHeader(pnlMenu, "HỆ THỐNG", ref topPos);
-            topPos = AddMenuButton(pnlMenu, "⚙️ Cài đặt Hệ thống", topPos, (s, e) => ShowComingSoon("Cài đặt"));
+            if (isAdmin || isQuanLy)
+            {
+                topPos = AddMenuButton(pnlMenu, "🧑‍💼 Quản lý Nhân viên", topPos, BtnMenuNhanVien_Click);
+            }
+            topPos = AddMenuButton(pnlMenu, "📋 Quản lý Phiếu mượn", topPos, BtnMenuPhieuMuon_Click);
+            topPos = AddMenuButton(pnlMenu, "📥 Nhận Trả & Luân Chuyển", topPos, BtnMenuMuonTra_Click);
 
             pnlSidebar.Controls.Add(pnlMenu);
+
+            // Footer User Badge
+            var pnlUserBadge = new Panel { Dock = DockStyle.Bottom, Height = 75, BackColor = Color.FromArgb(248, 249, 250), Padding = new Padding(12) };
+            string hoTen = AppSession.CurrentUser?.HoTen ?? "Admin Quản Trị";
+            string roleName = !string.IsNullOrEmpty(vaiTro) ? vaiTro : "Quản trị viên";
+            var lblUserInfo = new Label { Text = $"👤 {hoTen}\n🔑 {roleName}", Font = new Font("Segoe UI Semibold", 9.5F), ForeColor = Color.FromArgb(40, 40, 40), Dock = DockStyle.Top, Height = 40 };
+            pnlUserBadge.Controls.Add(lblUserInfo);
+            pnlSidebar.Controls.Add(pnlUserBadge);
+
             this.Controls.Add(pnlSidebar);
         }
 
@@ -204,8 +225,14 @@ namespace QuanLyThueBang.Presentation.Forms
 
         private void MainShellForm_Load(object? sender, EventArgs e)
         {
-            // Mặc định khởi chạy vào màn hình Quản lý Phim
-            BtnMenuPhim_Click(this, EventArgs.Empty);
+            // Mặc định khởi chạy vào màn hình Bảng điều khiển (Dashboard)
+            BtnMenuDashboard_Click(this, EventArgs.Empty);
+        }
+
+        private void BtnMenuDashboard_Click(object? sender, EventArgs e)
+        {
+            var control = new QuanLyThueBang.Presentation.Controls.DashboardControl(_serviceProvider);
+            LoadSubControl(control);
         }
 
         private void BtnMenuPhim_Click(object? sender, EventArgs e)
@@ -249,6 +276,28 @@ namespace QuanLyThueBang.Presentation.Forms
             var nvService = _serviceProvider.GetRequiredService<NhanVienService>();
             var chService = _serviceProvider.GetRequiredService<CuaHangService>();
             var control = new QuanLyNhanVienControl(nvService, chService);
+            LoadSubControl(control);
+        }
+
+        private void BtnMenuMuonTra_Click(object? sender, EventArgs e)
+        {
+            var muonTraService = _serviceProvider.GetRequiredService<MuonTraService>();
+            var khService = _serviceProvider.GetRequiredService<KhachHangService>();
+            var chService = _serviceProvider.GetRequiredService<CuaHangService>();
+            var nvService = _serviceProvider.GetRequiredService<NhanVienService>();
+
+            var control = new QuanLyThueBang.Presentation.Controls.MuonTraBangControl(muonTraService, khService, chService, nvService);
+            LoadSubControl(control);
+        }
+
+        private void BtnMenuPhieuMuon_Click(object? sender, EventArgs e)
+        {
+            var muonTraService = _serviceProvider.GetRequiredService<MuonTraService>();
+            var khService = _serviceProvider.GetRequiredService<KhachHangService>();
+            var chService = _serviceProvider.GetRequiredService<CuaHangService>();
+            var nvService = _serviceProvider.GetRequiredService<NhanVienService>();
+
+            var control = new QuanLyThueBang.Presentation.Controls.QuanLyPhieuMuonControl(muonTraService, khService, chService, nvService);
             LoadSubControl(control);
         }
 

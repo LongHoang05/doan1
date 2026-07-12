@@ -68,14 +68,14 @@ namespace QuanLyThueBang.Presentation.Controls
             var pnlActionRight = new Panel
             {
                 Dock = DockStyle.Right,
-                Width = 220,
+                Width = 260,
                 BackColor = Color.Transparent
             };
 
             btnAddCategory = new Button
             {
                 Text = "+ Thêm Danh Mục Mới",
-                Size = new Size(185, 42),
+                Size = new Size(230, 42),
                 Location = new Point(15, 21),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(184, 123, 125),
@@ -234,6 +234,8 @@ namespace QuanLyThueBang.Presentation.Controls
                 BorderStyle = BorderStyle.None,
                 CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
                 ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
+                ColumnHeadersHeight = 46,
+                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
                 EnableHeadersVisualStyles = false,
                 RowHeadersVisible = false,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
@@ -251,7 +253,7 @@ namespace QuanLyThueBang.Presentation.Controls
                 ForeColor = Color.FromArgb(73, 80, 87),
                 Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
                 Alignment = DataGridViewContentAlignment.MiddleLeft,
-                Padding = new Padding(10, 8, 10, 8)
+                Padding = new Padding(8, 4, 8, 4)
             };
 
             dgvDanhMuc.DefaultCellStyle = new DataGridViewCellStyle
@@ -273,19 +275,22 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 DataPropertyName = nameof(TheLoaiDTO.MaTheLoai),
                 HeaderText = "Mã Danh Mục",
-                Width = 130
+                Width = 150,
+                MinimumWidth = 130
             });
             dgvDanhMuc.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = nameof(TheLoaiDTO.TenTheLoai),
                 HeaderText = "Tên Danh Mục Phim (Thể Loại)",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                MinimumWidth = 200
             });
             dgvDanhMuc.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = nameof(TheLoaiDTO.SoLuongPhim),
                 HeaderText = "Số Tựa Phim Trực Thuộc",
-                Width = 210,
+                Width = 240,
+                MinimumWidth = 200,
                 DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
 
@@ -295,7 +300,7 @@ namespace QuanLyThueBang.Presentation.Controls
                 HeaderText = "Hành Động",
                 Text = "✏️ Sửa",
                 UseColumnTextForButtonValue = true,
-                Width = 90,
+                Width = 155,
                 FlatStyle = FlatStyle.Flat,
                 DefaultCellStyle = { ForeColor = Color.FromArgb(13, 110, 253), BackColor = Color.White, Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
@@ -306,7 +311,7 @@ namespace QuanLyThueBang.Presentation.Controls
                 HeaderText = "",
                 Text = "🗑️ Xóa",
                 UseColumnTextForButtonValue = true,
-                Width = 90,
+                Width = 105,
                 FlatStyle = FlatStyle.Flat,
                 DefaultCellStyle = { ForeColor = Color.FromArgb(220, 53, 69), BackColor = Color.White, Alignment = DataGridViewContentAlignment.MiddleCenter }
             });

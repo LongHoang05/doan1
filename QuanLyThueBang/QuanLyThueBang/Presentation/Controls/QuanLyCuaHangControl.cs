@@ -32,12 +32,12 @@ namespace QuanLyThueBang.Presentation.Controls
 
             // Header
             var pnlHeader = new Panel { Dock = DockStyle.Top, Height = 85, BackColor = Color.White, Padding = new Padding(25, 15, 25, 15) };
-            var pnlRight = new Panel { Dock = DockStyle.Right, Width = 220, BackColor = Color.Transparent };
+            var pnlRight = new Panel { Dock = DockStyle.Right, Width = 260, BackColor = Color.Transparent };
 
             var btnAdd = new Button
             {
                 Text = "+ Thêm Cửa Hàng Mới",
-                Size = new Size(185, 42),
+                Size = new Size(230, 42),
                 Location = new Point(15, 21),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(184, 123, 125),
@@ -75,6 +75,8 @@ namespace QuanLyThueBang.Presentation.Controls
                 BorderStyle = BorderStyle.None,
                 CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
                 ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
+                ColumnHeadersHeight = 46,
+                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
                 EnableHeadersVisualStyles = false,
                 RowHeadersVisible = false,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
@@ -84,19 +86,19 @@ namespace QuanLyThueBang.Presentation.Controls
                 AllowUserToDeleteRows = false,
                 RowTemplate = { Height = 44 }
             };
-            dgvCuaHang.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.FromArgb(243, 244, 246), Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold), Padding = new Padding(10, 8, 10, 8) };
+            dgvCuaHang.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.FromArgb(243, 244, 246), Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold), Padding = new Padding(8, 4, 8, 4) };
             dgvCuaHang.DefaultCellStyle = new DataGridViewCellStyle { SelectionBackColor = Color.FromArgb(250, 235, 235), SelectionForeColor = Color.FromArgb(184, 123, 125), Padding = new Padding(10, 0, 10, 0) };
             dgvCuaHang.AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.FromArgb(252, 253, 254) };
 
             dgvCuaHang.AutoGenerateColumns = false;
-            dgvCuaHang.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(CuaHangDTO.MaCuaHang), HeaderText = "Mã Chi Nhánh", Width = 130 });
-            dgvCuaHang.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(CuaHangDTO.DiaChi), HeaderText = "Địa Chỉ Chi Nhánh", AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill });
-            dgvCuaHang.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(CuaHangDTO.SoDienThoai), HeaderText = "Số Điện Thoại", Width = 150 });
-            dgvCuaHang.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(CuaHangDTO.SoLuongNhanVien), HeaderText = "Nhân Sự", Width = 110, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter } });
-            dgvCuaHang.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(CuaHangDTO.SoLuongBanSao), HeaderText = "Kho Băng", Width = 110, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter } });
+            dgvCuaHang.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(CuaHangDTO.MaCuaHang), HeaderText = "Mã Chi Nhánh", Width = 150, MinimumWidth = 130 });
+            dgvCuaHang.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(CuaHangDTO.DiaChi), HeaderText = "Địa Chỉ Chi Nhánh", AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, MinimumWidth = 200 });
+            dgvCuaHang.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(CuaHangDTO.SoDienThoai), HeaderText = "Số Điện Thoại", Width = 160, MinimumWidth = 140 });
+            dgvCuaHang.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(CuaHangDTO.SoLuongNhanVien), HeaderText = "Nhân Sự", Width = 130, MinimumWidth = 115, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter } });
+            dgvCuaHang.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(CuaHangDTO.SoLuongBanSao), HeaderText = "Kho Băng", Width = 130, MinimumWidth = 115, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter } });
 
-            dgvCuaHang.Columns.Add(new DataGridViewButtonColumn { Name = "colEdit", HeaderText = "Hành Động", Text = "✏️ Sửa", UseColumnTextForButtonValue = true, Width = 90, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(13, 110, 253), BackColor = Color.White, Alignment = DataGridViewContentAlignment.MiddleCenter } });
-            dgvCuaHang.Columns.Add(new DataGridViewButtonColumn { Name = "colDelete", HeaderText = "", Text = "🗑️ Xóa", UseColumnTextForButtonValue = true, Width = 90, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(220, 53, 69), BackColor = Color.White, Alignment = DataGridViewContentAlignment.MiddleCenter } });
+            dgvCuaHang.Columns.Add(new DataGridViewButtonColumn { Name = "colEdit", HeaderText = "Hành Động", Text = "✏️ Sửa", UseColumnTextForButtonValue = true, Width = 155, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(13, 110, 253), BackColor = Color.White, Alignment = DataGridViewContentAlignment.MiddleCenter } });
+            dgvCuaHang.Columns.Add(new DataGridViewButtonColumn { Name = "colDelete", HeaderText = "", Text = "🗑️ Xóa", UseColumnTextForButtonValue = true, Width = 105, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(220, 53, 69), BackColor = Color.White, Alignment = DataGridViewContentAlignment.MiddleCenter } });
 
             dgvCuaHang.CellClick += Dgv_CellClick;
 
