@@ -21,6 +21,8 @@ namespace QuanLyThueBang.Helpers
         /// </summary>
         public static string? CurrentMaCuaHang => CurrentUser?.MaCuaHang;
 
+        public static bool WantsToLogout { get; set; } = false;
+
         public static void Logout()
         {
             CurrentUser = null;

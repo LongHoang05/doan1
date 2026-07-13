@@ -131,12 +131,37 @@ namespace QuanLyThueBang.Presentation.Forms
 
             pnlSidebar.Controls.Add(pnlMenu);
 
-            // Footer User Badge
-            var pnlUserBadge = new Panel { Dock = DockStyle.Bottom, Height = 75, BackColor = Color.FromArgb(248, 249, 250), Padding = new Padding(12) };
+            // Footer User Badge + Nút Đăng Xuất
+            var pnlUserBadge = new Panel { Dock = DockStyle.Bottom, Height = 95, BackColor = Color.FromArgb(248, 249, 250), Padding = new Padding(12, 8, 12, 8) };
             string hoTen = AppSession.CurrentUser?.HoTen ?? "Admin Quản Trị";
             string roleName = !string.IsNullOrEmpty(vaiTro) ? vaiTro : "Quản trị viên";
-            var lblUserInfo = new Label { Text = $"👤 {hoTen}\n🔑 {roleName}", Font = new Font("Segoe UI Semibold", 9.5F), ForeColor = Color.FromArgb(40, 40, 40), Dock = DockStyle.Top, Height = 40 };
+            var lblUserInfo = new Label { Text = $"👤 {hoTen}\n🔑 {roleName}", Font = new Font("Segoe UI Semibold", 9.2F), ForeColor = Color.FromArgb(40, 40, 40), Dock = DockStyle.Top, Height = 40 };
+
+            var btnLogout = new Button
+            {
+                Text = "🚪 Đăng Xuất",
+                Dock = DockStyle.Bottom,
+                Height = 34,
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(220, 53, 69),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnLogout.FlatAppearance.BorderSize = 0;
+            btnLogout.Click += (s, e) =>
+            {
+                var confirm = MessageBox.Show("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?", "Xác nhận Đăng Xuất", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (confirm == DialogResult.Yes)
+                {
+                    AppSession.WantsToLogout = true;
+                    AppSession.Logout();
+                    this.Close();
+                }
+            };
+
             pnlUserBadge.Controls.Add(lblUserInfo);
+            pnlUserBadge.Controls.Add(btnLogout);
             pnlSidebar.Controls.Add(pnlUserBadge);
 
             this.Controls.Add(pnlSidebar);

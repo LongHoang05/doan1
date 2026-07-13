@@ -199,28 +199,55 @@ namespace QuanLyThueBang.Presentation.Controls
         {
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             int total = _cntSanSang + _cntDangMuon + _cntHuHong;
-            if (total == 0) return;
 
-            int size = Math.Min(pnlPieChart.Width - 180, pnlPieChart.Height - 40);
-            size = Math.Max(size, 120);
-            var rect = new Rectangle(20, 20, size, size);
+            int diameter = Math.Min(pnlPieChart.Width - 220, pnlPieChart.Height - 40);
+            diameter = Math.Clamp(diameter, 130, 240);
+            int pieX = 25;
+            int pieY = Math.Max(15, (pnlPieChart.Height - diameter) / 2 - 15);
+            var rect = new Rectangle(pieX, pieY, diameter, diameter);
 
-            float startAngle = 0;
+            int legX = rect.Right + 35;
+            int legY = pieY + 20;
+
+            if (total == 0)
+            {
+                using var bEmpty = new SolidBrush(Color.FromArgb(220, 224, 230));
+                e.Graphics.FillPie(bEmpty, rect, 0, 360);
+                e.Graphics.DrawString("Chưa có dữ liệu kho băng", new Font("Segoe UI Italic", 10F), Brushes.Gray, legX, legY + 30);
+                return;
+            }
+
+            float startAngle = -90f; // Bắt đầu ở đỉnh 12h
 
             float sweepSanSang = (float)_cntSanSang / total * 360f;
-            using (var b = new SolidBrush(Color.FromArgb(40, 167, 69))) e.Graphics.FillPie(b, rect, startAngle, sweepSanSang);
-            startAngle += sweepSanSang;
-
             float sweepDangMuon = (float)_cntDangMuon / total * 360f;
-            using (var b = new SolidBrush(Color.FromArgb(13, 110, 253))) e.Graphics.FillPie(b, rect, startAngle, sweepDangMuon);
-            startAngle += sweepDangMuon;
+            float sweepHuHong = Math.Max(0f, 360f - (sweepSanSang + sweepDangMuon));
 
-            float sweepHuHong = 360f - startAngle;
-            using (var b = new SolidBrush(Color.FromArgb(220, 53, 69))) e.Graphics.FillPie(b, rect, startAngle, sweepHuHong);
+            if (sweepSanSang > 0)
+            {
+                using var b = new SolidBrush(Color.FromArgb(40, 167, 69));
+                e.Graphics.FillPie(b, rect, startAngle, sweepSanSang);
+                startAngle += sweepSanSang;
+            }
+
+            if (sweepDangMuon > 0)
+            {
+                using var b = new SolidBrush(Color.FromArgb(13, 110, 253));
+                e.Graphics.FillPie(b, rect, startAngle, sweepDangMuon);
+                startAngle += sweepDangMuon;
+            }
+
+            if (sweepHuHong > 0)
+            {
+                using var b = new SolidBrush(Color.FromArgb(220, 53, 69));
+                e.Graphics.FillPie(b, rect, startAngle, sweepHuHong);
+            }
+
+            // Vẽ viền tròn mềm mại
+            using var pen = new Pen(Color.White, 2f);
+            e.Graphics.DrawEllipse(pen, rect);
 
             // Legend
-            int legX = rect.Right + 30;
-            int legY = 35;
             DrawLegendItem(e.Graphics, legX, legY, "Sẵn sàng (Rảnh)", _cntSanSang, total, Color.FromArgb(40, 167, 69));
             DrawLegendItem(e.Graphics, legX, legY + 45, "Đang cho mượn", _cntDangMuon, total, Color.FromArgb(13, 110, 253));
             DrawLegendItem(e.Graphics, legX, legY + 90, "Hư hỏng / Bảo trì", _cntHuHong, total, Color.FromArgb(220, 53, 69));

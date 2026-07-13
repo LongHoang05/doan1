@@ -45,13 +45,26 @@ namespace QuanLyThueBang
             // Khởi tạo CSDL & tạo 2 tài khoản mặc định admin / quanly với mật khẩu "1"
             DbSeeder.SeedDefaultUsers(host.Services);
 
-            // Hiển thị màn hình Đăng nhập (LoginForm) trước
-            using (var loginForm = host.Services.GetRequiredService<Presentation.Forms.LoginForm>())
+            // Vòng lặp hiển thị Đăng nhập -> Màn hình chính -> Đăng xuất quay lại Đăng nhập
+            while (true)
             {
-                if (loginForm.ShowDialog() == DialogResult.OK)
+                AppSession.WantsToLogout = false;
+                using (var loginForm = host.Services.GetRequiredService<Presentation.Forms.LoginForm>())
                 {
-                    var mainForm = host.Services.GetRequiredService<Presentation.Forms.MainShellForm>();
-                    System.Windows.Forms.Application.Run(mainForm);
+                    if (loginForm.ShowDialog() == DialogResult.OK)
+                    {
+                        var mainForm = host.Services.GetRequiredService<Presentation.Forms.MainShellForm>();
+                        System.Windows.Forms.Application.Run(mainForm);
+
+                        if (!AppSession.WantsToLogout)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }
