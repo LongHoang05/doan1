@@ -19,7 +19,7 @@ namespace QuanLyThueBang.Helpers
                 context.Database.EnsureCreated();
 
                 // 1. Kiểm tra & tạo VaiTro
-                var roleAdmin = context.VaiTros.FirstOrDefault(v => v.TenVaiTro == "Admin" || v.TenVaiTro == "Admin Cấp Cao");
+                var roleAdmin = context.VaiTros.FirstOrDefault(v => v.TenVaiTro == "Admin" || v.TenVaiTro == "Admin Cấp Cao" || v.TenVaiTro == "Admin_CapCao");
                 if (roleAdmin == null)
                 {
                     roleAdmin = new VaiTro { TenVaiTro = "Admin" };
@@ -27,7 +27,7 @@ namespace QuanLyThueBang.Helpers
                     context.SaveChanges();
                 }
 
-                var roleQuanLy = context.VaiTros.FirstOrDefault(v => v.TenVaiTro == "Quản lý" || v.TenVaiTro == "Quản lý chi nhánh");
+                var roleQuanLy = context.VaiTros.FirstOrDefault(v => v.TenVaiTro == "Quản lý" || v.TenVaiTro == "Quản lý chi nhánh" || v.TenVaiTro == "QuanLy_ChiNhanh");
                 if (roleQuanLy == null)
                 {
                     roleQuanLy = new VaiTro { TenVaiTro = "Quản lý" };
@@ -35,7 +35,7 @@ namespace QuanLyThueBang.Helpers
                     context.SaveChanges();
                 }
 
-                var roleNhanVien = context.VaiTros.FirstOrDefault(v => v.TenVaiTro == "Nhân viên" || v.TenVaiTro == "Nhân viên quầy");
+                var roleNhanVien = context.VaiTros.FirstOrDefault(v => v.TenVaiTro == "Nhân viên" || v.TenVaiTro == "Nhân viên quầy" || v.TenVaiTro == "NhanVien_Quay");
                 if (roleNhanVien == null)
                 {
                     roleNhanVien = new VaiTro { TenVaiTro = "Nhân viên" };
@@ -56,9 +56,11 @@ namespace QuanLyThueBang.Helpers
                 var admin = context.NhanViens.FirstOrDefault(n => n.TenDangNhap == "admin");
                 if (admin == null)
                 {
+                    // Tránh trùng MaNhanVien với các dữ liệu cũ (ví dụ NV001 đã có)
+                    string maNVAdmin = context.NhanViens.Any(n => n.MaNhanVien == "ADM01") ? "ADM02" : "ADM01";
                     admin = new NhanVien
                     {
-                        MaNhanVien = "NV001",
+                        MaNhanVien = maNVAdmin,
                         CMND = "079090000001",
                         HoTen = "Quản Trị Viên Hệ Thống",
                         SoDienThoai = "0901111111",
@@ -79,16 +81,17 @@ namespace QuanLyThueBang.Helpers
                 var quanLy = context.NhanViens.FirstOrDefault(n => n.TenDangNhap == "quanly");
                 if (quanLy == null)
                 {
+                    string maNVQL = context.NhanViens.Any(n => n.MaNhanVien == "QL01") ? "QL02" : "QL01";
                     quanLy = new NhanVien
                     {
-                        MaNhanVien = "NV002",
+                        MaNhanVien = maNVQL,
                         CMND = "079090000002",
                         HoTen = "Quản Lý Chi Nhánh 1",
                         SoDienThoai = "0902222222",
                         TenDangNhap = "quanly",
                         MatKhau = "1",
                         MaVaiTro = roleQuanLy.MaVaiTro,
-                        MaCuaHang = cuaHang.MaCuaHang
+                        MaCuaHang = cuaHang?.MaCuaHang
                     };
                     context.NhanViens.Add(quanLy);
                 }
@@ -102,16 +105,17 @@ namespace QuanLyThueBang.Helpers
                 var nhanVien = context.NhanViens.FirstOrDefault(n => n.TenDangNhap == "nhanvien");
                 if (nhanVien == null)
                 {
+                    string maNVQ = context.NhanViens.Any(n => n.MaNhanVien == "NVQ01") ? "NVQ02" : "NVQ01";
                     nhanVien = new NhanVien
                     {
-                        MaNhanVien = "NV003",
+                        MaNhanVien = maNVQ,
                         CMND = "079090000003",
                         HoTen = "Nhân Viên Quầy Giao Dịch",
                         SoDienThoai = "0903333333",
                         TenDangNhap = "nhanvien",
                         MatKhau = "1",
                         MaVaiTro = roleNhanVien.MaVaiTro,
-                        MaCuaHang = cuaHang.MaCuaHang
+                        MaCuaHang = cuaHang?.MaCuaHang
                     };
                     context.NhanViens.Add(nhanVien);
                 }
