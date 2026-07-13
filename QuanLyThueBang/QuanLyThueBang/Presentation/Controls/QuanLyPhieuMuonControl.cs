@@ -481,6 +481,19 @@ namespace QuanLyThueBang.Presentation.Controls
             lblTongTienGioMuon.Text = $"Tổng Tiền Thuê Dự Kiến: {tong:N0} VNĐ";
         }
 
+        private string GetSelectedId(ComboBox cbo)
+        {
+            if (cbo.SelectedItem is KhachHangDTO kh)
+                return kh.MaKhachHang;
+            if (cbo.SelectedItem is CuaHangDTO ch)
+                return ch.MaCuaHang;
+            if (cbo.SelectedItem is NhanVienDTO nv)
+                return nv.MaNhanVien;
+            if (cbo.SelectedValue is string strId && !string.IsNullOrWhiteSpace(strId))
+                return strId;
+            return cbo.SelectedValue?.ToString() ?? "";
+        }
+
         private void BtnChotMuon_Click(object? sender, EventArgs e)
         {
             if (_gioMuonList.Count == 0)
@@ -489,9 +502,9 @@ namespace QuanLyThueBang.Presentation.Controls
                 return;
             }
 
-            string maKH = cboKhachHangMuon.SelectedValue?.ToString() ?? "";
-            string maCH = cboCuaHangMuon.SelectedValue?.ToString() ?? "";
-            string maNV = cboNhanVienMuon.SelectedValue?.ToString() ?? "";
+            string maKH = GetSelectedId(cboKhachHangMuon);
+            string maCH = GetSelectedId(cboCuaHangMuon);
+            string maNV = GetSelectedId(cboNhanVienMuon);
 
             var (success, msg, maPM) = _muonTraService.LapPhieuMuon(maKH, maCH, maNV, _gioMuonList.Select(g => g.MaBanSao).ToList(), dtpNgayDuKienTra.Value);
             if (success)
@@ -513,20 +526,17 @@ namespace QuanLyThueBang.Presentation.Controls
         {
             try
             {
-                var khs = _khachHangService.GetAllKhachHang();
-                cboKhachHangMuon.DataSource = khs;
                 cboKhachHangMuon.DisplayMember = nameof(KhachHangDTO.HoTen);
                 cboKhachHangMuon.ValueMember = nameof(KhachHangDTO.MaKhachHang);
+                cboKhachHangMuon.DataSource = _khachHangService.GetAllKhachHang();
 
-                var chs = _cuaHangService.GetAllCuaHang();
-                cboCuaHangMuon.DataSource = chs.ToList();
                 cboCuaHangMuon.DisplayMember = nameof(CuaHangDTO.DiaChi);
                 cboCuaHangMuon.ValueMember = nameof(CuaHangDTO.MaCuaHang);
+                cboCuaHangMuon.DataSource = _cuaHangService.GetAllCuaHang();
 
-                var nvs = _nhanVienService.GetAllNhanVien();
-                cboNhanVienMuon.DataSource = nvs.ToList();
                 cboNhanVienMuon.DisplayMember = nameof(NhanVienDTO.HoTen);
                 cboNhanVienMuon.ValueMember = nameof(NhanVienDTO.MaNhanVien);
+                cboNhanVienMuon.DataSource = _nhanVienService.GetAllNhanVien();
             }
             catch { }
         }

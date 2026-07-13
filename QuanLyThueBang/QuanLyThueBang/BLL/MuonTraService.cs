@@ -106,7 +106,8 @@ namespace QuanLyThueBang.BLL
             catch (Exception ex)
             {
                 transaction.Rollback();
-                return (false, $"Lỗi transaction: {ex.Message}", string.Empty);
+                string detail = ex.InnerException?.InnerException?.Message ?? ex.InnerException?.Message ?? ex.Message;
+                return (false, $"Lỗi transaction: {detail}", string.Empty);
             }
         }
 
@@ -209,7 +210,8 @@ namespace QuanLyThueBang.BLL
             catch (Exception ex)
             {
                 transaction.Rollback();
-                return (false, $"Lỗi transaction: {ex.Message}", string.Empty);
+                string detail = ex.InnerException?.InnerException?.Message ?? ex.InnerException?.Message ?? ex.Message;
+                return (false, $"Lỗi transaction: {detail}", string.Empty);
             }
         }
 
