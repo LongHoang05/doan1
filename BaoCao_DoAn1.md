@@ -121,20 +121,55 @@ Sự thống nhất cao về ý tưởng (Conceive) và công nghệ đã tạo 
 
 ## 2.1. KHẢO SÁT HIỆN TRẠNG NGHIỆP VỤ THỰC TẾ
 
-Để xây dựng một hệ thống phần mềm quản lý sát với thực tiễn vận hành của chuỗi cửa hàng cho thuê băng đĩa, quá trình khảo sát nghiệp vụ thực tế được tiến hành toàn diện qua các bước tiếp nhận khách hàng, quản lý kho băng vật lý, xử lý mượn trả chéo chi nhánh và báo cáo thu hồi nợ phạt.
+Để xây dựng một hệ thống phần mềm quản lý sát với thực tiễn vận hành của chuỗi cửa hàng cho thuê băng đĩa, quá trình khảo sát nghiệp vụ thực tế được tiến hành toàn diện tại quầy giao dịch và văn phòng điều hành chuỗi. Dưới đây là phân tích chi tiết từng quy trình nghiệp vụ cốt lõi đang diễn ra trong thực tế.
 
 ### 2.1.1. Quy trình định danh khách hàng và cấp mã số nhân viên
-1. **Định danh Khách hàng thành viên (Customer Identification):**
-   - Khi một khách hàng đến quầy giao dịch lần đầu, nhân viên quầy tiến hành thu thập các thông tin pháp lý bắt buộc: **Họ và tên, Số CMND/CCCD/Hộ chiếu, Số điện thoại liên lạc**.
-   - Mỗi khách hàng được cấp một mã định danh duy nhất (`MaKhachHang`, ví dụ: `KH001`, `KH002`...) gắn liền với hồ sơ cá nhân. Khách hàng sử dụng số điện thoại hoặc mã thành viên để tra cứu lịch sử mượn trả tại tất cả các điểm giao dịch trong chuỗi.
-2. **Cấp mã số và quản lý Nhân sự vận hành (Employee Identification):**
-   - Nhân viên tuyển dụng vào hệ thống được phân công vào một chi nhánh cụ thể (`MaCuaHang`, ví dụ: `CH01`, `CH02`) hoặc thuộc khối điều hành trung tâm.
-   - Mỗi nhân viên sở hữu một mã định danh (`MaNhanVien`, ví dụ: `ADM01`, `QL01`, `NV001`), đi kèm thông tin đăng nhập (`TenDangNhap`, `MatKhau`) và mã vai trò nghiệp vụ (`MaVaiTro`).
+
+#### 1. Quy trình tiếp nhận, định danh và cấp thẻ Khách hàng thành viên
+Trong mô hình dịch vụ cho thuê tài sản có giá trị (băng video gốc/bản sao bản quyền), việc quản lý chính xác danh tính khách hàng là yêu cầu tiên quyết nhằm ngăn chặn thất thoát tài sản. Quy trình định danh khách hàng tại quầy được thực hiện theo 5 bước chuẩn hóa:
+
+```
+[Khách hàng đến quầy] 
+       │
+       ▼
+[Nhân viên kiểm tra giấy tờ pháp lý: CMND/CCCD/SĐT]
+       │
+       ▼
+[Tra cứu trùng lặp trên Hệ thống toàn chuỗi] ──(Đã có)──► [Cập nhật hồ sơ / Tiến hành mượn ngay]
+       │
+   (Chưa có)
+       ▼
+[Tạo hồ sơ mới & Cấp mã định danh KHxxx (ví dụ: KH001)]
+       │
+       ▼
+[Cấp tài khoản thành viên liên thông toàn chuỗi]
+```
+
+- **Bước 1: Tiếp nhận yêu cầu đăng ký thành viên:** Khách hàng có nhu cầu thuê băng lần đầu xuất trình giấy tờ tùy thân hợp lệ (Căn cước công dân, Chứng minh nhân dân hoặc Hộ chiếu) kèm số điện thoại liên lạc chính chủ.
+- **Bước 2: Kiểm tra dữ liệu trùng lặp trên toàn chuỗi:** Nhân viên nhập số điện thoại hoặc số CMND vào hệ thống để tra cứu. Nếu khách hàng đã từng đăng ký tại một chi nhánh khác (ví dụ đã đăng ký tại Chi nhánh 1 - `CH01`), hệ thống hiển thị ngay hồ sơ thành viên, cho phép khách hàng thực hiện giao dịch tại Chi nhánh 2 (`CH02`) mà không cần đăng ký lại.
+- **Bước 3: Khởi tạo hồ sơ khách hàng mới:** Nếu là khách hàng mới hoàn toàn, nhân viên nhập các thông tin bắt buộc gồm: **Họ và tên (`HoTen`), Số CMND/CCCD (`CCCD`), Số điện thoại (`SoDienThoai`) và Địa chỉ (`DiaChi`)**.
+- **Bước 4: Cấp mã định danh duy nhất (`MaKhachHang`):** Hệ thống tự động phát sinh hoặc cho phép cấp mã định danh thành viên duy nhất toàn chuỗi theo định dạng `KHxxx` (ví dụ: `KH001`, `KH002`...).
+- **Bước 5: Kích hoạt quyền giao dịch:** Khách hàng chính thức được gia nhập hệ thống thành viên và có thể lập phiếu mượn băng tại bất kỳ chi nhánh nào thuộc chuỗi.
+
+#### 2. Quy trình tuyển dụng, phân bổ chi nhánh và cấp mã Nhân viên vận hành
+Đối với nội bộ doanh nghiệp, nhân sự vận hành được quản lý tập trung và phân cấp theo từng điểm bán:
+- **Cấp mã định danh nhân viên (`MaNhanVien`):** Mỗi nhân viên khi gia nhập chuỗi được cấp một mã định danh duy nhất theo tiền tố vai trò nghiệp vụ:
+  - `ADMxx` (ví dụ: `ADM01`): Quản trị viên hệ thống cấp cao.
+  - `QLxx` (ví dụ: `QL01`): Quản lý phụ trách chi nhánh.
+  - `NVxx` (ví dụ: `NV001`, `NVQ01`): Nhân viên nghiệp vụ trực quầy.
+- **Gán chi nhánh trực thuộc (`MaCuaHang`):** Nhân viên được gắn định danh vào một chi nhánh công tác cố định (ví dụ `CH01` - Trụ sở chính, `CH02` - Chi nhánh Cầu Giấy). Quyền truy xuất dữ liệu kho hàng của nhân viên quầy và quản lý sẽ được giới hạn theo chi nhánh trực thuộc này.
+- **Cấp thông tin xác thực an toàn:** Mỗi hồ sơ nhân viên đi kèm tài khoản đăng nhập (`TenDangNhap`) và mật khẩu (`MatKhau`) được mã hóa bảo mật, bảo đảm truy vết trách nhiệm (Audit Trail) cho từng phiếu mượn/trả do nhân viên đó lập ra.
 
 ---
 
 ### 2.1.2. Phương thức phân loại phim gốc và quản lý số thứ tự các bản sao vật lý
-Đặc thù lớn nhất trong nghiệp vụ kinh doanh băng đĩa là sự phân định rõ ràng giữa **Tựa phim (Master Catalog)** và **Cuốn băng thực tế trên kệ (Physical Item Copy)**:
+
+#### 1. Phân tích bài toán quản lý tài sản theo mô hình 1 - N (Master vs. Physical Copies)
+Trong quản lý bán lẻ thông thường, các sản phẩm cùng loại thường chỉ cần theo dõi bằng thuộc tính "Số lượng tồn kho" (Quantity). Tuy nhiên, đối với dịch vụ cho thuê băng đĩa, **việc quản lý gộp số lượng là hoàn toàn không khả thi**, bởi lẽ:
+- Hai cuốn băng của cùng một bộ phim có thể được mua vào ở hai thời điểm khác nhau, có độ mới/cũ khác nhau và hạn sử dụng (`NgayHetHan`) khác nhau.
+- Khi khách hàng làm hỏng vỏ hoặc làm đứt dây băng của một cuốn cụ thể, cửa hàng phải định danh chính xác cuốn băng đó để tính phí bồi thường và chuyển trạng thái sang "Hư hỏng", trong khi các cuốn băng còn lại của bộ phim đó vẫn cho thuê bình thường.
+
+Do đó, hệ thống chuẩn hóa CSDL theo mô hình quan hệ một - nhiều (**1 - N**) chặt chẽ:
 
 ```
 +-----------------------------------------------------------------------------------+
@@ -156,58 +191,154 @@ Sự thống nhất cao về ý tưởng (Conceive) và công nghệ đã tạo 
 +-------------------+-------------------+-------------------+-----------------------+
 ```
 
-1. **Phân loại Phim gốc (Tựa phim lý thuyết):**
-   - Được lưu tại bảng `Phim`, đại diện cho thông tin chung về bộ phim: *Mã phim (`MaPhim`), Tựa đề (`TuaDe`), Năm phát hành (`NamPhatHanh`), Thể loại (`MaTheLoai`), Độ dài phút (`DoDaiPhut`)*.
-2. **Quản lý số thứ tự các Bản sao vật lý (`BanSaoBang`):**
-   - Khi cửa hàng mua về 3 cuốn băng vật lý của phim `PHIM001`, hệ thống tự động sinh mã định danh duy nhất cho từng cuốn theo cú pháp `[MaPhim]-BS[STT]` (ví dụ: `PHIM001-BS01`, `PHIM001-BS02`, `PHIM001-BS03`) tương ứng với `SoThuTuBanSao = 1, 2, 3`.
-   - Mỗi bản sao có các thuộc tính độc lập: **Loại băng** (`PAL` / `NTSC`), **Đơn giá thuê** (`DonGiaThue`), **Ngày hết hạn sử dụng** (`NgayHetHan`), **Chi nhánh lưu kho hiện tại** (`MaCuaHangHienTai`) và **Trạng thái vật lý** (`Sẵn sàng`, `Đang cho mượn`, `Bảo trì`, `Thất lạc`).
+#### 2. Đặc tả thông tin Tựa phim gốc (Master Movie Catalog)
+Bảng `Phim` đóng vai trò là Danh mục mục lục trung tâm, lưu trữ thông tin trí tuệ và thuộc tính nội dung của bộ phim:
+- **Mã phim (`MaPhim`):** Khóa chính định danh tựa phim (ví dụ: `PHIM001`, `PHIM002`).
+- **Tựa đề (`TuaDe`):** Tên đầy đủ của tác phẩm điện ảnh/video.
+- **Năm phát hành (`NamPhatHanh`) & Thời lượng (`DoDaiPhut`):** Cung cấp thông tin tham khảo cho khách hàng khi lựa chọn.
+- **Mã thể loại (`MaTheLoai`):** Liên kết khóa ngoại đến bảng Danh mục Thể loại (`TheLoai`) nhằm phục vụ phân loại và báo cáo thống kê thị hiếu người xem.
+
+#### 3. Đặc tả thông tin từng Bản sao vật lý (`BanSaoBang`) và vòng đời lưu hành
+Mỗi cuốn băng nhập kho được khởi tạo một bản ghi độc lập trong bảng `BanSaoBang`:
+- **Mã định danh duy nhất (`MaBanSao`):** Được tổ chức theo quy tắc kết hợp mã phim gốc và số thứ tự bản sao: `[MaPhim]-BS[STT]` (ví dụ: `PHIM001-BS01`, `PHIM001-BS02`). Mã này được in thành tem mã vạch (Barcode) hoặc gắn chip RFID dán lên vỏ băng.
+- **Số thứ tự bản sao (`SoThuTuBanSao`):** Số nguyên (`1, 2, 3...`) phân biệt các bản sao thuộc cùng một tựa phim.
+- **Định dạng kỹ thuật (`LoaiBang`):** Phân loại hệ màu/chuẩn băng như `PAL`, `NTSC` hoặc chuẩn đĩa `HD`, `Blu-ray`.
+- **Đơn giá cho thuê (`DonGiaThue`):** Giá tiền cho thuê tiêu chuẩn trên một chu kỳ giao dịch (tính bằng VNĐ).
+- **Chi nhánh lưu trữ hiện tại (`MaCuaHangHienTai`):** Trường khóa ngoại quan trọng nhất phục vụ nghiệp vụ luân chuyển liên chi nhánh. Trường này xác định cuốn băng hiện đang nằm trên kệ của chi nhánh nào.
+- **Vòng đời trạng thái vật lý (`TrangThai`):** Cuốn băng luân chuyển qua 4 trạng thái nghiệp vụ chuẩn:
+  1. *Sẵn sàng (`SanSang`):* Băng đang ở trên kệ tại kho `MaCuaHangHienTai`, sẵn sàng cho thuê.
+  2. *Đang cho mượn (`DangChoMuon`):* Băng đang nằm trong tay khách hàng thông qua một Phiếu Mượn chưa hoàn tất trả.
+  3. *Hư hỏng (`HuHong`):* Băng bị trầy xước, hỏng dây màng, không đạt tiêu chuẩn cho thuê.
+  4. *Thất lạc (`ThatLac`):* Băng bị khách hàng làm mất hoặc thất lạc trong quá trình luân chuyển.
 
 ---
 
 ### 2.1.3. Quy trình lập hồ sơ mượn băng video liên chi nhánh
-Quy trình cho mượn băng được thiết kế hỗ trợ khả năng mượn liên chi nhánh mượt mà:
-1. **Tiếp nhận khách hàng:** Nhân viên quầy chọn Khách hàng thành viên từ danh sách hoặc tra cứu nhanh theo số điện thoại/CMND.
-2. **Quét mã băng vào giỏ mượn:** Nhân viên nhập hoặc dùng đầu đọc quét mã vạch/RFID (`MaBanSao`) của các cuốn băng khách chọn. Hệ thống kiểm tra tức thì:
-   - Cuốn băng phải ở trạng thái **"Sẵn sàng"** (`Constants.TrangThaiBang_SanSang`).
-   - Cuốn băng phải đang nằm tại đúng kho của chi nhánh thực hiện giao dịch (`MaCuaHangHienTai`).
-   - Cuốn băng chưa vượt quá hạn sử dụng (`NgayHetHan >= DateTime.Today`).
-3. **Chốt Phiếu Mượn (Database Transaction):**
-   - Hệ thống mở một giao dịch cơ sở dữ liệu (`BEGIN TRANSACTION`), ghi nhận phiếu mượn mới (`PhieuMuon`) gồm: *Mã phiếu mượn (`MaPhieuMuon`), Khách hàng, Cửa hàng mượn, Nhân viên lập phiếu, Ngày mượn, Ngày dự kiến trả*.
-   - Đồng thời ghi danh sách chi tiết (`ChiTietPhieuMuon`) và lập tức chuyển trạng thái các cuốn băng trong giỏ sang **"Đang cho mượn"** (`Constants.TrangThaiBang_DangChoMuon`).
+
+Quy trình cho mượn băng được thực hiện hằng ngày tại quầy giao dịch của từng chi nhánh. Nhờ kiến trúc dữ liệu tập trung, khách hàng có thể đến bất kỳ chi nhánh nào trong chuỗi để mượn băng.
+
+```
++-----------------------------------------------------------------------------------+
+|               LƯU ĐỒ NGHIỆP VỤ LẬP PHIẾU MƯỢN BĂNG LIÊN CHI NHÁNH                 |
++-----------------------------------------------------------------------------------+
+|  1. Nhận diện Khách hàng  ──► 2. Quét mã vạch Bản sao (MaBanSao) vào Giỏ mượn     |
+|                                        │                                          |
+|                                        ▼                                          |
+|                               3. Kiểm tra Hợp lệ Nghiệp vụ:                       |
+|                                  - TrangThai == "Sẵn sàng"?                       |
+|                                  - MaCuaHangHienTai == Chi nhánh đang đứng?       |
+|                                  - NgayHetHan >= Today?                           |
+|                                        │                                          |
+|                               (Hợp lệ) ▼                                          |
+|  5. In Phiếu Mượn giao KH ◄── 4. Chốt Giao Dịch (BEGIN DATABASE TRANSACTION):     |
+|                                  - INSERT PhieuMuon (MaKH, MaCH, MaNV, NgayMuon)  |
+|                                  - INSERT ChiTietPhieuMuon cho từng bản sao       |
+|                                  - UPDATE BanSaoBang.TrangThai = "Đang cho mượn"  |
++-----------------------------------------------------------------------------------+
+```
+
+#### 1. Các bước thực hiện chi tiết tại quầy
+- **Bước 1: Chọn hoặc tra cứu Khách hàng:** Nhân viên chọn khách hàng từ danh sách thành viên hoặc nhập số điện thoại để tra cứu nhanh. Hệ thống kiểm tra xem khách hàng có đang giữ cuốn băng nào bị quá hạn nghiêm trọng hay không trước khi cho phép mượn mới.
+- **Bước 2: Quét mã vạch các cuốn băng vào Giỏ mượn:** Nhân viên sử dụng máy đọc mã vạch quét tem `MaBanSao` trên vỏ băng.
+- **Bước 3: Kiểm tra điều kiện ràng buộc toàn vẹn nghiệp vụ:** Trước khi đưa cuốn băng vào giỏ mượn, tầng Business Logic Layer (BLL) kiểm tra đồng thời 3 điều kiện tiên quyết:
+  - *Kiểm tra trạng thái:* Cuốn băng bắt buộc phải có `TrangThai == "Sẵn sàng"`. Nếu băng đang cho mượn hoặc hư hỏng, lập tức thông báo lỗi.
+  - *Kiểm tra đúng vị trí chi nhánh:* Thuộc tính `MaCuaHangHienTai` của cuốn băng phải khớp với `MaCuaHang` của chi nhánh đang thực hiện lập phiếu. Điều này ngăn chặn lỗi nhân viên chi nhánh A quét nhầm mã của cuốn băng đang ở chi nhánh B.
+  - *Kiểm tra hạn sử dụng:* `NgayHetHan` của cuốn băng phải lớn hơn hoặc bằng ngày hiện tại.
+- **Bước 4: Xác định thời gian hẹn trả (`NgayDuKienTra`):** Nhân viên chọn ngày dự kiến trả băng thỏa thuận với khách hàng (mặc định cộng thêm 3 ngày kể từ ngày lập phiếu).
+
+#### 2. Cơ chế bảo đảm tính nguyên tử giao dịch (Atomic Database Transaction)
+Khi nhân viên nhấn nút **"Chốt Phiếu Mượn"**, một giao dịch cơ sở dữ liệu (`IDbContextTransaction`) được kích hoạt nhằm đảm bảo tính toàn vẹn ACID:
+1. Ghi bản ghi mới vào bảng `PhieuMuon`: Mã phiếu mượn (`MaPhieuMuon`), Mã khách hàng, Mã cửa hàng mượn, Mã nhân viên cho mượn, Ngày mượn (`DateTime.Now`) và Ngày dự kiến trả.
+2. Duyệt qua từng cuốn băng trong giỏ mượn:
+   - Ghi bản ghi chi tiết vào bảng `ChiTietPhieuMuon` (`MaPhieuMuon`, `MaBanSao`, `TrangThaiTra = false`).
+   - Cập nhật trạng thái cuốn băng trong bảng `BanSaoBang`: `TrangThai = Constants.TrangThaiBang_DangChoMuon`.
+3. Nếu tất cả thao tác thành công, gọi `transaction.Commit()` để lưu vĩnh viễn vào CSDL. Nếu phát sinh bất kỳ ngoại lệ nào (lỗi ngắt kết nối, khóa ngoại), gọi `transaction.Rollback()` để trả lại nguyên trạng CSDL, tuyệt đối không để xảy ra tình trạng phiếu mượn đã tạo nhưng trạng thái băng chưa cập nhật.
 
 ---
 
 ### 2.1.4. Quy trình xử lý sự kiện trả băng, nhập phạt thủ công và in biên lai thu tiền
-Quy trình nhận trả băng là điểm nhấn nghiệp vụ vượt trội của chuỗi liên kết (Cross-Store Return & Inventory Relocation):
-1. **Quét mã băng nhận trả (Không phụ thuộc chi nhánh xuất đi):**
-   - Khách hàng có thể mang băng trả tại bất kỳ chi nhánh nào trong chuỗi. Nhân viên chỉ cần quét mã bản sao (`MaBanSao`).
-   - Hệ thống tự động truy tìm Phiếu Mượn đang mở gần nhất chứa cuốn băng này (`ChiTietPhieuMuon.TrangThaiTra == false`), hiển thị thông tin phim, ngày mượn, ngày hẹn trả.
-2. **Tính toán trễ hạn & Nhập tình trạng phạt:**
-   - Nếu `Ngày trả thực tế > Ngày dự kiến trả`, hệ thống tự động cảnh báo số ngày trễ hạn.
-   - Nhân viên kiểm tra tình trạng vật lý vỏ băng/dây băng, ghi nhận mô tả tình trạng trả (`TinhTrangKhiTra`: *Bình thường, Hỏng vỏ, Đứt băng...*) và nhập số tiền phạt vi phạm (`TienPhat`).
-3. **Chốt Phiếu Trả & Tự động luân chuyển kho chéo chi nhánh:**
-   - Hệ thống tạo Phiếu Trả (`PhieuTra`) và Chi tiết Phiếu Trả (`ChiTietPhieuTra`).
-   - **Đồng bộ kho tức thì:** Thuộc tính `BanSaoBang.TrangThai` được cập nhật về **"Sẵn sàng"** và thuộc tính `BanSaoBang.MaCuaHangHienTai` tự động chuyển về **chi nhánh vừa tiếp nhận trả băng**.
+
+Nghiệp vụ trả băng trong chuỗi liên kết mang tính đột phá nhờ cơ chế **"Trả chéo chi nhánh & Luân chuyển kho tự động" (Cross-Store Return & Automatic Inventory Relocation)**.
+
+```
++-----------------------------------------------------------------------------------+
+|               LƯU ĐỒ NGHIỆP VỤ NHẬN TRẢ BĂNG CHÉO CHI NHÁNH                       |
++-----------------------------------------------------------------------------------+
+|  Khách hàng mang băng đến trả tại Chi nhánh B (Dù trước đó mượn tại Chi nhánh A)  |
+|                                        │                                          |
+|                                        ▼                                          |
+|  1. Quét mã bản sao (MaBanSao) ──► 2. Tự động tìm ChiTietPhieuMuon đang mở gần nhất|
+|                                        │                                          |
+|                                        ▼                                          |
+|  3. Kiểm tra & Tính tiền phạt:                                                    |
+|     - Kiểm tra trễ hạn: Nếu Today > NgayDuKienTra ──► Cảnh báo số ngày trễ        |
+|     - Kiểm tra vật lý: Nhập mô tả TinhTrangKhiTra & Tiền phạt vi phạm (TienPhat)  |
+|                                        │                                          |
+|                                        ▼                                          |
+|  4. Chốt Nhận Trả & LUÂN CHUYỂN KHO TỰ ĐỘNG (BEGIN TRANSACTION):                  |
+|     - INSERT PhieuTra & ChiTietPhieuTra (lưu tiền thuê, tiền phạt, tình trạng)    |
+|     - UPDATE ChiTietPhieuMuon.TrangThaiTra = true                                 |
+|     - UPDATE BanSaoBang.TrangThai = "Sẵn sàng"                                    |
+|     - [QUAN TRỌNG] UPDATE BanSaoBang.MaCuaHangHienTai = Chi nhánh B vừa nhận trả! |
++-----------------------------------------------------------------------------------+
+```
+
+#### 1. Quy trình tiếp nhận trả băng không phụ thuộc địa điểm xuất phát
+- **Bước 1: Quét mã băng nhận trả:** Khách hàng mang băng đến quầy của chi nhánh bất kỳ (ví dụ Chi nhánh 2 - `CH02`). Nhân viên quét mã `MaBanSao` trên cuốn băng.
+- **Bước 2: Tự động đối soát giao dịch đang mở:** Hệ thống tự động tìm kiếm bản ghi `ChiTietPhieuMuon` có `MaBanSao` tương ứng và `TrangThaiTra == false`. Hệ thống lập tức hiển thị thông tin: Tên khách hàng mượn, Tựa đề phim, Chi nhánh xuất cho mượn ban đầu, Ngày mượn và Ngày hẹn trả.
+
+#### 2. Quy tắc kiểm tra trễ hạn và tính toán phí bồi thường vi phạm
+- **Kiểm tra thời gian trễ hạn:** Hệ thống tự động so sánh ngày trả thực tế (`DateTime.Today`) với `NgayDuKienTra`. Nếu phát hiện quá hạn, hệ thống hiển thị hộp thoại cảnh báo: *Số ngày trễ hạn = Ngày hiện tại - Ngày hẹn trả*.
+- **Kiểm tra tình trạng vật lý và ghi nhận phạt:** Nhân viên kiểm tra ngoại quan cuốn băng (vỏ hộp, nhãn mác, dây màng từ). Nếu băng có hao tổn vật lý hoặc vi phạm trễ hạn, nhân viên nhập:
+  - *Mô tả tình trạng khi trả (`TinhTrangKhiTra`):* Ví dụ *"Bình thường"*, *"Trễ hạn 2 ngày"*, *"Hỏng vỏ nhựa"*, *"Đứt dây băng"*.
+  - *Số tiền phạt vi phạm (`TienPhat`):* Số tiền phạt do nhân viên nhập hoặc thỏa thuận theo quy chế cửa hàng.
+
+#### 3. Chốt Phiếu Trả và tự động chuyển dịch vị trí kho hàng
+Khi nhấn **"Chốt Nhận Trả"**, giao dịch CSDL thực hiện посл tiếp các thay đổi:
+1. Tạo Phiếu Trả (`PhieuTra`) và Chi tiết Phiếu Trả (`ChiTietPhieuTra`), ghi nhận chính xác tiền thuê (`TienThue`) và tiền phạt (`TienPhat`).
+2. Cập nhật `ChiTietPhieuMuon.TrangThaiTra = true` (đóng giao dịch mượn).
+3. **Cập nhật luân chuyển kho tự động cho Bản sao băng (`BanSaoBang`):**
+   - Đưa `TrangThai` trở lại **"Sẵn sàng"** (`Constants.TrangThaiBang_SanSang`).
+   - Cập nhật `MaCuaHangHienTai` chuyển về **Mã chi nhánh đang tiếp nhận trả băng**.
+   - *Ý nghĩa thực tiễn:* Ngay sau khi khách trả băng tại Chi nhánh B, cuốn băng lập tức xuất hiện trong kho "Sẵn sàng" của Chi nhánh B và có thể cho vị khách hàng tiếp theo tại Chi nhánh B mượn ngay mà không cần chờ xe vận chuyển vật lý về Chi nhánh A.
 
 ---
 
 ### 2.1.5. Quy trình tổng hợp hồ sơ và in thông báo nhắc trả băng hằng ngày
-Để giảm thiểu nợ xấu và thất thoát tài sản, hệ thống duy trì quy trình kiểm tra tự động hằng ngày:
-- Hệ thống quét toàn bộ bảng `ChiTietPhieuMuon` có `TrangThaiTra = false` kèm theo điều kiện `PhieuMuon.NgayDuKienTra < DateTime.Today`.
-- Danh sách kết quả được tổng hợp thành bảng **Băng Quá Hạn**, hiển thị rõ: *Tên khách hàng, Số điện thoại, Tựa đề phim, Mã bản sao, Ngày hẹn trả và Số ngày đã quá hạn*.
-- Nhân viên quản lý có thể xuất danh sách này ra file Excel hoặc in danh sách để gọi điện thông báo, nhắc nhở khách hàng mang trả băng.
+
+Nhằm duy trì kỷ luật thu hồi tài sản và quản lý nợ xấu, hệ thống cung cấp quy trình quét tự động danh sách các cuốn băng đang quá hạn:
+
+```
++-----------------------------------------------------------------------------------+
+|               QUY TRÌNH QUÉT VÀ NHẮC NHỞ BĂNG QUÁ HẠN HẰNG NGÀY                   |
++-----------------------------------------------------------------------------------+
+|  Duyệt toàn bộ ChiTietPhieuMuon có TrangThaiTra == false & NgayDuKienTra < Today  |
+|                                        │                                          |
+|                                        ▼                                          |
+|  Tổng hợp danh sách Băng Quá Hạn:                                                 |
+|  + Khách hàng | SĐT liên hệ | Tựa phim | Mã bản sao | Ngày hẹn trả | Số ngày trễ  |
+|                                        │                                          |
+|                                        ▼                                          |
+|  Nhân viên Xuất danh sách Excel / Gọi điện thông báo nhắc trả / Khóa quyền mượn   |
++-----------------------------------------------------------------------------------+
+```
+
+1. **Quét dữ liệu tự động theo thời gian thực:** Mỗi ngày, quản lý chi nhánh truy cập tab **"Quét Băng Quá Hạn"**. Hệ thống thực hiện câu lệnh LINQ kết nối 4 bảng (`ChiTietPhieuMuon`, `PhieuMuon`, `KhachHang`, `BanSaoBang`), lọc ra tất cả giao dịch chưa trả có `NgayDuKienTra < DateTime.Today`.
+2. **Hiển thị thông tin tổng hợp trực quan:** Bảng kết quả hiển thị đầy đủ: *Tên khách hàng, Số điện thoại liên hệ, Tựa đề phim, Mã cuốn băng đang giữ, Ngày hẹn trả ban đầu và Số ngày đã trễ hạn*.
+3. **Hành động nghiệp vụ thu hồi:** Nhân viên có thể xuất bảng dữ liệu này ra tệp Excel để gửi báo cáo điều hành, hoặc trực tiếp gọi điện thoại theo số liên lạc hiển thị trên màn hình để nhắc nhở khách hàng mang băng đến chi nhánh gần nhất hoàn trả.
 
 ---
 
 ## 2.2. XÁC ĐỊNH YÊU CẦU PHẦN MỀM
 
 ### 2.2.1. Tóm tắt tổng quan hệ thống phần mềm quản lý chuỗi cho thuê băng
-Hệ thống phần mềm **Quản Lý Thuê Băng Đĩa (Rental Manager Enterprise)** là giải pháp phần mềm quản trị tập trung trên nền tảng Desktop Windows Forms (.NET 8.0), được thiết kế theo mô hình 3 lớp chuyên nghiệp. Phần mềm cung cấp trọn bộ công cụ từ quản lý danh mục phim, kiểm soát kho bản sao, lập phiếu mượn/trả, giám sát nợ quá hạn đến báo cáo thống kê đa chiều.
+Hệ thống phần mềm **Quản Lý Thuê Băng Đĩa Chuỗi Cửa Hàng (Enterprise Video Rental Management System)** được thiết kế và xây dựng trên nền tảng công nghệ Microsoft .NET 8.0 Windows Forms kết hợp hệ quản trị CSDL SQL Server (EF Core 8). Phần mềm mang sứ mệnh thay thế hoàn toàn sổ sách thủ công, tự động hóa từ khâu kiểm soát kho bản sao đa chi nhánh, thanh toán mượn/trả, giám sát vi phạm đến phân tích biểu đồ doanh thu theo chuẩn mực doanh nghiệp hiện đại.
 
 ---
 
 ### 2.2.2. Xác định các đối tượng sử dụng và phân quyền nghiệp vụ (RBAC)
-Hệ thống phân chia người dùng thành **3 vai trò cốt lõi** tuân thủ mô hình Role-Based Access Control (RBAC):
+
+Để đảm bảo tính bảo mật và sự tuân thủ kỷ luật vận hành trong mạng lưới nhiều cửa hàng, hệ thống thiết lập ma trận phân quyền dựa theo vai trò (**RBAC - Role-Based Access Control**) với 3 nhóm đối tượng người dùng chính:
 
 ```
 +-----------------------------------------------------------------------------------+
@@ -226,19 +357,33 @@ Hệ thống phân chia người dùng thành **3 vai trò cốt lõi** tuân th
 +-----------------------------------+-------------------+-------------------+-------+
 ```
 
-1. **Admin Cấp Cao (`Admin_CapCao`):**
-   - Có toàn quyền kiểm soát toàn bộ hệ thống ở tất cả các chi nhánh.
-   - Được quyền quản lý danh sách cửa hàng, quản lý tất cả nhân viên, cấu hình phân quyền và là vai trò duy nhất được thực hiện thao tác **XÓA (`DELETE`)** hồ sơ nhạy cảm.
-2. **Quản Lý Chi Nhánh (`QuanLy_ChiNhanh`):**
-   - Phụ trách điều hành tại chi nhánh được phân công.
-   - Được xem thống kê doanh thu/kho hàng của chi nhánh mình, quản lý nhân viên thuộc chi nhánh, theo dõi băng quá hạn. **Bị ẩn/khóa toàn bộ nút Xóa dữ liệu**.
-3. **Nhân Viên Quầy (`NhanVien_Quay`):**
-   - Người trực tiếp thực hiện giao dịch tại quầy.
-   - Quyền hạn tập trung vào 2 tab nghiệp vụ chính: **Lập Phiếu Mượn/Trả** và **Đăng ký Khách hàng mới**. Không có quyền truy cập tab Báo cáo Dashboard, Quản lý Cửa hàng hay Quản lý Nhân viên.
+#### 1. Quản trị viên Hệ thống Cấp cao (`Admin_CapCao`)
+- **Vai trò & Trách nhiệm:** Là người điều hành cao nhất của toàn chuỗi cửa hàng, chịu trách nhiệm quản trị cấu hình hệ thống, kiểm soát tài sản toàn diện và quản lý mạng lưới chi nhánh.
+- **Phạm vi quyền hạn:**
+  - Truy cập toàn bộ 8 module chức năng của phần mềm.
+  - Xem và quản lý dữ liệu kho hàng, nhân viên, doanh thu của **tất cả các chi nhánh** trong hệ thống.
+  - Là vai trò duy nhất có quyền thực hiện thao tác **XÓA (`DELETE`)** hồ sơ tựa phim, bản sao băng, khách hàng hoặc nhân viên khỏi cơ sở dữ liệu.
+
+#### 2. Quản lý Cửa hàng / Chi nhánh (`QuanLy_ChiNhanh`)
+- **Vai trò & Trách nhiệm:** Là người đứng đầu chịu trách nhiệm điều hành hoạt động kinh doanh tại một điểm bán (Chi nhánh cụ thể được phân công).
+- **Phạm vi quyền hạn:**
+  - Được quyền Thêm mới và Cập nhật hồ sơ Phim, Bản sao băng, Khách hàng phục vụ hoạt động của chi nhánh.
+  - Quản lý danh sách nhân viên trực thuộc chi nhánh của mình.
+  - Xem Dashboard thống kê biểu đồ doanh thu và tình trạng kho hàng thuộc chi nhánh công tác.
+  - **Giới hạn bảo mật:** Bị khóa/ẩn toàn bộ các nút **Xóa dữ liệu**, không được quyền truy cập thông tin nhân sự và doanh thu của các chi nhánh khác.
+
+#### 3. Nhân viên Quầy giao dịch (`NhanVien_Quay`)
+- **Vai trò & Trách nhiệm:** Là nhân viên nghiệp vụ trực tiếp làm việc với khách hàng tại quầy, thực hiện các thủ tục cho mượn, nhận trả băng và ghi nhận khách hàng mới.
+- **Phạm vi quyền hạn:**
+  - Chỉ được quyền thao tác trên 3 nghiệp vụ chính: **Lập Phiếu Mượn Băng**, **Chốt Nhận Trả Băng** và **Thêm hồ sơ Khách hàng mới**.
+  - Được xem tra cứu danh mục Phim và danh sách Bản sao đang sẵn sàng tại cửa hàng để tư vấn cho khách.
+  - **Giới hạn bảo mật:** Giao diện tự động ẩn hoàn toàn các tab Quản lý Nhân viên, Quản lý Cửa hàng và Dashboard Báo cáo Biểu đồ. Không có quyền sửa đổi giá thuê hay xóa bất kỳ hồ sơ nào.
 
 ---
 
 ### 2.2.3. Yêu cầu chức năng (Functional Requirements) cho 8 module cốt lõi
+
+Phần mềm được chia thành 8 module nghiệp vụ độc lập nhưng liên thông chặt chẽ về mặt dữ liệu:
 
 ```
 +-----------------------------------------------------------------------------------+
@@ -251,54 +396,102 @@ Hệ thống phân chia người dùng thành **3 vai trò cốt lõi** tuân th
 +-----------------------------------------------------------------------------------+
 ```
 
-#### 1. Module Quản trị Phim gốc (Master Movie Management)
-- Hiển thị danh sách tựa phim với bộ lọc nhanh theo từ khóa, thể loại và năm phát hành.
-- Cho phép thêm mới, cập nhật thông tin tựa phim (Tựa đề, Thể loại, Năm phát hành, Thời lượng phút).
-- Thống kê tự động tổng số lượng bản sao hiện có và số bản sao sẵn sàng cho từng tựa phim.
+#### Module 1: Quản trị Phim gốc (Master Movie Management)
+- **Mục đích:** Quản lý danh mục Tựa phim gốc (Master Catalog) của chuỗi cửa hàng.
+- **Yêu cầu chức năng chi tiết:**
+  - Hiển thị danh sách tựa phim dưới dạng DataGridView với đầy đủ cột thông tin: Mã phim, Tựa đề, Năm phát hành, Tên thể loại, Thời lượng phút.
+  - Hỗ trợ tìm kiếm tức thì (Real-time Search) theo từ khóa tựa phim, lọc theo Thể loại hoặc Năm phát hành.
+  - Thêm mới một bộ phim vào hệ thống với kiểm tra ràng buộc không được để trống mã phim và tựa đề.
+  - Cập nhật chỉnh sửa thông tin bộ phim hiện có.
+  - Tự động thống kê số lượng: Hiển thị tổng số bản sao hiện sở hữu và số bản sao đang sẵn sàng cho thuê đối với từng tựa phim.
 
-#### 2. Module Quản lý Bản sao Băng vật lý (Physical Tape Copy Management)
-- Quản lý từng bản sao cụ thể với mã vạch duy nhất `MaBanSao` (`[MaPhim]-BS[STT]`).
-- Hỗ trợ nhập kho bản sao mới, chỉ định kho chi nhánh (`MaCuaHangHienTai`), định giá cho thuê (`DonGiaThue`), loại băng (`PAL`/`NTSC`) và ngày hết hạn.
-- Cung cấp bộ lọc theo chi nhánh và trạng thái (*Sẵn sàng, Đang cho mượn, Hư hỏng...*), hỗ trợ xuất dữ liệu ra tệp Excel.
+#### Module 2: Quản lý Bản sao Băng vật lý (Physical Tape Copy Management)
+- **Mục đích:** Quản lý từng cuốn băng thực tế nhập kho và luân chuyển giữa các chi nhánh.
+- **Yêu cầu chức năng chi tiết:**
+  - Nhập kho bản sao mới: Gán tự động mã `MaBanSao` (`[MaPhim]-BS[STT]`), chỉ định chi nhánh lưu kho ban đầu, chọn loại định dạng (`PAL`, `NTSC`), đơn giá thuê tiêu chuẩn và hạn sử dụng.
+  - Cập nhật thông tin bản sao và thay đổi trạng thái vật lý (`Sẵn sàng`, `Bảo trì`, `Hư hỏng`, `Thất lạc`).
+  - Lọc danh sách bản sao theo chi nhánh cụ thể và theo trạng thái lưu kho, giúp quản lý kiểm kê kho hàng nhanh chóng.
 
-#### 3. Module Quản lý Khách hàng thành viên (Customer Management)
-- Quản lý hồ sơ thành viên: Họ tên, CMND/CCCD, Số điện thoại và địa chỉ.
-- Tra cứu lịch sử thuê băng của khách hàng, đếm tổng lượt giao dịch đã thực hiện.
-- Cảnh báo khách hàng đang giữ băng trễ hạn trước khi cho phép lập phiếu mượn mới.
+#### Module 3: Quản lý Khách hàng thành viên (Customer Management)
+- **Mục đích:** Quản lý cơ sở dữ liệu khách hàng thân thiết toàn chuỗi.
+- **Yêu cầu chức năng chi tiết:**
+  - Đăng ký hồ sơ thành viên mới với mã `KHxxx`, lưu trữ đầy đủ Họ tên, CMND/CCCD, Số điện thoại và Địa chỉ.
+  - Tìm kiếm nhanh khách hàng theo Số điện thoại hoặc Họ tên để hỗ trợ lập phiếu mượn/trả.
+  - Thống kê lịch sử: Đếm tổng số lượt giao dịch mượn/trả mà khách hàng đã thực hiện trong hệ thống.
 
-#### 4. Module Quản lý Nhân sự & Phân quyền (Employee & RBAC Management)
-- Quản lý danh sách nhân viên, tài khoản đăng nhập và mật khẩu truy cập.
-- Gán vai trò (`Admin`, `Quản lý`, `Nhân viên`) và chi nhánh công tác (`MaCuaHang`).
-- Cơ chế kiểm tra vai trò khi đăng nhập để tự động ẩn/hiện các nút chức năng tương ứng trên giao diện.
+#### Module 4: Quản lý Nhân sự & Phân quyền (Employee & RBAC Management)
+- **Mục đích:** Quản lý danh sách nhân sự vận hành và kiểm soát quyền hạn truy cập.
+- **Yêu cầu chức năng chi tiết:**
+  - Thêm mới hồ sơ nhân viên kèm thông tin tài khoản (`TenDangNhap`, `MatKhau`), phân bổ vào một chi nhánh cụ thể (`MaCuaHang`) và cấp mã vai trò (`Admin`, `Quản lý`, `Nhân viên`).
+  - Hỗ trợ lọc danh sách nhân viên theo từng chi nhánh hoặc theo chức vụ.
+  - Khóa/mở khóa tài khoản nhân viên khi có biến động nhân sự.
 
-#### 5. Module Quản lý Cửa hàng / Chi nhánh (Store / Branch Management)
-- Thêm mới, cập nhật thông tin mạng lưới chi nhánh (Mã cửa hàng, Địa chỉ, Số điện thoại).
-- Hiển thị bảng tổng hợp số lượng nhân viên và tổng số lượng bản sao băng đang lưu trữ tại từng chi nhánh.
+#### Module 5: Quản lý Cửa hàng / Chi nhánh (Store / Branch Management)
+- **Mục đích:** Quản lý cấu trúc mạng lưới điểm kinh doanh của toàn chuỗi.
+- **Yêu cầu chức năng chi tiết:**
+  - Thêm mới hoặc cập nhật thông tin chi nhánh: Mã chi nhánh (`CHxx`), Tên/Địa chỉ chi nhánh, Số điện thoại liên hệ.
+  - Hiển thị bảng tổng hợp toàn cảnh: Thống kê số lượng nhân viên đang trực thuộc và tổng số lượng cuốn băng đang lưu kho tại từng chi nhánh.
 
-#### 6. Module Quản lý Danh mục Thể loại (Genre Management)
-- Chuẩn hóa danh mục thể loại phim (*Hành động, Hoạt hình, Khoa học, Hài hước...*) nhằm tránh lỗi nhập dữ liệu tự do.
+#### Module 6: Quản lý Danh mục Thể loại (Genre Management)
+- **Mục đích:** Chuẩn hóa từ điển thể loại phim phục vụ phân loại và báo cáo.
+- **Yêu cầu chức năng chi tiết:**
+  - Thêm, sửa danh mục các thể loại chuẩn (*Hành động, Hoạt hình, Tâm lý, Viễn tưởng, Hài hước...*), đảm bảo tính nhất quán dữ liệu cho toàn bộ danh mục phim gốc.
 
-#### 7. Module Nghiệp vụ Mượn - Trả Băng & Luân chuyển kho (Cross-Store Workflow)
-- **Tab Lập Phiếu Mượn:** Quét mã vạch/RFID vào giỏ mượn, tự động tính tổng tiền thuê, chọn khách hàng/nhân viên và chốt phiếu mượn với giao dịch an toàn (`BeginTransaction`).
-- **Tab Nhận Trả Băng:** Quét mã băng trả, tự động tra cứu phiếu mượn tương ứng, cảnh báo trễ hạn, hỗ trợ nhập tiền phạt và tự động luân chuyển kho về chi nhánh nhận trả.
-- **Tab Quét Băng Quá Hạn:** Hiển thị danh sách khách hàng giữ băng quá hạn hẹn trả để liên hệ nhắc nhở.
+#### Module 7: Nghiệp vụ Mượn - Trả Băng & Luân chuyển kho liên chi nhánh (Cross-Store Rental & Return Workflow)
+- **Mục đích:** Xử lý giao dịch mượn, trả băng hằng ngày tại quầy giao dịch.
+- **Yêu cầu chức năng chi tiết:**
+  - *Tab 1 - Lập Phiếu Mượn Băng:*
+    - Chọn Khách hàng mượn, Cửa hàng mượn và Nhân viên lập phiếu.
+    - Quét mã vạch `MaBanSao` vào giỏ mượn (đảm bảo kiểm tra băng sẵn sàng, đúng kho và còn hạn).
+    - Tự động cộng dồn tổng tiền thuê dự kiến hiển thị trực quan cho khách hàng.
+    - Chốt phiếu mượn với giao dịch an toàn (`BeginTransaction`), tự động chuyển trạng thái băng sang *"Đang cho mượn"*.
+  - *Tab 2 - Chốt Nhận Trả Băng (Cross-Store Return):*
+    - Quét mã `MaBanSao` bất kỳ để tự động tra cứu Phiếu Mượn đang mở gần nhất.
+    - Tự động cảnh báo nếu băng trả muộn hơn ngày hẹn trả (`SoNgayTreHan`).
+    - Hỗ trợ nhập tiền phạt vi phạm (`TienPhat`) và ghi nhận tình trạng vật lý khi trả (`TinhTrangKhiTra`).
+    - Chốt Phiếu Trả, tự động đồng bộ trạng thái băng về *"Sẵn sàng"* và cập nhật `MaCuaHangHienTai` về địa điểm chi nhánh tiếp nhận trả.
+  - *Tab 3 - Quét Danh Sách Quá Hạn:*
+    - Quét và hiển thị danh sách toàn bộ khách hàng đang giữ băng quá hạn hẹn trả để tiến hành gọi điện thu hồi.
 
-#### 8. Module Dashboard Báo cáo & Thống kê Trực quan (Executive Analytics)
-- Hiển thị các thẻ chỉ số KPI tổng quan: **Tổng doanh thu thực thu, Tổng lượng phim, Tổng lượng bản sao, Lượt thuê active**.
-- **Biểu đồ Cột (Bar Chart):** Thống kê doanh thu theo thời gian, vẽ bằng framework **ScottPlot 5**.
-- **Biểu đồ Tròn (Pie Chart):** Phân bổ tỷ lệ tình trạng kho (Sẵn sàng / Đang cho mượn / Hư hỏng).
-- **Bảng Top Trending:** Danh sách 5 bộ phim thịnh hành được mượn nhiều nhất trong tháng.
+#### Module 8: Dashboard Báo cáo & Thống kê Trực quan (Executive Analytics & Charting)
+- **Mục đích:** Cung cấp tầm nhìn quản trị toàn cảnh và biểu đồ phân tích cho lãnh đạo doanh nghiệp.
+- **Yêu cầu chức năng chi tiết:**
+  - *Thẻ chỉ số KPI tổng quan (KPI Metric Cards):* Hiển thị tức thì 4 chỉ số cốt lõi: **Tổng doanh thu thực thu (VNĐ)**, **Tổng số tựa phim**, **Tổng số bản sao vật lý** và **Số giao dịch đang cho mượn active**.
+  - *Biểu đồ Cột Doanh Thu (Revenue Bar Chart):* Sử dụng thư viện **ScottPlot 5** vẽ biểu đồ cột thể hiện sự tăng trưởng doanh thu theo thời gian, giúp nhà quản lý đánh giá hiệu quả kinh doanh.
+  - *Biểu đồ Tròn Tình Trạng Kho (Inventory Status Pie Chart):* Vẽ biểu đồ tròn trực quan hóa tỷ lệ phần trăm kho hàng: *Tỷ lệ Sẵn sàng vs. Tỷ lệ Đang cho mượn vs. Tỷ lệ Hư hỏng*.
+  - *Bảng xếp hạng Phim Thịnh Hành (Top 5 Trending Movies):* Liệt kê Top 5 bộ phim có lượt mượn cao nhất trong kỳ, hỗ trợ ra quyết định nhập thêm bản sao mới cho các phim hot.
 
 ---
 
 ### 2.2.4. Yêu cầu phi chức năng (Non-Functional Requirements)
 
+Bên cạnh các chức năng nghiệp vụ, phần mềm phải đáp ứng nghiêm ngặt 4 nhóm yêu cầu phi chức năng nhằm bảo đảm tính chuyên nghiệp và ổn định vận hành:
+
+```
++-----------------------------------------------------------------------------------+
+|                  4 TRỤ CỘT YÊU CẦU PHI CHỨC NĂNG CỦA HỆ THỐNG                     |
++---------------------+---------------------+-------------------+-------------------+
+| 1. BẢO MẬT & PHÂN   | 2. TOÀN VẸN GIAO    | 3. HIỆU NĂNG &    | 4. GIAO DIỆN HIỆN |
+|    QUYỀN (SECURITY) |    DỊCH (ACID)      |    TỐC ĐỘ (SPEED) |    ĐẠI (UI/UX)    |
++---------------------+---------------------+-------------------+-------------------+
+| Kiểm tra vai trò    | Mọi thao tác Lập    | Tốc độ tra cứu và | Bảng màu Pastel   |
+| RBAC trên từng form | Phiếu Mượn/Trả đều  | quét mã vạch phản | sang trọng, nút   |
+| Tự động khóa nút    | bọc trong Database  | hồi dưới 500ms    | Flat bo góc, phông|
+| Xóa với Quản lý     | Transaction, tự động| với CSDL 100.000  | Segoe UI Semibold |
+| và Nhân viên quầy.  | Rollback khi có lỗi.| bản ghi.          | chuẩn Enterprise. |
++---------------------+---------------------+-------------------+-------------------+
+```
+
 1. **Yêu cầu về Bảo mật & Phân quyền (Security & Access Control):**
-   - Thông tin xác thực phải được kiểm tra qua cơ chế kiểm soát vai trò chặt chẽ.
-   - Các hành động nhạy cảm như xóa dữ liệu hay truy cập báo cáo tài chính phải được vô hiệu hóa ở tầng UI và chặn ở tầng BLL nếu tài khoản không đủ thẩm quyền.
-2. **Yêu cầu về Toàn vẹn dữ liệu & Tốc độ đồng bộ (Data Integrity & Performance):**
-   - Mọi thao tác chốt phiếu mượn hoặc trả nhiều cuốn băng đồng thời phải được bọc trong **Database Transaction** (`IDbContextTransaction`). Nếu xảy ra lỗi ở bất kỳ cuốn băng nào, toàn bộ giao dịch phải được `Rollback` hoàn toàn để ngăn tình trạng lệch dữ liệu kho.
-   - Thời gian phản hồi cho các thao tác tra cứu, quét mã vạch không quá 500ms đối với kho dữ liệu dưới 100.000 bản ghi.
-3. **Yêu cầu về Khả năng lưu trữ & Triển khai (Storage & Deployment):**
-   - Hệ thống tương thích tốt với SQL Server LocalDB, không đòi hỏi máy trạm cấu hình cao (chỉ cần RAM tối thiểu 4GB, hệ điều hành Windows 10/11 x64).
-   - Biểu đồ và giao diện hỗ trợ tự động co giãn (Responsive Layout) đảm bảo hiển thị sắc nét trên cả màn hình laptop tiêu chuẩn lẫn màn hình độ phân giải Full HD / 4K.
+   - Mọi phiên truy cập hệ thống đều bắt buộc phải xác thực qua màn hình Đăng nhập (`LoginForm`).
+   - Mật khẩu người dùng phải được bảo vệ an toàn.
+   - Phân quyền RBAC được thực thi đa tầng: Kiểm soát hiển thị ở tầng UI (tự động ẩn các tab/nút không hợp lệ) và kiểm soát thực thi ở tầng Business Logic Layer (từ chối giao dịch nếu tài khoản không đủ thẩm quyền).
+2. **Yêu cầu về Toàn vẹn dữ liệu & Giao dịch an toàn (Data Integrity & ACID Compliance):**
+   - Mọi giao dịch Lập Phiếu Mượn và Chốt Nhận Trả liên quan đến nhiều bảng dữ liệu (`PhieuMuon`, `ChiTietPhieuMuon`, `BanSaoBang`) phải tuân thủ chuẩn nguyên tử ACID.
+   - Nếu xảy ra lỗi ngắt kết nối hoặc vi phạm khóa ngoại trong quá trình ghi dữ liệu, giao dịch phải tự động `Rollback` hoàn toàn 100%, tuyệt đối không để xảy ra tình trạng lệch dữ liệu kho.
+3. **Yêu cầu về Hiệu năng & Tốc độ đồng bộ (Performance & Speed):**
+   - Tốc độ phản hồi cho thao tác tra cứu mã vạch, quét băng vào giỏ mượn không vượt quá 500ms.
+   - Các truy vấn thống kê Dashboard phức tạp sử dụng LINQ được tối ưu hóa qua `AsNoTracking()` và chỉ chọn lọc các cột cần thiết (`Select DTO`), đảm bảo thời gian tải biểu đồ dưới 1 giây.
+4. **Yêu cầu về Trải nghiệm Người dùng & Giao diện (Modern UI/UX & Responsive Design):**
+   - Giao diện người dùng tuân thủ nguyên tắc thiết kế phẳng (Flat Design), sử dụng bảng màu Pastel sang trọng, phông chữ `Segoe UI Semibold` mượt mà và nút bấm phẳng bo góc.
+   - Biểu đồ ScottPlot 5 và các bảng dữ liệu DataGridView hỗ trợ cơ chế tự động co giãn (`Dock = DockStyle.Fill`, `Anchor`), bảo đảm hiển thị sắc nét, không vỡ layout trên mọi kích thước cửa sổ màn hình từ Laptop tiêu chuẩn đến màn hình Full HD / 4K.
