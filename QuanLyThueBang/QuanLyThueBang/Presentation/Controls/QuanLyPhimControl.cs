@@ -86,7 +86,10 @@ namespace QuanLyThueBang.Presentation.Controls
                 BackColor = Color.FromArgb(25, 135, 84),
                 ForeColor = Color.White,
                 Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold),
-                Cursor = Cursors.Hand
+                Cursor = Cursors.Hand,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Padding = new Padding(0, 0, 0, 4),
+                UseCompatibleTextRendering = true
             };
             btnExportExcel.FlatAppearance.BorderSize = 0;
             btnExportExcel.Click += (s, e) => QuanLyThueBang.Helpers.ExportHelper.ExportDataGridViewToExcel(dgvPhim, "DanhSachPhim");
@@ -100,7 +103,10 @@ namespace QuanLyThueBang.Presentation.Controls
                 BackColor = Color.FromArgb(184, 123, 125), // Tone màu hồng đất sang trọng
                 ForeColor = Color.White,
                 Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold),
-                Cursor = Cursors.Hand
+                Cursor = Cursors.Hand,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Padding = new Padding(0, 0, 0, 4),
+                UseCompatibleTextRendering = true
             };
             btnAddMovie.FlatAppearance.BorderSize = 0;
             btnAddMovie.Click += BtnAddMovie_Click;

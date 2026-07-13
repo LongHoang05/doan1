@@ -81,7 +81,10 @@ namespace QuanLyThueBang.Presentation.Controls
                 BackColor = Color.FromArgb(184, 123, 125),
                 ForeColor = Color.White,
                 Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold),
-                Cursor = Cursors.Hand
+                Cursor = Cursors.Hand,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Padding = new Padding(0, 0, 0, 4),
+                UseCompatibleTextRendering = true
             };
             btnAddCategory.FlatAppearance.BorderSize = 0;
             btnAddCategory.Click += BtnAddCategory_Click;

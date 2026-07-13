@@ -99,7 +99,10 @@ namespace QuanLyThueBang.Presentation.Forms.Phim
                 BackColor = Color.FromArgb(184, 123, 125), // Tone hồng/đất ấm áp theo ảnh mẫu 2
                 ForeColor = Color.White,
                 Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
-                Cursor = Cursors.Hand
+                Cursor = Cursors.Hand,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Padding = new Padding(0, 0, 0, 3), // Đẩy chữ lên giữa dọc chính xác
+                UseCompatibleTextRendering = true
             };
             btnAddMovie.FlatAppearance.BorderSize = 0;
             btnAddMovie.Click += BtnAddMovie_Click;
