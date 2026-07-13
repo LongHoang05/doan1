@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using QuanLyThueBang.DAL;
 using QuanLyThueBang.Helpers;
+using ScottPlot.WinForms;
 
 namespace QuanLyThueBang.Presentation.Controls
 {
@@ -19,7 +21,7 @@ namespace QuanLyThueBang.Presentation.Controls
         private Label lblCountPhieuMuon = null!;
         private Label lblTongDoanhThu = null!;
         private DataGridView dgvTopTrending = null!;
-        private Panel pnlPieChart = null!;
+        private FormsPlot _formsPlot = null!;
 
         private int _cntSanSang = 0;
         private int _cntDangMuon = 0;
@@ -124,14 +126,13 @@ namespace QuanLyThueBang.Presentation.Controls
             pnlTrending.Controls.Add(dgvTopTrending);
             pnlTrending.Controls.Add(lblTrendingTitle);
 
-            // Right: Kho Băng Pie Chart
+            // Right: Kho Băng Pie Chart (Sử dụng Framework chuyên nghiệp ScottPlot 5)
             var pnlRightBox = new Panel { Dock = DockStyle.Fill, BackColor = Color.White, Padding = new Padding(15) };
             var lblPieTitle = new Label { Text = "📦 TỶ LỆ TÌNH TRẠNG KHO BĂNG ĐĨA", Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold), ForeColor = Color.FromArgb(50, 50, 50), Dock = DockStyle.Top, Height = 35 };
 
-            pnlPieChart = new Panel { Dock = DockStyle.Fill };
-            pnlPieChart.Paint += PnlPieChart_Paint;
+            _formsPlot = new FormsPlot { Dock = DockStyle.Fill };
 
-            pnlRightBox.Controls.Add(pnlPieChart);
+            pnlRightBox.Controls.Add(_formsPlot);
             pnlRightBox.Controls.Add(lblPieTitle);
 
             tlpMain.Controls.Add(pnlTrending, 0, 0);
@@ -192,73 +193,47 @@ namespace QuanLyThueBang.Presentation.Controls
             _cntDangMuon = context.BanSaoBangs.Count(b => b.TrangThai == Constants.TrangThaiBang_DangChoMuon);
             _cntHuHong = context.BanSaoBangs.Count(b => b.TrangThai != Constants.TrangThaiBang_SanSang && b.TrangThai != Constants.TrangThaiBang_DangChoMuon);
 
-            pnlPieChart.Invalidate();
+            UpdatePieChart();
         }
 
-        private void PnlPieChart_Paint(object? sender, PaintEventArgs e)
+        private void UpdatePieChart()
         {
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            _formsPlot.Plot.Clear();
+
             int total = _cntSanSang + _cntDangMuon + _cntHuHong;
-
-            int diameter = Math.Min(pnlPieChart.Width - 220, pnlPieChart.Height - 40);
-            diameter = Math.Clamp(diameter, 130, 240);
-            int pieX = 25;
-            int pieY = Math.Max(15, (pnlPieChart.Height - diameter) / 2 - 15);
-            var rect = new Rectangle(pieX, pieY, diameter, diameter);
-
-            int legX = rect.Right + 35;
-            int legY = pieY + 20;
-
             if (total == 0)
             {
-                using var bEmpty = new SolidBrush(Color.FromArgb(220, 224, 230));
-                e.Graphics.FillPie(bEmpty, rect, 0, 360);
-                e.Graphics.DrawString("Chưa có dữ liệu kho băng", new Font("Segoe UI Italic", 10F), Brushes.Gray, legX, legY + 30);
+                var emptyPie = _formsPlot.Plot.Add.Pie(new List<ScottPlot.PieSlice>
+                {
+                    new ScottPlot.PieSlice { Value = 1, FillColor = ScottPlot.Color.FromHex("#E0E4E8"), Label = "Chưa có dữ liệu" }
+                });
+                _formsPlot.Plot.Axes.Frameless();
+                _formsPlot.Plot.HideGrid();
+                _formsPlot.Refresh();
                 return;
             }
 
-            float startAngle = -90f; // Bắt đầu ở đỉnh 12h
-
-            float sweepSanSang = (float)_cntSanSang / total * 360f;
-            float sweepDangMuon = (float)_cntDangMuon / total * 360f;
-            float sweepHuHong = Math.Max(0f, 360f - (sweepSanSang + sweepDangMuon));
-
-            if (sweepSanSang > 0)
+            var slices = new List<ScottPlot.PieSlice>();
+            if (_cntSanSang > 0)
             {
-                using var b = new SolidBrush(Color.FromArgb(40, 167, 69));
-                e.Graphics.FillPie(b, rect, startAngle, sweepSanSang);
-                startAngle += sweepSanSang;
+                slices.Add(new ScottPlot.PieSlice { Value = _cntSanSang, FillColor = ScottPlot.Color.FromHex("#28a745"), Label = $"Sẵn sàng ({_cntSanSang})" });
+            }
+            if (_cntDangMuon > 0)
+            {
+                slices.Add(new ScottPlot.PieSlice { Value = _cntDangMuon, FillColor = ScottPlot.Color.FromHex("#0d6efd"), Label = $"Đang cho mượn ({_cntDangMuon})" });
+            }
+            if (_cntHuHong > 0)
+            {
+                slices.Add(new ScottPlot.PieSlice { Value = _cntHuHong, FillColor = ScottPlot.Color.FromHex("#dc3545"), Label = $"Hư hỏng / Bảo trì ({_cntHuHong})" });
             }
 
-            if (sweepDangMuon > 0)
-            {
-                using var b = new SolidBrush(Color.FromArgb(13, 110, 253));
-                e.Graphics.FillPie(b, rect, startAngle, sweepDangMuon);
-                startAngle += sweepDangMuon;
-            }
+            var pie = _formsPlot.Plot.Add.Pie(slices);
+            pie.ExplodeFraction = 0.03; // Thêm khoảng hở sang trọng giữa các lát cắt
 
-            if (sweepHuHong > 0)
-            {
-                using var b = new SolidBrush(Color.FromArgb(220, 53, 69));
-                e.Graphics.FillPie(b, rect, startAngle, sweepHuHong);
-            }
-
-            // Vẽ viền tròn mềm mại
-            using var pen = new Pen(Color.White, 2f);
-            e.Graphics.DrawEllipse(pen, rect);
-
-            // Legend
-            DrawLegendItem(e.Graphics, legX, legY, "Sẵn sàng (Rảnh)", _cntSanSang, total, Color.FromArgb(40, 167, 69));
-            DrawLegendItem(e.Graphics, legX, legY + 45, "Đang cho mượn", _cntDangMuon, total, Color.FromArgb(13, 110, 253));
-            DrawLegendItem(e.Graphics, legX, legY + 90, "Hư hỏng / Bảo trì", _cntHuHong, total, Color.FromArgb(220, 53, 69));
-        }
-
-        private void DrawLegendItem(Graphics g, int x, int y, string label, int count, int total, Color color)
-        {
-            using var brush = new SolidBrush(color);
-            g.FillRectangle(brush, x, y, 16, 16);
-            double pct = total > 0 ? (double)count / total * 100 : 0;
-            g.DrawString($"{label}: {count} ({pct:F1}%)", new Font("Segoe UI Semibold", 10F), Brushes.DarkSlateGray, x + 25, y - 2);
+            _formsPlot.Plot.ShowLegend();
+            _formsPlot.Plot.Axes.Frameless();
+            _formsPlot.Plot.HideGrid();
+            _formsPlot.Refresh();
         }
     }
 }
