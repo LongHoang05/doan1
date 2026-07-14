@@ -7,6 +7,7 @@ using QuanLyThueBang.BLL;
 using QuanLyThueBang.Domain.DTOs;
 using QuanLyThueBang.Helpers;
 using QuanLyThueBang.Presentation.Forms.HoaDon;
+using QuanLyThueBang.Presentation.Forms.MuonTra;
 
 namespace QuanLyThueBang.Presentation.Controls
 {
@@ -330,15 +331,11 @@ namespace QuanLyThueBang.Presentation.Controls
                 return;
             }
 
-            var dialogConfirm = MessageBox.Show($"Cuốn băng [{data.MaBanSao} - {data.TuaDe}] bị MẤT hay HƯ HỎNG?\n\n• Nhấn YES nếu báo Hư Hỏng.\n• Nhấn NO nếu báo Mất Băng (Thất Lạc).\n• Nhấn CANCEL để hủy.", "Phân loại Sự cố", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-            if (dialogConfirm == DialogResult.Cancel) return;
-
-            string loaiSuCo = dialogConfirm == DialogResult.Yes ? "Hư hỏng (Bồi thường)" : "Mất băng / Thất lạc (Bồi thường)";
-            string inputTien = Microsoft.VisualBasic.Interaction.InputBox($"Nhập số tiền bồi thường (VNĐ) cho sự cố '{loaiSuCo}' của băng [{data.TuaDe}]:", "Ghi Nhận Bồi Thường", "150000");
-            if (decimal.TryParse(inputTien, out decimal tienBoiThuong) && tienBoiThuong >= 0)
+            using var dlg = new PhatHongDialogForm(data, isBaoHongMatDirect: true);
+            if (dlg.ShowDialog(this.FindForm()) == DialogResult.OK)
             {
-                data.TinhTrangKhiTra = loaiSuCo;
-                data.TienPhat = tienBoiThuong;
+                data.TinhTrangKhiTra = dlg.TinhTrangChon;
+                data.TienPhat = dlg.TienPhatChon;
                 _danhSachTraList.Add(data);
                 txtInputMaBanSaoTra.Clear();
                 RefreshDanhSachTraGrid();
@@ -347,15 +344,11 @@ namespace QuanLyThueBang.Presentation.Controls
 
         private void OpenDialogTinhPhat(ThongTinBangMuonChuaTraDTO item)
         {
-            string promptPhat = $"Nhập số tiền phạt (VNĐ) cho băng [{item.MaBanSao} - {item.TuaDe}]:";
-            string inputTien = Microsoft.VisualBasic.Interaction.InputBox(promptPhat, "Ghi Nhận Phạt Vi Phạm", item.TienPhat.ToString("F0"));
-            if (decimal.TryParse(inputTien, out decimal tienPhat) && tienPhat >= 0)
+            using var dlg = new PhatHongDialogForm(item, isBaoHongMatDirect: false);
+            if (dlg.ShowDialog(this.FindForm()) == DialogResult.OK)
             {
-                item.TienPhat = tienPhat;
-                string inputTinhTrang = Microsoft.VisualBasic.Interaction.InputBox("Mô tả tình trạng khi trả:", "Tình Trạng Vật Lý", item.TinhTrangKhiTra);
-                if (!string.IsNullOrWhiteSpace(inputTinhTrang))
-                    item.TinhTrangKhiTra = inputTinhTrang;
-
+                item.TinhTrangKhiTra = dlg.TinhTrangChon;
+                item.TienPhat = dlg.TienPhatChon;
                 RefreshDanhSachTraGrid();
             }
         }

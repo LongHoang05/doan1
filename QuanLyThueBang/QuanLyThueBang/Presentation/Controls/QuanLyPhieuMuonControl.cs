@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using QuanLyThueBang.BLL;
 using QuanLyThueBang.Domain.DTOs;
 using QuanLyThueBang.Helpers;
+using QuanLyThueBang.Presentation.Forms.HoaDon;
 
 namespace QuanLyThueBang.Presentation.Controls
 {
@@ -372,6 +373,7 @@ namespace QuanLyThueBang.Presentation.Controls
 
             var lblNgayTra = new Label { Text = "Hẹn Trả:", Anchor = AnchorStyles.Left, AutoSize = true };
             dtpNgayDuKienTra = new DateTimePicker { Dock = DockStyle.Left, Width = 160, Format = DateTimePickerFormat.Short, Value = DateTime.Today.AddDays(3) };
+            dtpNgayDuKienTra.ValueChanged += (s, e) => RefreshGioMuonGrid();
 
             tlp.Controls.Add(lblNV, 0, 1);
             tlp.Controls.Add(cboNhanVienMuon, 1, 1);
@@ -477,8 +479,10 @@ namespace QuanLyThueBang.Presentation.Controls
         {
             dgvGioMuon.DataSource = null;
             dgvGioMuon.DataSource = _gioMuonList.ToList();
-            decimal tong = _gioMuonList.Sum(x => x.DonGiaThue);
-            lblTongTienGioMuon.Text = $"Tổng Tiền Thuê Dự Kiến: {tong:N0} VNĐ";
+            int soNgay = Math.Max(1, (dtpNgayDuKienTra.Value.Date - DateTime.Today).Days);
+            decimal tongDonGia = _gioMuonList.Sum(x => x.DonGiaThue);
+            decimal tongTienThue = tongDonGia * soNgay;
+            lblTongTienGioMuon.Text = $"Thuê {soNgay} ngày  |  Tổng Tiền (Thanh Toán Ngay): {tongTienThue:N0} VNĐ";
         }
 
         private string GetSelectedId(ComboBox cbo)
@@ -509,7 +513,18 @@ namespace QuanLyThueBang.Presentation.Controls
             var (success, msg, maPM) = _muonTraService.LapPhieuMuon(maKH, maCH, maNV, _gioMuonList.Select(g => g.MaBanSao).ToList(), dtpNgayDuKienTra.Value);
             if (success)
             {
-                MessageBox.Show(msg, "Lập Phiếu Mượn Thành Công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                int soNgay = Math.Max(1, (dtpNgayDuKienTra.Value.Date - DateTime.Today).Days);
+                decimal tongTienThue = _gioMuonList.Sum(x => x.DonGiaThue) * soNgay;
+                var copyList = _gioMuonList.ToList();
+                MessageBox.Show($"{msg}\n\n💰 Khách hàng thuê trong {soNgay} ngày - Đã thanh toán Tiền Thuê: {tongTienThue:N0} VNĐ cho {copyList.Count} cuốn băng.", "Lập Phiếu Mượn & Thanh Toán Thành Công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                var askPrint = MessageBox.Show("Bạn có muốn xem và in Hóa Đơn Thuê Băng (Đã Thanh Toán) cho khách hàng không?", "In Hóa Đơn Thuê Băng", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (askPrint == DialogResult.Yes)
+                {
+                    using var dlg = new HoaDonMuonDialogForm(maPM, cboKhachHangMuon.Text, cboCuaHangMuon.Text, cboNhanVienMuon.Text, dtpNgayDuKienTra.Value, copyList);
+                    dlg.ShowDialog(this.FindForm());
+                }
+
                 _gioMuonList.Clear();
                 RefreshGioMuonGrid();
                 _tabControl.SelectedTab = _tabDanhSach;

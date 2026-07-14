@@ -11,10 +11,17 @@ namespace QuanLyThueBang.Helpers
 
         public static bool IsLoggedIn => CurrentUser != null;
 
-        /// <summary>
-        /// Kiểm tra có phải Admin cấp cao quản lý toàn chuỗi hay không
-        /// </summary>
-        public static bool IsAdmin => CurrentUser != null && string.IsNullOrEmpty(CurrentUser.MaCuaHang);
+        public static bool IsAdmin
+        {
+            get
+            {
+                if (CurrentUser == null) return false;
+                if (string.Equals(CurrentUser.TenDangNhap, "admin", System.StringComparison.OrdinalIgnoreCase)) return true;
+                if (CurrentUser.VaiTro?.TenVaiTro != null && CurrentUser.VaiTro.TenVaiTro.Contains("Admin", System.StringComparison.OrdinalIgnoreCase)) return true;
+                if (CurrentUser.VaiTro?.TenVaiTro != null && (CurrentUser.VaiTro.TenVaiTro.Contains("Quản lý", System.StringComparison.OrdinalIgnoreCase) || CurrentUser.VaiTro.TenVaiTro.Contains("Nhân viên", System.StringComparison.OrdinalIgnoreCase))) return false;
+                return string.IsNullOrEmpty(CurrentUser.MaCuaHang);
+            }
+        }
 
         /// <summary>
         /// Mã cửa hàng của nhân viên đang làm việc
