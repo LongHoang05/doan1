@@ -9,6 +9,7 @@ namespace QuanLyThueBang.Helpers
         public const string TrangThaiBang_SanSang = "Sẵn sàng";
         public const string TrangThaiBang_DangChoMuon = "Đang cho mượn";
         public const string TrangThaiBang_BaoTri = "Bảo trì";
+        public const string TrangThaiBang_HuHong = "Hư hỏng";
         public const string TrangThaiBang_ThatLac = "Thất lạc";
 
         // Tình trạng băng khi trả

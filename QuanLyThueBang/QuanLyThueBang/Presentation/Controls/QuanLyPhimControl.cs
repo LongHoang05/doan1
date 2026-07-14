@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using QuanLyThueBang.BLL;
 using QuanLyThueBang.Domain.DTOs;
+using QuanLyThueBang.Helpers;
 using QuanLyThueBang.Presentation.Forms.Phim;
 
 namespace QuanLyThueBang.Presentation.Controls
@@ -40,6 +41,7 @@ namespace QuanLyThueBang.Presentation.Controls
             InitializeComponent();
             this.Load += (s, e) =>
             {
+                ApplyRbacPermissions();
                 LoadCategoryFilter();
                 LoadData();
             };
@@ -379,7 +381,7 @@ namespace QuanLyThueBang.Presentation.Controls
             });
 
             dgvPhim.CellClick += DgvPhim_CellClick;
-            dgvPhim.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) EditMovieAtRow(e.RowIndex); };
+            dgvPhim.CellDoubleClick += (s, e) => { if (AppSession.IsAdmin && e.RowIndex >= 0) EditMovieAtRow(e.RowIndex); };
 
             pnlGridContainer.Controls.Add(dgvPhim);
             this.Controls.Add(pnlGridContainer);
@@ -442,9 +444,17 @@ namespace QuanLyThueBang.Presentation.Controls
             btnNextPage.Enabled = _currentPage < totalPages;
         }
 
+        private void ApplyRbacPermissions()
+        {
+            bool canManage = AppSession.IsAdmin;
+            if (btnAddMovie != null) btnAddMovie.Visible = canManage;
+            if (dgvPhim.Columns.Contains("colActionEdit")) dgvPhim.Columns["colActionEdit"].Visible = canManage;
+            if (dgvPhim.Columns.Contains("colActionDelete")) dgvPhim.Columns["colActionDelete"].Visible = canManage;
+        }
+
         private void DgvPhim_CellClick(object? sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0) return;
+            if (e.RowIndex < 0 || !AppSession.IsAdmin) return;
             var colName = dgvPhim.Columns[e.ColumnIndex].Name;
             if (colName == "colActionEdit")
             {

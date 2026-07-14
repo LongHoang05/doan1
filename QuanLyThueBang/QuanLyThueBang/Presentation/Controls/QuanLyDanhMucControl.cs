@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using QuanLyThueBang.BLL;
 using QuanLyThueBang.Domain.DTOs;
+using QuanLyThueBang.Helpers;
 using QuanLyThueBang.Presentation.Forms.DanhMuc;
 
 namespace QuanLyThueBang.Presentation.Controls
@@ -37,7 +38,11 @@ namespace QuanLyThueBang.Presentation.Controls
         {
             _phimService = phimService ?? throw new ArgumentNullException(nameof(phimService));
             InitializeComponent();
-            this.Load += (s, e) => LoadData();
+            this.Load += (s, e) =>
+            {
+                ApplyRbacPermissions();
+                LoadData();
+            };
         }
 
         private void InitializeComponent()
@@ -320,7 +325,7 @@ namespace QuanLyThueBang.Presentation.Controls
             });
 
             dgvDanhMuc.CellClick += DgvDanhMuc_CellClick;
-            dgvDanhMuc.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) EditCategoryAtRow(e.RowIndex); };
+            dgvDanhMuc.CellDoubleClick += (s, e) => { if (AppSession.IsAdmin && e.RowIndex >= 0) EditCategoryAtRow(e.RowIndex); };
 
             pnlGridContainer.Controls.Add(dgvDanhMuc);
             this.Controls.Add(pnlGridContainer);
@@ -362,9 +367,17 @@ namespace QuanLyThueBang.Presentation.Controls
             btnNextPage.Enabled = _currentPage < totalPages;
         }
 
+        private void ApplyRbacPermissions()
+        {
+            bool canManage = AppSession.IsAdmin;
+            if (btnAddCategory != null) btnAddCategory.Visible = canManage;
+            if (dgvDanhMuc.Columns.Contains("colActionEdit")) dgvDanhMuc.Columns["colActionEdit"].Visible = canManage;
+            if (dgvDanhMuc.Columns.Contains("colActionDelete")) dgvDanhMuc.Columns["colActionDelete"].Visible = canManage;
+        }
+
         private void DgvDanhMuc_CellClick(object? sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0) return;
+            if (e.RowIndex < 0 || !AppSession.IsAdmin) return;
             var colName = dgvDanhMuc.Columns[e.ColumnIndex].Name;
             if (colName == "colActionEdit")
             {

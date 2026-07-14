@@ -198,7 +198,18 @@ namespace QuanLyThueBang.BLL
                     var bang = _context.BanSaoBangs.FirstOrDefault(b => b.MaBanSao == item.MaBanSao);
                     if (bang != null)
                     {
-                        bang.TrangThai = Constants.TrangThaiBang_SanSang;
+                        if (item.TinhTrangKhiTra.Contains("Hư hỏng", StringComparison.OrdinalIgnoreCase))
+                        {
+                            bang.TrangThai = Constants.TrangThaiBang_HuHong;
+                        }
+                        else if (item.TinhTrangKhiTra.Contains("Mất", StringComparison.OrdinalIgnoreCase) || item.TinhTrangKhiTra.Contains("Thất lạc", StringComparison.OrdinalIgnoreCase))
+                        {
+                            bang.TrangThai = Constants.TrangThaiBang_ThatLac;
+                        }
+                        else
+                        {
+                            bang.TrangThai = Constants.TrangThaiBang_SanSang;
+                        }
                         bang.MaCuaHangHienTai = maCuaHangNhanTra;
                     }
                 }

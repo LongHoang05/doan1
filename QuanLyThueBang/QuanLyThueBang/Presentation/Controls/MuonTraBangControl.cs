@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using QuanLyThueBang.BLL;
 using QuanLyThueBang.Domain.DTOs;
 using QuanLyThueBang.Helpers;
+using QuanLyThueBang.Presentation.Forms.HoaDon;
 
 namespace QuanLyThueBang.Presentation.Controls
 {
@@ -166,8 +167,7 @@ namespace QuanLyThueBang.Presentation.Controls
             var btnScanTra = new Button
             {
                 Text = "🔍 Nhận Diện Băng Trả",
-                Dock = DockStyle.Left,
-                Width = 195,
+                Dock = DockStyle.Fill,
                 Height = 35,
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(13, 110, 253),
@@ -178,10 +178,24 @@ namespace QuanLyThueBang.Presentation.Controls
             btnScanTra.Click += BtnScanTra_Click;
             txtInputMaBanSaoTra.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; BtnScanTra_Click(s, e); } };
 
+            var btnBaoHongMat = new Button
+            {
+                Text = "⚠️ Báo Hỏng / Mất Băng",
+                Dock = DockStyle.Fill,
+                Height = 35,
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(220, 53, 69),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI Semibold", 9.5F, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnBaoHongMat.FlatAppearance.BorderSize = 0;
+            btnBaoHongMat.Click += BtnBaoHongMat_Click;
+
             tlp.Controls.Add(lblScanTra, 0, 1);
             tlp.Controls.Add(txtInputMaBanSaoTra, 1, 1);
-            tlp.SetColumnSpan(btnScanTra, 2);
             tlp.Controls.Add(btnScanTra, 2, 1);
+            tlp.Controls.Add(btnBaoHongMat, 3, 1);
 
             pnlTop.Controls.Add(tlp);
 
@@ -205,8 +219,25 @@ namespace QuanLyThueBang.Presentation.Controls
             };
             btnChotTra.FlatAppearance.BorderSize = 0;
             btnChotTra.Click += BtnChotTra_Click;
+
+            var btnInBienLai = new Button
+            {
+                Text = "🖨️ Xem & In Hóa Đơn",
+                Dock = DockStyle.Right,
+                Width = 175,
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(25, 135, 84),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnInBienLai.FlatAppearance.BorderSize = 0;
+            btnInBienLai.Click += (s, e) => OpenReceiptDialog("PT_TEMP");
+
             pnlBottom.Controls.Add(lblTongTienTra);
             pnlBottom.Controls.Add(btnChotTra);
+            pnlBottom.Controls.Add(new Panel { Width = 12, Dock = DockStyle.Right });
+            pnlBottom.Controls.Add(btnInBienLai);
 
             // Grid Danh Sách Trả
             dgvDanhSachTra = SetupGrid();
@@ -277,6 +308,43 @@ namespace QuanLyThueBang.Presentation.Controls
             RefreshDanhSachTraGrid();
         }
 
+        private void BtnBaoHongMat_Click(object? sender, EventArgs e)
+        {
+            string maBanSao = txtInputMaBanSaoTra.Text.Trim();
+            if (string.IsNullOrEmpty(maBanSao))
+            {
+                MessageBox.Show("Vui lòng nhập hoặc quét Mã Bản Sao cần báo Hỏng / Mất vào ô nhập phía trước.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (_danhSachTraList.Any(x => x.MaBanSao.Equals(maBanSao, StringComparison.OrdinalIgnoreCase)))
+            {
+                MessageBox.Show("Cuốn băng này đã có trong danh sách trả bên dưới.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var (success, err, data) = _muonTraService.TraCuuBangMuonChuaTra(maBanSao);
+            if (!success || data == null)
+            {
+                MessageBox.Show(err, "Không tìm thấy băng đang mượn", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var dialogConfirm = MessageBox.Show($"Cuốn băng [{data.MaBanSao} - {data.TuaDe}] bị MẤT hay HƯ HỎNG?\n\n• Nhấn YES nếu báo Hư Hỏng.\n• Nhấn NO nếu báo Mất Băng (Thất Lạc).\n• Nhấn CANCEL để hủy.", "Phân loại Sự cố", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            if (dialogConfirm == DialogResult.Cancel) return;
+
+            string loaiSuCo = dialogConfirm == DialogResult.Yes ? "Hư hỏng (Bồi thường)" : "Mất băng / Thất lạc (Bồi thường)";
+            string inputTien = Microsoft.VisualBasic.Interaction.InputBox($"Nhập số tiền bồi thường (VNĐ) cho sự cố '{loaiSuCo}' của băng [{data.TuaDe}]:", "Ghi Nhận Bồi Thường", "150000");
+            if (decimal.TryParse(inputTien, out decimal tienBoiThuong) && tienBoiThuong >= 0)
+            {
+                data.TinhTrangKhiTra = loaiSuCo;
+                data.TienPhat = tienBoiThuong;
+                _danhSachTraList.Add(data);
+                txtInputMaBanSaoTra.Clear();
+                RefreshDanhSachTraGrid();
+            }
+        }
+
         private void OpenDialogTinhPhat(ThongTinBangMuonChuaTraDTO item)
         {
             string promptPhat = $"Nhập số tiền phạt (VNĐ) cho băng [{item.MaBanSao} - {item.TuaDe}]:";
@@ -315,14 +383,36 @@ namespace QuanLyThueBang.Presentation.Controls
             var (success, msg, maPT) = _muonTraService.ChotNhanTraBang(maKH, maCHTra, maNVTra, _danhSachTraList);
             if (success)
             {
+                var receiptList = _danhSachTraList.ToList();
                 MessageBox.Show(msg, "Hoàn Tất Nhận Trả & Luân Chuyển Kho", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 _danhSachTraList.Clear();
                 RefreshDanhSachTraGrid();
+
+                var dlgAsk = MessageBox.Show("Bạn có muốn xem và in Biên Lai Trả Băng cho khách hàng không?", "In Biên Lai", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dlgAsk == DialogResult.Yes)
+                {
+                    using var dlgReceipt = new HoaDonDialogForm(maPT, receiptList[0].HoTenKhachHang, cboCuaHangTra.Text, cboNhanVienTra.Text, receiptList);
+                    dlgReceipt.ShowDialog(this.FindForm());
+                }
             }
             else
             {
                 MessageBox.Show(msg, "Lỗi Nhận Trả", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void OpenReceiptDialog(string maPT)
+        {
+            if (_danhSachTraList.Count == 0)
+            {
+                MessageBox.Show("Chưa có cuốn băng nào trong danh sách trả bên dưới để in hóa đơn.\nVui lòng quét hoặc thêm băng mang trả trước.", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            string tenKH = _danhSachTraList[0].HoTenKhachHang;
+            string tenCH = cboCuaHangTra.Text;
+            string tenNV = cboNhanVienTra.Text;
+            using var dlg = new HoaDonDialogForm(maPT, tenKH, tenCH, tenNV, _danhSachTraList.ToList());
+            dlg.ShowDialog(this.FindForm());
         }
         #endregion
 
