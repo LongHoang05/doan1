@@ -102,9 +102,9 @@ namespace QuanLyThueBang.Presentation.Forms
             bool isAdmin = AppSession.IsAdmin || username == "admin";
             bool isQuanLy = vaiTro.Contains("Quản lý", StringComparison.OrdinalIgnoreCase) || username == "quanly";
 
-            // Nhóm 1: TRANG CHỦ (Dashboard)
-            AddSectionHeader(pnlMenu, "TỔNG QUAN", ref topPos);
-            topPos = AddMenuButton(pnlMenu, "📊 Bảng điều khiển", topPos, BtnMenuDashboard_Click, isDefaultActive: true);
+            // Nhóm 1: TRANG CHỦ (Dashboard - Tổng quan)
+            AddSectionHeader(pnlMenu, "TỔNG QUAN HỆ THỐNG", ref topPos);
+            topPos = AddMenuButton(pnlMenu, "📊 Tổng quan", topPos, BtnMenuDashboard_Click, isDefaultActive: true);
 
             // Nhóm 2: QUẢN LÝ DANH MỤC & KHO (Chỉ Admin hoặc Quản lý)
             if (isAdmin || isQuanLy)

@@ -346,14 +346,14 @@ Hệ thống phần mềm **Quản Lý Thuê Băng Đĩa Chuỗi Cửa Hàng (En
 +-----------------------------------+-------------------+-------------------+-------+
 | Nhóm chức năng / Module           | Admin Cấp Cao     | Quản Lý Chi Nhánh | NV Quầy|
 +-----------------------------------+-------------------+-------------------+-------+
-| 1. Quản lý Phim gốc               | Toàn quyền        | Xem, Thêm, Sửa    | Xem   |
+| 1. Quản lý Phim gốc               | Toàn quyền        | Toàn quyền        | Xem   |
 | 2. Quản lý Bản sao Băng           | Toàn quyền        | Theo kho chi nhánh| Xem   |
-| 3. Quản lý Khách hàng             | Toàn quyền        | Xem, Thêm, Sửa    | Thêm  |
+| 3. Quản lý Khách hàng             | Toàn quyền        | Toàn quyền        | Thêm  |
 | 4. Nghiệp vụ Mượn - Trả Băng      | Toàn quyền        | Toàn quyền        | Mượn/Trả|
 | 5. Quản lý Nhân viên              | Toàn quyền        | NV thuộc chi nhánh| Cấm   |
 | 6. Quản lý Cửa hàng / Chi nhánh   | Toàn quyền        | Xem chi nhánh mình| Cấm   |
 | 7. Dashboard Thống kê Biểu đồ     | Toàn chuỗi        | Theo chi nhánh    | Cấm   |
-| 8. Hành động XÓA dữ liệu          | Được phép         | Cấm               | Cấm   |
+| 8. Hành động XÓA dữ liệu          | Được phép         | Được phép         | Cấm   |
 +-----------------------------------+-------------------+-------------------+-------+
 ```
 
@@ -362,22 +362,22 @@ Hệ thống phần mềm **Quản Lý Thuê Băng Đĩa Chuỗi Cửa Hàng (En
 - **Phạm vi quyền hạn:**
   - Truy cập toàn bộ 8 module chức năng của phần mềm.
   - Xem và quản lý dữ liệu kho hàng, nhân viên, doanh thu của **tất cả các chi nhánh** trong hệ thống.
-  - Là vai trò duy nhất có quyền thực hiện thao tác **XÓA (`DELETE`)** hồ sơ tựa phim, bản sao băng, khách hàng hoặc nhân viên khỏi cơ sở dữ liệu.
+  - Có toàn quyền thực hiện thao tác **XÓA (`DELETE`)** hồ sơ tựa phim, bản sao băng, khách hàng, nhân viên hoặc cửa hàng khỏi cơ sở dữ liệu.
 
 #### 2. Quản lý Cửa hàng / Chi nhánh (`QuanLy_ChiNhanh`)
 - **Vai trò & Trách nhiệm:** Là người đứng đầu chịu trách nhiệm điều hành hoạt động kinh doanh tại một điểm bán (Chi nhánh cụ thể được phân công).
 - **Phạm vi quyền hạn:**
-  - Được quyền Thêm mới và Cập nhật hồ sơ Phim, Bản sao băng, Khách hàng phục vụ hoạt động của chi nhánh.
+  - Được quyền **Thêm mới, Cập nhật và Xóa (`DELETE`)** hồ sơ Phim, Bản sao băng, Khách hàng và Nhân viên trong phạm vi chi nhánh được phân công.
   - Quản lý danh sách nhân viên trực thuộc chi nhánh của mình.
   - Xem Dashboard thống kê biểu đồ doanh thu và tình trạng kho hàng thuộc chi nhánh công tác.
-  - **Giới hạn bảo mật:** Bị khóa/ẩn toàn bộ các nút **Xóa dữ liệu**, không được quyền truy cập thông tin nhân sự và doanh thu của các chi nhánh khác.
+  - **Giới hạn bảo mật:** Không được truy cập hoặc xóa dữ liệu của các chi nhánh khác, không được quyền quản lý/xóa Cửa hàng trong toàn hệ thống.
 
 #### 3. Nhân viên Quầy giao dịch (`NhanVien_Quay`)
 - **Vai trò & Trách nhiệm:** Là nhân viên nghiệp vụ trực tiếp làm việc với khách hàng tại quầy, thực hiện các thủ tục cho mượn, nhận trả băng và ghi nhận khách hàng mới.
 - **Phạm vi quyền hạn:**
   - Chỉ được quyền thao tác trên 3 nghiệp vụ chính: **Lập Phiếu Mượn Băng**, **Chốt Nhận Trả Băng** và **Thêm hồ sơ Khách hàng mới**.
   - Được xem tra cứu danh mục Phim và danh sách Bản sao đang sẵn sàng tại cửa hàng để tư vấn cho khách.
-  - **Giới hạn bảo mật:** Giao diện tự động ẩn hoàn toàn các tab Quản lý Nhân viên, Quản lý Cửa hàng và Dashboard Báo cáo Biểu đồ. Không có quyền sửa đổi giá thuê hay xóa bất kỳ hồ sơ nào.
+  - **Giới hạn bảo mật:** Giao diện tự động ẩn hoàn toàn các tab Quản lý Nhân viên, Quản lý Cửa hàng và Dashboard Báo cáo Biểu đồ. **Cấm thực hiện hành động Xóa dữ liệu** trên tất cả các danh mục.
 
 ---
 
@@ -477,8 +477,8 @@ Bên cạnh các chức năng nghiệp vụ, phần mềm phải đáp ứng ngh
 | Kiểm tra vai trò    | Mọi thao tác Lập    | Tốc độ tra cứu và | Bảng màu Pastel   |
 | RBAC trên từng form | Phiếu Mượn/Trả đều  | quét mã vạch phản | sang trọng, nút   |
 | Tự động khóa nút    | bọc trong Database  | hồi dưới 500ms    | Flat bo góc, phông|
-| Xóa với Quản lý     | Transaction, tự động| với CSDL 100.000  | Segoe UI Semibold |
-| và Nhân viên quầy.  | Rollback khi có lỗi.| bản ghi.          | chuẩn Enterprise. |
+| Xóa với Nhân viên   | Transaction, tự động| với CSDL 100.000  | Segoe UI Semibold |
+| quầy giao dịch.     | Rollback khi có lỗi.| bản ghi.          | chuẩn Enterprise. |
 +---------------------+---------------------+-------------------+-------------------+
 ```
 
