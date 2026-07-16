@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tape Copies Management - Serene Boutique</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "on-secondary-container": "#656464",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "on-surface-variant": "#4e4445",
+                    "tertiary": "#5d5f5f",
+                    "error": "#ba1a1a",
+                    "surface-tint": "#70585c",
+                    "on-error-container": "#93000a",
+                    "on-primary-container": "#735b5f",
+                    "on-background": "#1b1c1c",
+                    "primary-fixed-dim": "#ddbfc3",
+                    "background": "#fbf9f9",
+                    "surface-container-low": "#f5f3f3",
+                    "surface": "#fbf9f9",
+                    "error-container": "#ffdad6",
+                    "surface-variant": "#e3e2e2",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#e2e2e2",
+                    "primary": "#70585c",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "tertiary-container": "#dddddd",
+                    "secondary-fixed": "#e5e2e1",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-tertiary-container": "#606161",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed-variant": "#474646",
+                    "surface-container-high": "#e9e8e7",
+                    "on-tertiary": "#ffffff",
+                    "surface-container": "#efeded",
+                    "primary-container": "#f5d6da",
+                    "outline-variant": "#d2c3c4",
+                    "surface-dim": "#dbdad9",
+                    "primary-fixed": "#fadbdf",
+                    "on-primary-fixed-variant": "#574145",
+                    "on-primary-fixed": "#28171a",
+                    "inverse-primary": "#ddbfc3",
+                    "secondary-container": "#e5e2e1",
+                    "inverse-on-surface": "#f2f0f0",
+                    "surface-container-highest": "#e3e2e2",
+                    "secondary": "#5f5e5e",
+                    "surface-bright": "#fbf9f9",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#303031",
+                    "on-surface": "#1b1c1c",
+                    "outline": "#807475"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "20px",
+                    "margin-desktop": "40px",
+                    "unit": "4px",
+                    "stack-lg": "24px",
+                    "gutter": "16px",
+                    "stack-md": "16px",
+                    "stack-sm": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Be Vietnam Pro"],
+                    "headline-lg-mobile": ["Be Vietnam Pro"],
+                    "label-md": ["Be Vietnam Pro"],
+                    "headline-lg": ["Be Vietnam Pro"],
+                    "body-lg": ["Be Vietnam Pro"],
+                    "label-lg": ["Be Vietnam Pro"],
+                    "body-md": ["Be Vietnam Pro"]
+            },
+            "fontSize": {
+                    "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                    "headline-lg-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                    "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                    "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                    "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                    "label-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                    "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md flex h-screen overflow-hidden antialiased">
+<!-- SideNavBar Component -->
+<nav class="fixed left-0 top-0 h-full flex flex-col py-stack-lg z-50 bg-surface-container-low border-r border-outline-variant w-64 hidden md:flex">
+<!-- Brand Header -->
+<div class="px-6 mb-stack-lg flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">video_camera_front</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight leading-tight">Serene Boutique</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Admin Console</p>
+</div>
+</div>
+<!-- CTA -->
+<div class="px-6 mb-stack-lg">
+<button class="w-full bg-primary-container text-on-primary-container hover:bg-primary-fixed font-label-lg text-label-lg py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+                New Rental
+            </button>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 overflow-y-auto px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all font-label-lg text-label-lg group scale-98 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all font-label-lg text-label-lg group scale-98 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">movie</span>
+                Movies
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-primary bg-surface-container group scale-98 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+                Inventory
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all font-label-lg text-label-lg group scale-98 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">group</span>
+                Members
+            </a>
+</div>
+<!-- Footer Links -->
+<div class="px-4 mt-auto space-y-1 pt-4 border-t border-outline-variant/30">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all font-label-lg text-label-lg scale-98 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">help</span>
+                Help
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all font-label-lg text-label-lg scale-98 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Logout
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-64 h-screen overflow-hidden">
+<!-- TopAppBar Component -->
+<header class="flex justify-between items-center w-full px-margin-desktop h-16 z-40 bg-surface shadow-sm flex-shrink-0">
+<!-- Search Bar (Left) -->
+<div class="flex-1 max-w-md">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border border-transparent focus:border-outline-variant focus:bg-surface focus:ring-0 rounded-full py-2 pl-10 pr-4 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant transition-colors" placeholder="Search across store..." type="text"/>
+</div>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-4 ml-4">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-9 h-9 rounded-full bg-tertiary-container overflow-hidden ml-2 cursor-pointer border border-outline-variant/50">
+<img alt="Administrator profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQ4g78dxUpMMS2dfo_XBwF6VyxiRqzlFYSw0puYlqZ8jHJnOhxWY8qH9E8Qfgkx-aMs-QsSw9nSAEtwxqaDk0f-1OuFfJOZ5N-6T--l4tMIpO3lGSPSKSECxE_prt9lzP7kTeeV4RhfvgJc5c2yMWfjPf_QQ8ItGAPDMwdmYmdZhxhZdtuzHUw_Opzpj1vUwkrrcVI1WTyR5xe1Ko8HuJhmCd8QzNZwAM6aYy3qIYBUFuY2KjihU9lXTUBi-rBZN5JdHdnGLjaq8fd"/>
+</div>
+</div>
+</header>
+<!-- Page Canvas (Scrollable) -->
+<main class="flex-1 overflow-y-auto bg-background p-margin-mobile md:p-margin-desktop">
+<div class="max-w-[1400px] mx-auto">
+<!-- Page Header & Global Action -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-stack-lg">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mb-1">Tape Copies Management</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage physical inventory, formats, and availability across branches.</p>
+</div>
+<button class="bg-primary-container text-on-primary-container hover:bg-primary-fixed transition-colors px-5 py-2.5 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 shadow-sm self-start sm:self-auto">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                        Add New Copy
+                    </button>
+</div>
+<!-- Filters & Controls Bar -->
+<div class="bg-surface p-4 rounded-xl shadow-sm border border-outline-variant/30 flex flex-col md:flex-row gap-gutter items-center justify-between mb-stack-lg">
+<!-- Specific Search -->
+<div class="relative w-full md:w-80">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-2 pl-10 pr-4 font-body-md text-body-md text-on-surface transition-all" placeholder="Search by Tape ID or Name..." type="text"/>
+</div>
+<!-- Filters -->
+<div class="flex w-full md:w-auto gap-3 items-center">
+<div class="relative flex-1 md:w-48">
+<select class="w-full appearance-none bg-surface border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg py-2 pl-3 pr-10 focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer">
+<option value="">All Branches</option>
+<option value="downtown">Downtown Hub</option>
+<option value="westside">Westside Plaza</option>
+<option value="suburb">Suburb Station</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">arrow_drop_down</span>
+</div>
+<div class="relative flex-1 md:w-40">
+<select class="w-full appearance-none bg-surface border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg py-2 pl-3 pr-10 focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer">
+<option value="">All Formats</option>
+<option value="bluray">Blu-ray</option>
+<option value="dvd">DVD</option>
+<option value="vhs">VHS Classic</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">arrow_drop_down</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container rounded-lg border border-transparent hover:border-outline-variant transition-all flex-shrink-0" title="Clear Filters">
+<span class="material-symbols-outlined text-[20px]">filter_alt_off</span>
+</button>
+</div>
+</div>
+<!-- Data Table -->
+<div class="bg-surface rounded-xl shadow-[0_4px_40px_-12px_rgba(0,0,0,0.04)] border border-outline-variant/40 overflow-hidden relative">
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
+<thead class="bg-surface-container-low font-label-md text-label-md text-on-surface border-b border-outline-variant/60">
+<tr>
+<th class="py-4 px-6 font-medium">Tape ID / Name</th>
+<th class="py-4 px-6 font-medium">Format</th>
+<th class="py-4 px-6 font-medium">Branch</th>
+<th class="py-4 px-6 font-medium">Status</th>
+<th class="py-4 px-6 font-medium text-right">Unit Price</th>
+<th class="py-4 px-6 font-medium text-center">Qty</th>
+<th class="py-4 px-6 font-medium text-right">Expiry Date</th>
+<th class="py-4 px-6 font-medium text-center w-24">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface-variant divide-y divide-surface-variant/60">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-14 bg-tertiary-container rounded border border-outline-variant/30 flex-shrink-0 bg-cover bg-center" data-alt="Close up macro shot of a sleek modern blu-ray disc case with minimal typography, soft cinematic lighting, pristine white background. High resolution, hyper-realistic, sophisticated minimal aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA2rz6IEYvgyYM74FK1voUVkjoSXZY-exI8_AGab1fgQbZYEsreDbb-4avD9VHWvfCZYnOXS_MH13abVbQ44tA9kT-70y0a7YIpnNP1TP4zkj3qgtF9yV4bhW2iSlrow-LVhFJDXNgYiFWAIayxCCLLi-HgtzSTmWUPRem6OKcnCFq3ZQeiYd8fp9AJl9KX96Ci57Sbeiarhbh26U3oAGKFNS-J_KaPzmwlTM6HUtC8ozdWYpcZMP2CeYDoLefwdvyDRkggSGZrj4eL')"></div>
+<div>
+<div class="font-label-md text-label-md text-on-surface mb-0.5">Dune: Part Two</div>
+<div class="text-xs text-outline">ID: T-84920</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary-container/50 text-on-secondary-container text-xs font-medium border border-secondary-container">
+<span class="material-symbols-outlined text-[14px]">album</span> Blu-ray
+                                        </span>
+</td>
+<td class="py-4 px-6">Downtown Hub</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-container text-on-primary-container text-xs font-medium">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div> Available
+                                        </span>
+</td>
+<td class="py-4 px-6 text-right font-medium">$4.99</td>
+<td class="py-4 px-6 text-center">3</td>
+<td class="py-4 px-6 text-right text-outline">Oct 12, 2025</td>
+<td class="py-4 px-6">
+<div class="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-14 bg-tertiary-container rounded border border-outline-variant/30 flex-shrink-0 bg-cover bg-center" data-alt="A classic vintage VHS tape sleeve with subtle scuff marks, resting on a clean white marble surface. Bright natural light, soft shadows, nostalgic yet clean and professional presentation. High quality catalog photography." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBEqWsHQsMMahAA287B1-Z5z472eF9MCp9WO0u2K3n89gni41gHJe8qK581N2-QQ664vpe0OxtYk8N02wmj5763eaIgKDu6ONk_SFv_qFW1kh8fJQjjM-5aKSICw4Wppo6Fc7GwptO-LI3fDaKDSkzzF6TDqFySkH0NXQiUyKUznbJv4VKTUs4bCIvYZjLdC-u50tIYm-diDVP2cV1k2h6J-5RxkAeNzVB0jyzkieck3gTi_ba6_HOQ_avikt-6EUUdxflLQz_kwe4n')"></div>
+<div>
+<div class="font-label-md text-label-md text-on-surface mb-0.5">Blade Runner: Final Cut</div>
+<div class="text-xs text-outline">ID: T-10294</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-variant text-on-surface-variant text-xs font-medium border border-outline-variant/50">
+<span class="material-symbols-outlined text-[14px]">videocam_auto</span> VHS
+                                        </span>
+</td>
+<td class="py-4 px-6">Westside Plaza</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-xs font-medium border border-outline-variant/30">
+<div class="w-1.5 h-1.5 rounded-full bg-outline"></div> Rented
+                                        </span>
+</td>
+<td class="py-4 px-6 text-right font-medium">$2.50</td>
+<td class="py-4 px-6 text-center">1</td>
+<td class="py-4 px-6 text-right text-outline">Never</td>
+<td class="py-4 px-6">
+<div class="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-14 bg-tertiary-container rounded border border-outline-variant/30 flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-outline">movie</span>
+</div>
+<div>
+<div class="font-label-md text-label-md text-on-surface mb-0.5">Oppenheimer</div>
+<div class="text-xs text-outline">ID: T-99210</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary-container/50 text-on-secondary-container text-xs font-medium border border-secondary-container">
+<span class="material-symbols-outlined text-[14px]">album</span> Blu-ray
+                                        </span>
+</td>
+<td class="py-4 px-6">Downtown Hub</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-error-container/40 text-on-error-container text-xs font-medium border border-error-container/50">
+<span class="material-symbols-outlined text-[12px]">build</span> Maintenance
+                                        </span>
+</td>
+<td class="py-4 px-6 text-right font-medium">$5.99</td>
+<td class="py-4 px-6 text-center">2</td>
+<td class="py-4 px-6 text-right text-outline">Jan 05, 2026</td>
+<td class="py-4 px-6">
+<div class="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-14 bg-tertiary-container rounded border border-outline-variant/30 flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-outline">movie</span>
+</div>
+<div>
+<div class="font-label-md text-label-md text-on-surface mb-0.5">Everything Everywhere All at Once</div>
+<div class="text-xs text-outline">ID: T-44123</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-tertiary-container text-on-tertiary-container text-xs font-medium border border-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-[14px]">album</span> DVD
+                                        </span>
+</td>
+<td class="py-4 px-6">Suburb Station</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-container text-on-primary-container text-xs font-medium">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div> Available
+                                        </span>
+</td>
+<td class="py-4 px-6 text-right font-medium">$3.50</td>
+<td class="py-4 px-6 text-center">5</td>
+<td class="py-4 px-6 text-right text-outline">Nov 20, 2024</td>
+<td class="py-4 px-6">
+<div class="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Pagination -->
+<div class="bg-surface-container-low px-6 py-4 border-t border-outline-variant/60 flex items-center justify-between">
+<p class="font-body-md text-body-md text-on-surface-variant">Showing 1 to 4 of 248 entries</p>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-outline hover:bg-surface hover:text-on-surface transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-on-primary font-medium text-sm transition-colors">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container text-on-surface-variant transition-colors text-sm">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container text-on-surface-variant transition-colors text-sm">3</button>
+<span class="px-2 text-outline">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface-variant hover:bg-surface hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
