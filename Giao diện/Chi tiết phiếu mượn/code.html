@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chi Tiết Băng Trong Phiếu Mượn</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Be Vietnam Pro"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#fdf6f7',
+              100: '#fbe9eb',
+              200: '#f5d6da', // Custom color
+              300: '#eebbc4',
+              400: '#e395a3',
+              500: '#d56a7e',
+              600: '#bf4b62',
+              700: '#a0384d',
+              800: '#853142',
+              900: '#702d3a',
+              950: '#3e151e',
+            },
+            surface: '#fff8f7',
+            'surface-dim': '#e9d6d3',
+            'surface-bright': '#fff8f7',
+            'surface-container-lowest': '#ffffff',
+            'surface-container-low': '#fff0ee',
+            'surface-container': '#fbe5e2',
+            'surface-container-high': '#f5dbd7',
+            'surface-container-highest': '#efd1cd',
+            primary: '#8c4a52',
+            'on-primary': '#ffffff',
+            'primary-container': '#ffd9db',
+            'on-primary-container': '#3b0713',
+            outline: '#857374',
+            'outline-variant': '#d8c2c3',
+            'on-surface': '#231919',
+            'on-surface-variant': '#534344',
+          },
+          borderRadius: {
+            'none': '0',
+            'sm': '0.125rem',
+            DEFAULT: '0.25rem',
+            'md': '0.375rem',
+            'lg': '0.5rem', // ROUND_EIGHT roughly mapping to standard tailwind sizes
+            'xl': '0.75rem',
+            '2xl': '1rem',
+            '3xl': '1.5rem',
+            'full': '9999px',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="invoice-styles">
+    body {
+      background-color: theme('colors.surface-dim');
+    }
+    .invoice-container {
+      background-color: theme('colors.surface-container-lowest');
+      border-radius: theme('borderRadius.lg');
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+    .invoice-header {
+      border-bottom: 2px solid theme('colors.brand.200');
+    }
+    .invoice-table th {
+      border-bottom: 1px solid theme('colors.brand.200');
+      color: theme('colors.on-surface-variant');
+    }
+    .invoice-table td {
+      border-bottom: 1px dashed theme('colors.surface-container-highest');
+      color: theme('colors.on-surface');
+    }
+    .invoice-table tr:last-child td {
+      border-bottom: none;
+    }
+    .invoice-total {
+      border-top: 2px solid theme('colors.brand.200');
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex items-center justify-center font-sans text-on-surface">
+<!-- BEGIN: Invoice Container -->
+<main class="invoice-container w-full max-w-4xl p-8 md:p-12 relative overflow-hidden" data-purpose="main-invoice-layout">
+<!-- Decorative Corner Element -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-brand-100 rounded-bl-full -mr-16 -mt-16 opacity-50 pointer-events-none"></div>
+<!-- BEGIN: Invoice Header -->
+<header class="invoice-header pb-8 mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6" data-purpose="invoice-header">
+<div class="flex items-center gap-4">
+<!-- Store Logo Placeholder -->
+<div class="w-16 h-16 bg-brand-200 rounded-full flex items-center justify-center text-primary shadow-sm">
+<svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.999 2.999 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.999 2.999 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h1 class="text-2xl font-bold text-primary tracking-tight">Serene Boutique</h1>
+<p class="text-sm text-on-surface-variant mt-1">Hóa Đơn Thuê Băng Đĩa</p>
+</div>
+</div>
+<div class="text-left md:text-right w-full md:w-auto">
+<h2 class="text-sm font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Mã Phiếu Mượn</h2>
+<p class="text-lg font-medium text-on-surface font-mono bg-surface-container py-1 px-3 rounded-lg inline-block shadow-inner">PM260715232605</p>
+</div>
+</header>
+<!-- END: Invoice Header -->
+<!-- BEGIN: Customer Info Section -->
+<section class="mb-10 grid grid-cols-1 md:grid-cols-2 gap-8" data-purpose="customer-info">
+<div>
+<h3 class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3 flex items-center gap-2">
+<svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+          Thông Tin Khách Hàng
+        </h3>
+<div class="bg-surface p-4 rounded-lg border border-outline-variant shadow-sm">
+<p class="font-medium text-lg text-on-surface mb-1">Lê Hồng</p>
+<p class="text-sm text-on-surface-variant flex items-center gap-2">
+<span class="inline-block w-16 text-xs uppercase tracking-wider opacity-70">Mã KH:</span>
+<span class="font-mono bg-brand-50 px-2 py-0.5 rounded text-primary">KH001</span>
+</p>
+</div>
+</div>
+<div class="flex flex-col justify-end">
+<!-- Optional: Add date or other meta info here if needed -->
+<p class="text-sm text-on-surface-variant text-left md:text-right">Ngày lập: 26/07/2023</p>
+</div>
+</section>
+<!-- END: Customer Info Section -->
+<!-- BEGIN: Details Table -->
+<section class="mb-10" data-purpose="rental-items">
+<div class="overflow-x-auto rounded-lg border border-outline-variant shadow-sm">
+<table class="invoice-table w-full text-left border-collapse bg-surface-container-lowest">
+<thead>
+<tr class="bg-surface-container-low text-sm font-semibold uppercase tracking-wider">
+<th class="px-6 py-4">Mã Bản Sao</th>
+<th class="px-6 py-4">Tựa Đề Phim</th>
+<th class="px-6 py-4">Thể Loại</th>
+<th class="px-6 py-4 text-center">Tình Trạng Trả</th>
+<th class="px-6 py-4 text-right">Đơn Giá Thuê</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<tr class="hover:bg-brand-50 transition-colors duration-150">
+<td class="px-6 py-4 font-mono text-primary">P001-BS02</td>
+<td class="px-6 py-4 font-medium">Avenger: E...</td>
+<td class="px-6 py-4 text-on-surface-variant">Hành Động</td>
+<td class="px-6 py-4 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  Đã trả
+                </span>
+</td>
+<td class="px-6 py-4 text-right font-medium">15,000 ₫</td>
+</tr>
+<!-- Example of a second row to show table structure -->
+<tr class="hover:bg-brand-50 transition-colors duration-150">
+<td class="px-6 py-4 font-mono text-primary">P012-BS01</td>
+<td class="px-6 py-4 font-medium">Iron Man 3</td>
+<td class="px-6 py-4 text-on-surface-variant">Hành Động</td>
+<td class="px-6 py-4 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  Đang mượn
+                </span>
+</td>
+<td class="px-6 py-4 text-right font-medium">20,000 ₫</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- END: Details Table -->
+<!-- BEGIN: Summary Section -->
+<section class="invoice-total pt-6 flex flex-col md:flex-row justify-between items-end gap-6" data-purpose="invoice-summary">
+<div class="text-sm text-on-surface-variant w-full md:w-1/2">
+<p>Cảm ơn quý khách đã sử dụng dịch vụ tại Serene Boutique.</p>
+<p class="mt-1">Vui lòng hoàn trả băng đĩa đúng hạn để tránh phí phạt.</p>
+</div>
+<div class="w-full md:w-auto bg-brand-50 p-6 rounded-lg border border-brand-200 shadow-sm min-w-[300px]">
+<div class="flex justify-between items-center mb-2 text-on-surface-variant">
+<span>Tổng số lượng:</span>
+<span class="font-medium text-on-surface">2</span>
+</div>
+<div class="flex justify-between items-center text-lg font-bold text-primary mt-4 pt-4 border-t border-brand-200">
+<span>Tổng Tiền:</span>
+<span>35,000 ₫</span>
+</div>
+</div>
+</section>
+<!-- END: Summary Section -->
+<!-- BEGIN: Action Footer -->
+<footer class="mt-12 flex justify-end" data-purpose="action-buttons">
+<button class="bg-primary hover:bg-brand-800 text-on-primary font-medium py-2.5 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+        Đóng
+      </button>
+</footer>
+<!-- END: Action Footer -->
+</main>
+<!-- END: Invoice Container -->
+</body></html>

@@ -28,6 +28,11 @@ namespace QuanLyThueBang.Presentation.Controls
         private ComboBox cboNhanVienTra = null!;
         private DataGridView dgvDanhSachTra = null!;
         private Label lblTongTienTra = null!;
+        private Label lblInvoiceMaPhieu = null!;
+        private Label lblInvoiceTenKH = null!;
+        private Label lblInvoiceMaKH = null!;
+        private Label lblInvoiceTongSoLuong = null!;
+        private Panel pnlInvoiceCard = null!;
         private readonly List<ThongTinBangMuonChuaTraDTO> _danhSachTraList = new();
 
         // --- TAB 2: QUÉT BĂNG QUÁ HẠN ---
@@ -162,12 +167,22 @@ namespace QuanLyThueBang.Presentation.Controls
             tlp.Controls.Add(cboNhanVienTra, 3, 0);
 
             // Dòng 2: Quét Mã & Nút Nhận Diện
-            var lblScanTra = new Label { Text = "Quét Mã Băng Trả:", Anchor = AnchorStyles.Left, AutoSize = true };
-            txtInputMaBanSaoTra = new TextBox { Dock = DockStyle.Fill, PlaceholderText = "Quét MaBanSao hoặc RFID..." };
+            var lblScanTra = new Label { Text = "Tìm Phiếu Mượn:", Anchor = AnchorStyles.Left, AutoSize = true };
+            txtInputMaBanSaoTra = new TextBox 
+            { 
+                Dock = DockStyle.Fill, 
+                PlaceholderText = "Nhập Mã Phiếu Mượn...",
+                AutoCompleteMode = AutoCompleteMode.SuggestAppend,
+                AutoCompleteSource = AutoCompleteSource.CustomSource
+            };
+            var autoCompleteList = _muonTraService.GetActiveMaPhieuMuonList();
+            var source = new AutoCompleteStringCollection();
+            source.AddRange(autoCompleteList.ToArray());
+            txtInputMaBanSaoTra.AutoCompleteCustomSource = source;
 
             var btnScanTra = new Button
             {
-                Text = "🔍 Nhận Diện Băng Trả",
+                Text = "🔍 Tìm Kiếm",
                 Dock = DockStyle.Fill,
                 Height = 35,
                 FlatStyle = FlatStyle.Flat,
@@ -179,44 +194,25 @@ namespace QuanLyThueBang.Presentation.Controls
             btnScanTra.Click += BtnScanTra_Click;
             txtInputMaBanSaoTra.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; BtnScanTra_Click(s, e); } };
 
-            var btnBaoHongMat = new Button
-            {
-                Text = "⚠️ Báo Hỏng / Mất Băng",
-                Dock = DockStyle.Fill,
-                Height = 35,
-                FlatStyle = FlatStyle.Flat,
-                BackColor = Color.FromArgb(220, 53, 69),
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI Semibold", 9.5F, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
-            btnBaoHongMat.FlatAppearance.BorderSize = 0;
-            btnBaoHongMat.Click += BtnBaoHongMat_Click;
-
             tlp.Controls.Add(lblScanTra, 0, 1);
             tlp.Controls.Add(txtInputMaBanSaoTra, 1, 1);
             tlp.Controls.Add(btnScanTra, 2, 1);
-            tlp.Controls.Add(btnBaoHongMat, 3, 1);
 
             pnlTop.Controls.Add(tlp);
 
-            // Bottom Panel: Chốt trả
-            var pnlBottom = new Panel { Dock = DockStyle.Bottom, Height = 65, BackColor = Color.White, Padding = new Padding(15, 11, 15, 11) };
-            lblTongTienTra = new Label { Text = "Tổng Thu Giao Dịch Trả: 0 VNĐ", Font = new Font("Segoe UI Semibold", 13F, FontStyle.Bold), ForeColor = Color.FromArgb(40, 167, 69), Dock = DockStyle.Left, AutoSize = true, TextAlign = ContentAlignment.MiddleLeft };
-
+            // Bottom Panel: Chốt trả (Main Action)
+            var pnlBottomActions = new Panel { Dock = DockStyle.Bottom, Height = 65, BackColor = Color.White, Padding = new Padding(15, 11, 15, 11) };
             var btnChotTra = new Button
             {
                 Text = "✅ Chốt Nhận Trả & Luân Chuyển Kho",
                 Dock = DockStyle.Right,
                 Width = 285,
                 FlatStyle = FlatStyle.Flat,
-                BackColor = Color.FromArgb(184, 123, 125),
+                BackColor = Color.FromArgb(140, 74, 82),
                 ForeColor = Color.White,
                 Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold),
                 Cursor = Cursors.Hand,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Padding = new Padding(0, 0, 0, 4),
-                UseCompatibleTextRendering = true
             };
             btnChotTra.FlatAppearance.BorderSize = 0;
             btnChotTra.Click += BtnChotTra_Click;
@@ -235,49 +231,160 @@ namespace QuanLyThueBang.Presentation.Controls
             btnInBienLai.FlatAppearance.BorderSize = 0;
             btnInBienLai.Click += (s, e) => OpenReceiptDialog("PT_TEMP");
 
-            pnlBottom.Controls.Add(lblTongTienTra);
-            pnlBottom.Controls.Add(btnChotTra);
-            pnlBottom.Controls.Add(new Panel { Width = 12, Dock = DockStyle.Right });
-            pnlBottom.Controls.Add(btnInBienLai);
+            pnlBottomActions.Controls.Add(btnChotTra);
+            pnlBottomActions.Controls.Add(new Panel { Width = 12, Dock = DockStyle.Right });
+            pnlBottomActions.Controls.Add(btnInBienLai);
 
-            // Grid Danh Sách Trả
+            // Header Info Panel (2x2 layout like the screenshot)
+            var pnlHeader = new Panel { Dock = DockStyle.Top, Height = 90, BackColor = Color.White, Padding = new Padding(15, 20, 15, 10) };
+            
+            var tlpHeader = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                RowCount = 2,
+                BackColor = Color.White
+            };
+            tlpHeader.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tlpHeader.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tlpHeader.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tlpHeader.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+
+            var lblCustomerTitle = new Label { Text = "Khách hàng: ", Font = new Font("Segoe UI", 11F, FontStyle.Bold), AutoSize = true, Margin = new Padding(0) };
+            lblInvoiceTenKH = new Label { Text = "---", Font = new Font("Segoe UI", 11F), AutoSize = true, Margin = new Padding(0) };
+            var pnlCustomer = new FlowLayoutPanel { FlowDirection = FlowDirection.LeftToRight, AutoSize = true, Dock = DockStyle.Fill };
+            pnlCustomer.Controls.Add(lblCustomerTitle);
+            pnlCustomer.Controls.Add(lblInvoiceTenKH);
+
+            var lblBranchTitle = new Label { Text = "Chi nhánh: ", Font = new Font("Segoe UI", 11F, FontStyle.Bold), AutoSize = true, Margin = new Padding(0) };
+            lblInvoiceMaPhieu = new Label { Text = "---", Font = new Font("Segoe UI", 11F), AutoSize = true, Margin = new Padding(0) }; // Reusing for Branch
+            var pnlBranch = new FlowLayoutPanel { FlowDirection = FlowDirection.LeftToRight, AutoSize = true, Dock = DockStyle.Fill };
+            pnlBranch.Controls.Add(lblBranchTitle);
+            pnlBranch.Controls.Add(lblInvoiceMaPhieu); // This will hold Chi Nhanh
+
+            var lblDateTitle = new Label { Text = "Ngày hẹn trả: ", Font = new Font("Segoe UI", 11F, FontStyle.Bold), AutoSize = true, Margin = new Padding(0) };
+            lblInvoiceMaKH = new Label { Text = "---", Font = new Font("Segoe UI", 11F), AutoSize = true, Margin = new Padding(0) }; // Reusing for Date
+            var pnlDate = new FlowLayoutPanel { FlowDirection = FlowDirection.LeftToRight, AutoSize = true, Dock = DockStyle.Fill };
+            pnlDate.Controls.Add(lblDateTitle);
+            pnlDate.Controls.Add(lblInvoiceMaKH); // This will hold NgayHenTra
+
+            var lblEmpTitle = new Label { Text = "Nhân viên lập: ", Font = new Font("Segoe UI", 11F, FontStyle.Bold), AutoSize = true, Margin = new Padding(0) };
+            var lblEmployeeName = new Label { Text = "---", Name = "lblEmployeeName", Font = new Font("Segoe UI", 11F), AutoSize = true, Margin = new Padding(0) };
+            var pnlEmp = new FlowLayoutPanel { FlowDirection = FlowDirection.LeftToRight, AutoSize = true, Dock = DockStyle.Fill };
+            pnlEmp.Controls.Add(lblEmpTitle);
+            pnlEmp.Controls.Add(lblEmployeeName);
+
+            tlpHeader.Controls.Add(pnlCustomer, 0, 0);
+            tlpHeader.Controls.Add(pnlBranch, 1, 0);
+            tlpHeader.Controls.Add(pnlDate, 0, 1);
+            tlpHeader.Controls.Add(pnlEmp, 1, 1);
+
+            pnlHeader.Controls.Add(tlpHeader);
+
+            // Grid Section
+            var pnlGrid = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15, 10, 15, 10), BackColor = Color.White };
             dgvDanhSachTra = SetupGrid();
-            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.MaPhieuMuon), HeaderText = "Mã Phiếu Mượn", Width = 140, MinimumWidth = 125 });
-            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.MaBanSao), HeaderText = "Mã Bản Sao", Width = 130, MinimumWidth = 115 });
-            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.TuaDe), HeaderText = "Tựa Đề Phim", AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, MinimumWidth = 180 });
-            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.HoTenKhachHang), HeaderText = "Khách Mượn", Width = 160, MinimumWidth = 140 });
-            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.SoNgayTreHan), HeaderText = "Số Ngày Trễ", Width = 120, MinimumWidth = 110, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter } });
-            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.TinhTrangKhiTra), HeaderText = "Tình Trạng Trả", Width = 160, MinimumWidth = 140 });
-            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.TienPhat), HeaderText = "Tiền Phạt (VNĐ)", Width = 150, MinimumWidth = 135, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, Format = "N0" } });
-            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.TongTien), HeaderText = "Thành Tiền", Width = 140, MinimumWidth = 125, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, Format = "N0" } });
+            dgvDanhSachTra.ReadOnly = false; // Allow checking the "Chọn" checkbox
+            dgvDanhSachTra.BackgroundColor = Color.White;
+            dgvDanhSachTra.BorderStyle = BorderStyle.None;
+            dgvDanhSachTra.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvDanhSachTra.GridColor = Color.FromArgb(222, 226, 230);
+            dgvDanhSachTra.EnableHeadersVisualStyles = false;
+            dgvDanhSachTra.ColumnHeadersHeight = 45;
+            dgvDanhSachTra.RowTemplate.Height = 45;
+            dgvDanhSachTra.ColumnHeadersDefaultCellStyle.BackColor = Color.White;
+            dgvDanhSachTra.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
+            dgvDanhSachTra.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold);
+            dgvDanhSachTra.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.White;
+            dgvDanhSachTra.DefaultCellStyle.SelectionBackColor = Color.FromArgb(248, 249, 250);
+            dgvDanhSachTra.DefaultCellStyle.SelectionForeColor = Color.Black;
+            dgvDanhSachTra.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
+            // Draw top and bottom border for header
+            dgvDanhSachTra.Paint += (s, e) =>
+            {
+                var pen = new Pen(Color.FromArgb(222, 226, 230), 2);
+                e.Graphics.DrawLine(pen, 0, 0, dgvDanhSachTra.Width, 0);
+                e.Graphics.DrawLine(pen, 0, 44, dgvDanhSachTra.Width, 44);
+            };
 
-            var colPhat = new DataGridViewButtonColumn { Name = "colEditPhat", HeaderText = "Hành Động", Text = "⚙️ Phạt/Hỏng", UseColumnTextForButtonValue = true, Width = 140, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(13, 110, 253), Alignment = DataGridViewContentAlignment.MiddleCenter } };
-            var colXoaTra = new DataGridViewButtonColumn { Name = "colRemoveTra", HeaderText = "", Text = "🗑️ Bỏ", UseColumnTextForButtonValue = true, Width = 85, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(220, 53, 69), Alignment = DataGridViewContentAlignment.MiddleCenter } };
+            var colCheckTra = new DataGridViewCheckBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.IsSelected), HeaderText = "Chọn", Width = 60 };
+            dgvDanhSachTra.Columns.Add(colCheckTra);
+            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.MaBanSao), HeaderText = "Mã Bản Sao", Width = 120, MinimumWidth = 110, ReadOnly = true, DefaultCellStyle = { Font = new Font("Segoe UI", 10F, FontStyle.Bold) } });
+            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.TuaDe), HeaderText = "Tựa Đề Phim", AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, MinimumWidth = 180, ReadOnly = true });
+            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.TenTheLoai), HeaderText = "Thể Loại", Width = 140, MinimumWidth = 120, ReadOnly = true });
+            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.DonGiaThue), HeaderText = "Đơn Giá Thuê", Width = 130, MinimumWidth = 110, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, Format = "N0" }, ReadOnly = true });
+            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.TinhTrangKhiTra), HeaderText = "Tình Trạng", Width = 140, MinimumWidth = 120, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter }, ReadOnly = true });
+            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.TienPhat), HeaderText = "Tiền Phạt", Width = 110, MinimumWidth = 100, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, Format = "N0", ForeColor = Color.Red }, ReadOnly = true });
+            dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.TongTien), HeaderText = "Thành Tiền", Width = 120, MinimumWidth = 110, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, Format = "N0" }, ReadOnly = true });
+
+            var colPhat = new DataGridViewButtonColumn { Name = "colEditPhat", HeaderText = "Hành Động", Text = "⚙️", UseColumnTextForButtonValue = true, Width = 80, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(13, 110, 253), Alignment = DataGridViewContentAlignment.MiddleCenter } };
             dgvDanhSachTra.Columns.Add(colPhat);
-            dgvDanhSachTra.Columns.Add(colXoaTra);
 
+            dgvDanhSachTra.CurrentCellDirtyStateChanged += (s, e) => { if (dgvDanhSachTra.IsCurrentCellDirty) dgvDanhSachTra.CommitEdit(DataGridViewDataErrorContexts.Commit); };
+            dgvDanhSachTra.CellValueChanged += (s, e) => { if (e.ColumnIndex == dgvDanhSachTra.Columns[0].Index) RefreshDanhSachTraGrid(); };
             dgvDanhSachTra.CellClick += (s, e) =>
             {
                 if (e.RowIndex >= 0)
                 {
                     var item = _danhSachTraList[e.RowIndex];
-                    if (e.ColumnIndex == dgvDanhSachTra.Columns["colRemoveTra"].Index)
-                    {
-                        _danhSachTraList.RemoveAt(e.RowIndex);
-                        RefreshDanhSachTraGrid();
-                    }
-                    else if (e.ColumnIndex == dgvDanhSachTra.Columns["colEditPhat"].Index)
+                    if (e.ColumnIndex == dgvDanhSachTra.Columns["colEditPhat"].Index)
                     {
                         OpenDialogTinhPhat(item);
                     }
                 }
             };
+            dgvDanhSachTra.CellFormatting += (s, e) =>
+            {
+                // Format DonGia, TienPhat, TongTien to add " VNĐ"
+                if (e.RowIndex >= 0 && e.Value != null)
+                {
+                    var colName = dgvDanhSachTra.Columns[e.ColumnIndex].DataPropertyName;
+                    if (colName == nameof(ThongTinBangMuonChuaTraDTO.DonGiaThue) || 
+                        colName == nameof(ThongTinBangMuonChuaTraDTO.TienPhat) || 
+                        colName == nameof(ThongTinBangMuonChuaTraDTO.TongTien))
+                    {
+                        if (decimal.TryParse(e.Value.ToString(), out decimal val))
+                        {
+                            e.Value = $"{val:N0} VNĐ";
+                            e.FormattingApplied = true;
+                        }
+                    }
+                }
+            };
 
-            var pnlGrid = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0, 10, 0, 10) };
             pnlGrid.Controls.Add(dgvDanhSachTra);
 
-            tab.Controls.Add(pnlGrid);
-            tab.Controls.Add(pnlBottom);
+            // Summary Section (Bottom inside Card)
+            var pnlSummary = new Panel { Dock = DockStyle.Bottom, Height = 80, BackColor = Color.White, Padding = new Padding(0, 15, 15, 0) };
+            
+            var pnlTotalBox = new Panel { Size = new Size(350, 65), Location = new Point(pnlSummary.Width - 350, 5), Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            
+            var lblCountLabel = new Label { Text = "Tổng số băng trả:", Font = new Font("Segoe UI", 11F, FontStyle.Regular), ForeColor = Color.FromArgb(101, 75, 75), AutoSize = true, Location = new Point(20, 5) };
+            lblInvoiceTongSoLuong = new Label { Text = "0", Font = new Font("Segoe UI", 12F, FontStyle.Bold), ForeColor = Color.FromArgb(101, 75, 75), AutoSize = false, Size = new Size(180, 25), Location = new Point(160, 5), TextAlign = ContentAlignment.MiddleRight, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+
+            var lblTotalLabel = new Label { Text = "TỔNG CỘNG:", Font = new Font("Segoe UI", 12F, FontStyle.Bold), ForeColor = Color.FromArgb(101, 75, 75), AutoSize = true, Location = new Point(20, 35) };
+            lblTongTienTra = new Label { Text = "0 VNĐ", Font = new Font("Segoe UI", 13F, FontStyle.Bold), ForeColor = Color.FromArgb(101, 75, 75), AutoSize = false, Size = new Size(180, 25), Location = new Point(160, 34), TextAlign = ContentAlignment.MiddleRight, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            
+            pnlTotalBox.Controls.Add(lblCountLabel);
+            pnlTotalBox.Controls.Add(lblInvoiceTongSoLuong);
+            pnlTotalBox.Controls.Add(lblTotalLabel);
+            pnlTotalBox.Controls.Add(lblTongTienTra);
+            
+            pnlSummary.Resize += (s, e) => {
+                pnlTotalBox.Left = pnlSummary.Width - pnlTotalBox.Width - 5;
+            };
+            pnlSummary.Controls.Add(pnlTotalBox);
+
+            pnlInvoiceCard = new Panel { Dock = DockStyle.Fill, BackColor = Color.White, Visible = false };
+            
+            // Add in reverse order of Dock Fill priority!
+            pnlInvoiceCard.Controls.Add(pnlHeader); // Top
+            pnlInvoiceCard.Controls.Add(pnlSummary); // Bottom
+            pnlInvoiceCard.Controls.Add(pnlGrid); // Fill
+            pnlGrid.BringToFront();
+
+            tab.Controls.Add(pnlInvoiceCard);
+            tab.Controls.Add(pnlBottomActions);
             tab.Controls.Add(pnlTop);
         }
 
@@ -286,59 +393,34 @@ namespace QuanLyThueBang.Presentation.Controls
             string query = txtInputMaBanSaoTra.Text.Trim();
             if (string.IsNullOrEmpty(query)) return;
 
-            var (success, err, data) = _muonTraService.TraCuuBangMuonChuaTra(query);
-            if (!success || data == null)
+            var (success, err, dataList) = _muonTraService.TraCuuBangMuonChuaTraTheoPhieu(query);
+            if (!success || dataList == null)
             {
                 MessageBox.Show(err, "Không Tìm Thấy Phiếu Mượn", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (_danhSachTraList.Any(x => x.MaBanSao == data.MaBanSao))
-            {
-                MessageBox.Show("Cuốn băng này đã được quét vào danh sách trả!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
+            _danhSachTraList.Clear();
+            _danhSachTraList.AddRange(dataList);
 
-            if (data.IsTreHan)
-            {
-                MessageBox.Show($"CẢNH BÁO: Cuốn băng '{data.TuaDe}' đã bị trễ hạn {data.SoNgayTreHan} ngày!\nVui lòng kiểm tra tình trạng băng và nhập tiền phạt nếu cần.", "Băng Trễ Hạn", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+            var first = dataList[0];
+            lblInvoiceTenKH.Text = $"{first.MaKhachHang} - {first.HoTenKhachHang}";
+            lblInvoiceMaPhieu.Text = first.TenChiNhanh; // lblInvoiceMaPhieu reused for Branch
+            lblInvoiceMaKH.Text = first.NgayDuKienTra.ToString("dd/MM/yyyy"); // lblInvoiceMaKH reused for Date
+            
+            var lblEmp = pnlInvoiceCard.Controls.Find("lblEmployeeName", true).FirstOrDefault() as Label;
+            if (lblEmp != null) lblEmp.Text = first.TenNhanVienLap;
 
-            _danhSachTraList.Add(data);
-            txtInputMaBanSaoTra.Clear();
+            pnlInvoiceCard.Visible = true;
+
             RefreshDanhSachTraGrid();
-        }
 
-        private void BtnBaoHongMat_Click(object? sender, EventArgs e)
-        {
-            string maBanSao = txtInputMaBanSaoTra.Text.Trim();
-            if (string.IsNullOrEmpty(maBanSao))
+            // Cảnh báo băng trễ hạn
+            var listTreHan = dataList.Where(x => x.IsTreHan).ToList();
+            if (listTreHan.Any())
             {
-                MessageBox.Show("Vui lòng nhập hoặc quét Mã Bản Sao cần báo Hỏng / Mất vào ô nhập phía trước.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (_danhSachTraList.Any(x => x.MaBanSao.Equals(maBanSao, StringComparison.OrdinalIgnoreCase)))
-            {
-                MessageBox.Show("Cuốn băng này đã có trong danh sách trả bên dưới.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            var (success, err, data) = _muonTraService.TraCuuBangMuonChuaTra(maBanSao);
-            if (!success || data == null)
-            {
-                MessageBox.Show(err, "Không tìm thấy băng đang mượn", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            using var dlg = new PhatHongDialogForm(data, isBaoHongMatDirect: true);
-            if (dlg.ShowDialog(this.FindForm()) == DialogResult.OK)
-            {
-                data.TinhTrangKhiTra = dlg.TinhTrangChon;
-                data.TienPhat = dlg.TienPhatChon;
-                _danhSachTraList.Add(data);
-                txtInputMaBanSaoTra.Clear();
-                RefreshDanhSachTraGrid();
+                string warnMsg = $"CẢNH BÁO: Phiếu mượn này có {listTreHan.Count} cuốn băng đã bị trễ hạn!\nVui lòng kiểm tra tình trạng băng và nhập tiền phạt nếu cần.";
+                MessageBox.Show(warnMsg, "Băng Trễ Hạn", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -357,36 +439,56 @@ namespace QuanLyThueBang.Presentation.Controls
         {
             dgvDanhSachTra.DataSource = null;
             dgvDanhSachTra.DataSource = _danhSachTraList.ToList();
-            decimal tong = _danhSachTraList.Sum(x => x.TongTien);
-            lblTongTienTra.Text = $"Tổng Thu Giao Dịch Trả: {tong:N0} VNĐ";
+            
+            int selectedCount = _danhSachTraList.Count(x => x.IsSelected);
+            decimal tong = _danhSachTraList.Where(x => x.IsSelected).Sum(x => x.TongTien);
+            
+            if (lblInvoiceTongSoLuong != null)
+            {
+                lblInvoiceTongSoLuong.Text = selectedCount.ToString();
+            }
+            lblTongTienTra.Text = $"{tong:N0} VNĐ";
         }
 
         private void BtnChotTra_Click(object? sender, EventArgs e)
         {
-            if (_danhSachTraList.Count == 0)
+            var selectedItems = _danhSachTraList.Where(x => x.IsSelected).ToList();
+            if (selectedItems.Count == 0)
             {
-                MessageBox.Show("Chưa có cuốn băng nào trong danh sách trả.", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Chưa chọn cuốn băng nào để trả.", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            string maKH = _danhSachTraList[0].MaKhachHang;
+            string maKH = selectedItems[0].MaKhachHang;
             string maCHTra = cboCuaHangTra.SelectedValue?.ToString() ?? "";
             string maNVTra = cboNhanVienTra.SelectedValue?.ToString() ?? "";
 
-            var (success, msg, maPT) = _muonTraService.ChotNhanTraBang(maKH, maCHTra, maNVTra, _danhSachTraList);
+            var (success, msg, maPT) = _muonTraService.ChotNhanTraBang(maKH, maCHTra, maNVTra, selectedItems);
             if (success)
             {
-                var receiptList = _danhSachTraList.ToList();
                 MessageBox.Show(msg, "Hoàn Tất Nhận Trả & Luân Chuyển Kho", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                _danhSachTraList.Clear();
+                
+                // Loại bỏ những băng đã trả thành công ra khỏi lưới
+                _danhSachTraList.RemoveAll(x => x.IsSelected);
                 RefreshDanhSachTraGrid();
+                
+                if (_danhSachTraList.Count == 0)
+                {
+                    pnlInvoiceCard.Visible = false;
+                }
 
                 var dlgAsk = MessageBox.Show("Bạn có muốn xem và in Biên Lai Trả Băng cho khách hàng không?", "In Biên Lai", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (dlgAsk == DialogResult.Yes)
                 {
-                    using var dlgReceipt = new HoaDonDialogForm(maPT, receiptList[0].HoTenKhachHang, cboCuaHangTra.Text, cboNhanVienTra.Text, receiptList);
+                    using var dlgReceipt = new HoaDonDialogForm(maPT, selectedItems[0].HoTenKhachHang, cboCuaHangTra.Text, cboNhanVienTra.Text, selectedItems);
                     dlgReceipt.ShowDialog(this.FindForm());
                 }
+                
+                // Cập nhật lại autocomplete
+                var autoCompleteList = _muonTraService.GetActiveMaPhieuMuonList();
+                var source = new AutoCompleteStringCollection();
+                source.AddRange(autoCompleteList.ToArray());
+                txtInputMaBanSaoTra.AutoCompleteCustomSource = source;
             }
             else
             {

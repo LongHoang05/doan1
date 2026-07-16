@@ -57,86 +57,106 @@ namespace QuanLyThueBang.Presentation.Forms
             };
             pnlSidebar.Controls.Add(pnlBorderRight);
 
-            // Logo Header
-            var pnlLogo = new Panel
+            // Dùng TableLayoutPanel để đảm bảo layout đúng tuyệt đối
+            var tlpSidebar = new TableLayoutPanel
             {
-                Dock = DockStyle.Top,
-                Height = 90,
-                Padding = new Padding(25, 20, 20, 10)
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 3,
+                Padding = new Padding(0),
+                Margin = new Padding(0)
             };
+            tlpSidebar.RowStyles.Add(new RowStyle(SizeType.Absolute, 90F));   // Row 0: Logo
+            tlpSidebar.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));   // Row 1: Menu (Fill)
+            tlpSidebar.RowStyles.Add(new RowStyle(SizeType.Absolute, 95F));   // Row 2: Footer
 
+            // ── Row 0: Logo ────────────────────────────────────────────────────
+            var pnlLogo = new Panel { Dock = DockStyle.Fill, Padding = new Padding(25, 20, 20, 10) };
             var lblAppTitle = new Label
             {
                 Text = "Rental Manager",
                 Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(33, 37, 41),
-                Location = new Point(25, 20),
+                Location = new Point(0, 0),
                 AutoSize = true
             };
-
             var lblAppSubtitle = new Label
             {
                 Text = "Hệ thống quản lý băng đĩa",
                 Font = new Font("Segoe UI", 9F),
                 ForeColor = Color.FromArgb(108, 117, 125),
-                Location = new Point(27, 50),
+                Location = new Point(2, 30),
                 AutoSize = true
             };
-
             pnlLogo.Controls.Add(lblAppTitle);
             pnlLogo.Controls.Add(lblAppSubtitle);
-            pnlSidebar.Controls.Add(pnlLogo);
+            tlpSidebar.Controls.Add(pnlLogo, 0, 0);
 
-            // Các nút Navigation Menu
+            // ── Row 1: Navigation Menu ─────────────────────────────────────────
             var pnlMenu = new Panel
             {
                 Dock = DockStyle.Fill,
-                Padding = new Padding(15, 10, 15, 10),
-                AutoScroll = true
+                AutoScroll = true,
+                Padding = new Padding(0)
             };
 
-            int topPos = 5;
+            int topPos = 8;
 
             string username = AppSession.CurrentUser?.TenDangNhap?.ToLower() ?? "";
             string vaiTro = AppSession.CurrentUser?.VaiTro?.TenVaiTro ?? "";
             bool isAdmin = AppSession.IsAdmin || username == "admin";
             bool isQuanLy = vaiTro.Contains("Quản lý", StringComparison.OrdinalIgnoreCase) || username == "quanly";
+            bool hasDefault = false;
 
-            // Nhóm 1: TRANG CHỦ (Dashboard - Tổng quan)
-            AddSectionHeader(pnlMenu, "TỔNG QUAN HỆ THỐNG", ref topPos);
-            topPos = AddMenuButton(pnlMenu, "📊 Tổng quan", topPos, BtnMenuDashboard_Click, isDefaultActive: true);
+            // Nhóm 1: TỔNG QUAN (Admin/Quản lý)
+            if (isAdmin || isQuanLy)
+            {
+                AddSectionHeader(pnlMenu, "TỔNG QUAN HỆ THỐNG", ref topPos);
+                topPos = AddMenuButton(pnlMenu, "📊 Tổng quan", topPos, BtnMenuDashboard_Click, isDefaultActive: !hasDefault);
+                hasDefault = true;
+            }
 
-            // Nhóm 2: QUẢN LÝ DANH MỤC & KHO (Chỉ Admin hoặc Quản lý)
+            // Nhóm 2: QUẢN LÝ (Admin/Quản lý)
             if (isAdmin || isQuanLy)
             {
                 AddSectionHeader(pnlMenu, "QUẢN LÝ PHIM & KHO", ref topPos);
-                topPos = AddMenuButton(pnlMenu, "🎬 Quản lý Phim", topPos, BtnMenuPhim_Click);
+                topPos = AddMenuButton(pnlMenu, "🎬 Quản lý Phim", topPos, BtnMenuPhim_Click, isDefaultActive: !hasDefault);
+                if (!hasDefault) hasDefault = true;
                 topPos = AddMenuButton(pnlMenu, "🏷️ Quản lý Danh mục", topPos, BtnMenuDanhMuc_Click);
                 topPos = AddMenuButton(pnlMenu, "📼 Quản lý Bản sao", topPos, BtnMenuBanSao_Click);
                 if (isAdmin)
-                {
                     topPos = AddMenuButton(pnlMenu, "🏪 Quản lý Cửa hàng", topPos, BtnMenuCuaHang_Click);
-                }
             }
 
-            // Nhóm 3: QUẢN LÝ NGHIỆP VỤ
+            // Nhóm 3: NGHIỆP VỤ
             AddSectionHeader(pnlMenu, "NGHIỆP VỤ THUÊ BĂNG", ref topPos);
-            topPos = AddMenuButton(pnlMenu, "👥 Quản lý Khách hàng", topPos, BtnMenuKhachHang_Click);
+            topPos = AddMenuButton(pnlMenu, "👥 Quản lý Khách hàng", topPos, BtnMenuKhachHang_Click, isDefaultActive: !hasDefault);
+            if (!hasDefault) hasDefault = true;
             if (isAdmin || isQuanLy)
-            {
                 topPos = AddMenuButton(pnlMenu, "🧑‍💼 Quản lý Nhân viên", topPos, BtnMenuNhanVien_Click);
-            }
             topPos = AddMenuButton(pnlMenu, "📋 Quản lý Phiếu mượn", topPos, BtnMenuPhieuMuon_Click);
             topPos = AddMenuButton(pnlMenu, "📥 Nhận Trả & Luân Chuyển", topPos, BtnMenuMuonTra_Click);
 
-            pnlSidebar.Controls.Add(pnlMenu);
+            tlpSidebar.Controls.Add(pnlMenu, 0, 1);
 
-            // Footer User Badge + Nút Đăng Xuất
-            var pnlUserBadge = new Panel { Dock = DockStyle.Bottom, Height = 95, BackColor = Color.FromArgb(248, 249, 250), Padding = new Padding(12, 8, 12, 8) };
+            // ── Row 2: Footer (User Info + Logout) ────────────────────────────
+            var pnlUserBadge = new Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = Color.FromArgb(248, 249, 250),
+                Padding = new Padding(12, 8, 12, 8)
+            };
             string hoTen = AppSession.CurrentUser?.HoTen ?? "Admin Quản Trị";
             string roleName = !string.IsNullOrEmpty(vaiTro) ? vaiTro : "Quản trị viên";
-            var lblUserInfo = new Label { Text = $"👤 {hoTen}\n🔑 {roleName}", Font = new Font("Segoe UI Semibold", 9.2F), ForeColor = Color.FromArgb(40, 40, 40), Dock = DockStyle.Top, Height = 40 };
 
+            var lblUserInfo = new Label
+            {
+                Text = $"👤 {hoTen}\n🔑 {roleName}",
+                Font = new Font("Segoe UI Semibold", 9.2F),
+                ForeColor = Color.FromArgb(40, 40, 40),
+                Dock = DockStyle.Top,
+                Height = 42
+            };
             var btnLogout = new Button
             {
                 Text = "🚪 Đăng Xuất",
@@ -159,11 +179,11 @@ namespace QuanLyThueBang.Presentation.Forms
                     this.Close();
                 }
             };
-
             pnlUserBadge.Controls.Add(lblUserInfo);
             pnlUserBadge.Controls.Add(btnLogout);
-            pnlSidebar.Controls.Add(pnlUserBadge);
+            tlpSidebar.Controls.Add(pnlUserBadge, 0, 2);
 
+            pnlSidebar.Controls.Add(tlpSidebar);
             this.Controls.Add(pnlSidebar);
         }
 

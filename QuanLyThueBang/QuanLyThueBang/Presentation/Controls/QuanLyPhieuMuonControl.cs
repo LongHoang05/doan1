@@ -24,19 +24,23 @@ namespace QuanLyThueBang.Presentation.Controls
         // --- TAB 1: DANH SÁCH & TRA CỨU PHIẾU MƯỢN ---
         private TextBox txtSearchPhieuMuon = null!;
         private DataGridView dgvPhieuMuon = null!;
-        private DataGridView dgvChiTietPhieuMuon = null!;
-        private Label lblHeaderChiTiet = null!;
         private readonly List<PhieuMuonViewDTO> _phieuMuonList = new();
-
-        // --- TAB 2: LẬP PHIẾU MƯỢN ---
-        private ComboBox cboKhachHangMuon = null!;
+        private TextBox txtKhachHangMuon = null!;
+        private KhachHangDTO? _selectedKhachHang = null;
+        private ToolStripDropDown _popupKhachHang = null!;
+        private ListBox _lstKhachHangSuggestions = null!;
+        private bool _isSelectingKH = false;
         private ComboBox cboCuaHangMuon = null!;
         private ComboBox cboNhanVienMuon = null!;
-        private TextBox txtInputMaBanSaoMuon = null!;
-        private DataGridView dgvGioMuon = null!;
-        private DateTimePicker dtpNgayDuKienTra = null!;
+        private ComboBox cboInputMaBanSaoMuon = null!;
         private Label lblTongTienGioMuon = null!;
+        private DataGridView dgvGioMuon = null!;
         private readonly List<ChiTietGioMuonDTO> _gioMuonList = new();
+        private List<KhachHangDTO> _allKhachHang = new();
+        private List<string> _allMaBanSao = new();
+        private DateTimePicker dtpNgayDuKienTra = null!;
+        private System.Windows.Forms.Timer _typingTimerKH = null!;
+        private System.Windows.Forms.Timer _typingTimerBS = null!;
 
         public QuanLyPhieuMuonControl(MuonTraService muonTraService, KhachHangService khachHangService, CuaHangService cuaHangService, NhanVienService nhanVienService)
         {
@@ -46,6 +50,13 @@ namespace QuanLyThueBang.Presentation.Controls
             _nhanVienService = nhanVienService;
 
             InitializeUI();
+            
+            _typingTimerKH = new System.Windows.Forms.Timer { Interval = 400 };
+            _typingTimerKH.Tick += TypingTimerKH_Tick;
+            
+            _typingTimerBS = new System.Windows.Forms.Timer { Interval = 400 };
+            _typingTimerBS.Tick += TypingTimerBS_Tick;
+
             LoadMasterData();
             LoadDanhSachPhieuMuon();
         }
@@ -251,57 +262,44 @@ namespace QuanLyThueBang.Presentation.Controls
             dgvPhieuMuon.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(PhieuMuonViewDTO.SoLuongBang), HeaderText = "SL Băng", Width = 95, MinimumWidth = 85, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter } });
             dgvPhieuMuon.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(PhieuMuonViewDTO.TrangThaiPhieu), HeaderText = "Trạng Thái", Width = 125, MinimumWidth = 115 });
 
-            var colDelPhieu = new DataGridViewButtonColumn { Name = "colDelPhieu", HeaderText = "Hành Động", Text = "🗑️ Xóa Phiếu", UseColumnTextForButtonValue = true, Width = 120, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(220, 53, 69), Alignment = DataGridViewContentAlignment.MiddleCenter } };
-            dgvPhieuMuon.Columns.Add(colDelPhieu);
+            var colViewPhieu = new DataGridViewButtonColumn { Name = "colViewPhieu", HeaderText = "", Text = "👁 Chi Tiết", UseColumnTextForButtonValue = true, Width = 100, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(13, 110, 253), Alignment = DataGridViewContentAlignment.MiddleCenter } };
+            dgvPhieuMuon.Columns.Add(colViewPhieu);
 
-            dgvPhieuMuon.SelectionChanged += (s, e) =>
-            {
-                if (dgvPhieuMuon.CurrentRow != null)
-                {
-                    var pm = dgvPhieuMuon.CurrentRow.DataBoundItem as PhieuMuonViewDTO;
-                    if (pm != null)
-                    {
-                        LoadChiTietPhieuMuon(pm);
-                    }
-                }
-            };
+            var colDelPhieu = new DataGridViewButtonColumn { Name = "colDelPhieu", HeaderText = "Hành Động", Text = "🗑️ Xóa Phiếu", UseColumnTextForButtonValue = true, Width = 100, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(220, 53, 69), Alignment = DataGridViewContentAlignment.MiddleCenter } };
+            dgvPhieuMuon.Columns.Add(colDelPhieu);
 
             dgvPhieuMuon.CellClick += (s, e) =>
             {
-                if (e.RowIndex >= 0 && e.ColumnIndex == dgvPhieuMuon.Columns["colDelPhieu"].Index)
+                if (e.RowIndex >= 0)
                 {
                     var item = _phieuMuonList[e.RowIndex];
-                    var confirm = MessageBox.Show($"Bạn có chắc chắn muốn xóa phiếu mượn '{item.MaPhieuMuon}' không?", "Xác Nhận Xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (confirm == DialogResult.Yes)
+                    if (e.ColumnIndex == dgvPhieuMuon.Columns["colViewPhieu"].Index)
                     {
-                        var (success, msg) = _muonTraService.XoaPhieuMuon(item.MaPhieuMuon);
-                        MessageBox.Show(msg, success ? "Thành công" : "Lỗi", MessageBoxButtons.OK, success ? MessageBoxIcon.Information : MessageBoxIcon.Error);
-                        if (success) LoadDanhSachPhieuMuon();
+                        OpenChiTietDialog(item);
+                    }
+                    else if (e.ColumnIndex == dgvPhieuMuon.Columns["colDelPhieu"].Index)
+                    {
+                        var confirm = MessageBox.Show($"Bạn có chắc chắn muốn xóa phiếu mượn '{item.MaPhieuMuon}' không?", "Xác Nhận Xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        if (confirm == DialogResult.Yes)
+                        {
+                            var (success, msg) = _muonTraService.XoaPhieuMuon(item.MaPhieuMuon);
+                            MessageBox.Show(msg, success ? "Thành công" : "Lỗi", MessageBoxButtons.OK, success ? MessageBoxIcon.Information : MessageBoxIcon.Error);
+                            if (success) LoadDanhSachPhieuMuon();
+                        }
                     }
                 }
             };
 
-            splitContainer.Panel1.Controls.Add(dgvPhieuMuon);
-
-            var pnlDetailContainer = new Panel { Dock = DockStyle.Fill, BackColor = Color.White };
-            var pnlDetailHeader = new Panel { Dock = DockStyle.Top, Height = 40, BackColor = Color.FromArgb(243, 244, 246), Padding = new Padding(15, 8, 15, 8) };
-            lblHeaderChiTiet = new Label { Text = "📦 Chi Tiết Băng Trong Phiếu Mượn", Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold), ForeColor = Color.FromArgb(33, 37, 41), AutoSize = true };
-            pnlDetailHeader.Controls.Add(lblHeaderChiTiet);
-
-            dgvChiTietPhieuMuon = SetupGrid();
-            dgvChiTietPhieuMuon.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ChiTietPhieuMuonViewDTO.MaBanSao), HeaderText = "Mã Bản Sao", Width = 150 });
-            dgvChiTietPhieuMuon.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ChiTietPhieuMuonViewDTO.TuaDe), HeaderText = "Tựa Đề Phim", AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill });
-            dgvChiTietPhieuMuon.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ChiTietPhieuMuonViewDTO.TenTheLoai), HeaderText = "Thể Loại", Width = 180 });
-            dgvChiTietPhieuMuon.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ChiTietPhieuMuonViewDTO.DonGiaThue), HeaderText = "Đơn Giá Thuê", Width = 150, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, Format = "N0" } });
-            dgvChiTietPhieuMuon.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ChiTietPhieuMuonViewDTO.TrangThaiTra), HeaderText = "Tình Trạng Trả", Width = 140, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter } });
-
-            pnlDetailContainer.Controls.Add(dgvChiTietPhieuMuon);
-            pnlDetailContainer.Controls.Add(pnlDetailHeader);
-
-            splitContainer.Panel2.Controls.Add(pnlDetailContainer);
+            dgvPhieuMuon.CellDoubleClick += (s, e) =>
+            {
+                if (e.RowIndex >= 0)
+                {
+                    OpenChiTietDialog(_phieuMuonList[e.RowIndex]);
+                }
+            };
 
             var pnlBodyDanhSach = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0, 10, 0, 0) };
-            pnlBodyDanhSach.Controls.Add(splitContainer);
+            pnlBodyDanhSach.Controls.Add(dgvPhieuMuon);
 
             tab.Controls.Add(pnlBodyDanhSach);
             tab.Controls.Add(pnlTop);
@@ -316,21 +314,15 @@ namespace QuanLyThueBang.Presentation.Controls
 
             if (_phieuMuonList.Count > 0)
             {
-                LoadChiTietPhieuMuon(_phieuMuonList[0]);
-            }
-            else
-            {
-                dgvChiTietPhieuMuon.DataSource = null;
-                lblHeaderChiTiet.Text = "📦 Chi Tiết Băng Trong Phiếu Mượn";
+                // Optional: Select first row implicitly
             }
         }
 
-        private void LoadChiTietPhieuMuon(PhieuMuonViewDTO pm)
+        private void OpenChiTietDialog(PhieuMuonViewDTO pm)
         {
-            lblHeaderChiTiet.Text = $"📦 Chi Tiết Băng Trong Phiếu Mượn: [{pm.MaPhieuMuon}] — Khách hàng: {pm.TenKhachHang}";
             var chiTiets = _muonTraService.GetChiTietByPhieuMuon(pm.MaPhieuMuon);
-            dgvChiTietPhieuMuon.DataSource = null;
-            dgvChiTietPhieuMuon.DataSource = chiTiets;
+            using var dlg = new ChiTietPhieuMuonForm(pm, chiTiets);
+            dlg.ShowDialog(this.FindForm());
         }
         #endregion
 
@@ -357,13 +349,42 @@ namespace QuanLyThueBang.Presentation.Controls
 
             // Dòng 1: Khách Hàng & Chi Nhánh
             var lblKH = new Label { Text = "Khách Hàng:", Anchor = AnchorStyles.Left, AutoSize = true };
-            cboKhachHangMuon = new ComboBox { Dock = DockStyle.Fill, DropDownStyle = ComboBoxStyle.DropDownList };
+            txtKhachHangMuon = new TextBox { Dock = DockStyle.Fill, PlaceholderText = "Nhập tên, CMND, SĐT..." };
+            txtKhachHangMuon.TextChanged += (s, e) => {
+                if (_isSelectingKH) return;
+                _selectedKhachHang = null;
+                _typingTimerKH.Stop();
+                _typingTimerKH.Start();
+            };
+            txtKhachHangMuon.KeyDown += (s, e) => {
+                if (e.KeyCode == Keys.Down && _popupKhachHang.Visible)
+                {
+                    _lstKhachHangSuggestions.Focus();
+                    if (_lstKhachHangSuggestions.Items.Count > 0) _lstKhachHangSuggestions.SelectedIndex = 0;
+                }
+            };
+
+            _lstKhachHangSuggestions = new ListBox
+            {
+                DrawMode = DrawMode.OwnerDrawVariable,
+                BorderStyle = BorderStyle.None,
+                Width = 400,
+                BackColor = Color.FromArgb(245, 245, 245)
+            };
+            _lstKhachHangSuggestions.MeasureItem += (s, e) => e.ItemHeight = 45;
+            _lstKhachHangSuggestions.DrawItem += LstKhachHangSuggestions_DrawItem;
+            _lstKhachHangSuggestions.Click += LstKhachHangSuggestions_Click;
+            _lstKhachHangSuggestions.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) LstKhachHangSuggestions_Click(s, e); };
+
+            var host = new ToolStripControlHost(_lstKhachHangSuggestions) { Margin = Padding.Empty, Padding = Padding.Empty, AutoSize = false };
+            _popupKhachHang = new ToolStripDropDown { Padding = Padding.Empty, Margin = Padding.Empty, AutoSize = false };
+            _popupKhachHang.Items.Add(host);
 
             var lblCH = new Label { Text = "Chi Nhánh:", Anchor = AnchorStyles.Left, AutoSize = true };
             cboCuaHangMuon = new ComboBox { Dock = DockStyle.Fill, DropDownStyle = ComboBoxStyle.DropDownList };
 
             tlp.Controls.Add(lblKH, 0, 0);
-            tlp.Controls.Add(cboKhachHangMuon, 1, 0);
+            tlp.Controls.Add(txtKhachHangMuon, 1, 0);
             tlp.Controls.Add(lblCH, 2, 0);
             tlp.Controls.Add(cboCuaHangMuon, 3, 0);
 
@@ -382,7 +403,12 @@ namespace QuanLyThueBang.Presentation.Controls
 
             // Dòng 3: Quét Mã Băng & Nút Thêm Vào Giỏ
             var lblScan = new Label { Text = "Quét Mã Băng / RFID:", Anchor = AnchorStyles.Left, AutoSize = true };
-            txtInputMaBanSaoMuon = new TextBox { Dock = DockStyle.Fill, PlaceholderText = "Nhập mã bản sao hoặc RFID..." };
+            cboInputMaBanSaoMuon = new ComboBox 
+            { 
+                Dock = DockStyle.Fill, 
+                DropDownStyle = ComboBoxStyle.DropDown
+            };
+            cboInputMaBanSaoMuon.TextUpdate += CboInputMaBanSaoMuon_TextUpdate;
 
             var btnAddGio = new Button
             {
@@ -397,10 +423,10 @@ namespace QuanLyThueBang.Presentation.Controls
             };
             btnAddGio.FlatAppearance.BorderSize = 0;
             btnAddGio.Click += BtnAddGio_Click;
-            txtInputMaBanSaoMuon.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; BtnAddGio_Click(s, e); } };
+            cboInputMaBanSaoMuon.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; BtnAddGio_Click(s, e); } };
 
             tlp.Controls.Add(lblScan, 0, 2);
-            tlp.Controls.Add(txtInputMaBanSaoMuon, 1, 2);
+            tlp.Controls.Add(cboInputMaBanSaoMuon, 1, 2);
             tlp.SetColumnSpan(btnAddGio, 2);
             tlp.Controls.Add(btnAddGio, 2, 2);
 
@@ -453,7 +479,7 @@ namespace QuanLyThueBang.Presentation.Controls
 
         private void BtnAddGio_Click(object? sender, EventArgs e)
         {
-            string query = txtInputMaBanSaoMuon.Text.Trim();
+            string query = cboInputMaBanSaoMuon.Text.Trim();
             if (string.IsNullOrEmpty(query)) return;
 
             string maCH = cboCuaHangMuon.SelectedValue?.ToString() ?? "";
@@ -471,7 +497,7 @@ namespace QuanLyThueBang.Presentation.Controls
             }
 
             _gioMuonList.Add(item);
-            txtInputMaBanSaoMuon.Clear();
+            cboInputMaBanSaoMuon.Text = "";
             RefreshGioMuonGrid();
         }
 
@@ -487,6 +513,7 @@ namespace QuanLyThueBang.Presentation.Controls
 
         private string GetSelectedId(ComboBox cbo)
         {
+
             if (cbo.SelectedItem is KhachHangDTO kh)
                 return kh.MaKhachHang;
             if (cbo.SelectedItem is CuaHangDTO ch)
@@ -495,7 +522,7 @@ namespace QuanLyThueBang.Presentation.Controls
                 return nv.MaNhanVien;
             if (cbo.SelectedValue is string strId && !string.IsNullOrWhiteSpace(strId))
                 return strId;
-            return cbo.SelectedValue?.ToString() ?? "";
+            return cbo.Text;
         }
 
         private void BtnChotMuon_Click(object? sender, EventArgs e)
@@ -506,7 +533,7 @@ namespace QuanLyThueBang.Presentation.Controls
                 return;
             }
 
-            string maKH = GetSelectedId(cboKhachHangMuon);
+            string maKH = _selectedKhachHang?.MaKhachHang ?? txtKhachHangMuon.Text;
             string maCH = GetSelectedId(cboCuaHangMuon);
             string maNV = GetSelectedId(cboNhanVienMuon);
 
@@ -521,11 +548,15 @@ namespace QuanLyThueBang.Presentation.Controls
                 var askPrint = MessageBox.Show("Bạn có muốn xem và in Hóa Đơn Thuê Băng (Đã Thanh Toán) cho khách hàng không?", "In Hóa Đơn Thuê Băng", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (askPrint == DialogResult.Yes)
                 {
-                    using var dlg = new HoaDonMuonDialogForm(maPM, cboKhachHangMuon.Text, cboCuaHangMuon.Text, cboNhanVienMuon.Text, dtpNgayDuKienTra.Value, copyList);
+                    using var dlg = new HoaDonMuonDialogForm(maPM, txtKhachHangMuon.Text, cboCuaHangMuon.Text, cboNhanVienMuon.Text, dtpNgayDuKienTra.Value, copyList);
                     dlg.ShowDialog(this.FindForm());
                 }
 
                 _gioMuonList.Clear();
+                _selectedKhachHang = null;
+                txtKhachHangMuon.Text = "";
+                cboInputMaBanSaoMuon.SelectedIndex = -1;
+                cboInputMaBanSaoMuon.Text = "";
                 RefreshGioMuonGrid();
                 _tabControl.SelectedTab = _tabDanhSach;
                 LoadDanhSachPhieuMuon();
@@ -541,9 +572,7 @@ namespace QuanLyThueBang.Presentation.Controls
         {
             try
             {
-                cboKhachHangMuon.DisplayMember = nameof(KhachHangDTO.HoTen);
-                cboKhachHangMuon.ValueMember = nameof(KhachHangDTO.MaKhachHang);
-                cboKhachHangMuon.DataSource = _khachHangService.GetAllKhachHang();
+                _allKhachHang = _khachHangService.GetAllKhachHang();
 
                 cboCuaHangMuon.DisplayMember = nameof(CuaHangDTO.DiaChi);
                 cboCuaHangMuon.ValueMember = nameof(CuaHangDTO.MaCuaHang);
@@ -552,8 +581,113 @@ namespace QuanLyThueBang.Presentation.Controls
                 cboNhanVienMuon.DisplayMember = nameof(NhanVienDTO.HoTen);
                 cboNhanVienMuon.ValueMember = nameof(NhanVienDTO.MaNhanVien);
                 cboNhanVienMuon.DataSource = _nhanVienService.GetAllNhanVien();
+
+                _allMaBanSao = _muonTraService.GetActiveMaBanSaoList();
+                cboInputMaBanSaoMuon.Items.Clear();
+                cboInputMaBanSaoMuon.Items.AddRange(_allMaBanSao.Take(10).ToArray());
+                cboInputMaBanSaoMuon.SelectedIndex = -1;
             }
             catch { }
+        }
+
+        private void TypingTimerKH_Tick(object? sender, EventArgs e)
+        {
+            _typingTimerKH.Stop();
+            string search = txtKhachHangMuon.Text.Trim();
+
+            var filtered = string.IsNullOrWhiteSpace(search) 
+                ? _allKhachHang.Take(10).ToArray()
+                : _allKhachHang.Where(k => 
+                    k.HoTen.Contains(search, StringComparison.OrdinalIgnoreCase) || 
+                    k.MaKhachHang.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    k.CMND.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    k.SoDienThoai.Contains(search, StringComparison.OrdinalIgnoreCase))
+                .Take(10).ToArray();
+
+            _lstKhachHangSuggestions.Items.Clear();
+            if (filtered.Length > 0)
+            {
+                var newSize = new Size(400, filtered.Length * 45);
+                _lstKhachHangSuggestions.Size = newSize;
+                if (_popupKhachHang.Items.Count > 0) 
+                    _popupKhachHang.Items[0].Size = newSize;
+                _popupKhachHang.Size = newSize;
+
+                _lstKhachHangSuggestions.Items.AddRange(filtered);
+                _popupKhachHang.Show(txtKhachHangMuon, new Point(0, txtKhachHangMuon.Height));
+            }
+            else
+            {
+                _popupKhachHang.Hide();
+            }
+        }
+
+        private void LstKhachHangSuggestions_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            if (e.Index < 0) return;
+            e.DrawBackground();
+
+            var kh = (KhachHangDTO)_lstKhachHangSuggestions.Items[e.Index];
+
+            using var fontBold = new Font(e.Font ?? new Font("Segoe UI", 10F), FontStyle.Bold);
+            using var fontSmall = new Font(e.Font?.FontFamily ?? new FontFamily("Segoe UI"), (e.Font?.Size ?? 10F) - 1F, FontStyle.Regular);
+            
+            var brushText = new SolidBrush(e.ForeColor);
+            var brushGray = new SolidBrush(Color.Gray);
+
+            e.Graphics.DrawString(kh.HoTen, fontBold, brushText, e.Bounds.Left + 5, e.Bounds.Top + 5);
+            e.Graphics.DrawString($"SĐT: {kh.SoDienThoai}  |  CMND: {kh.CMND}  |  ĐC: {kh.DiaChi}", fontSmall, brushGray, e.Bounds.Left + 5, e.Bounds.Top + 25);
+            
+            e.DrawFocusRectangle();
+        }
+
+        private void LstKhachHangSuggestions_Click(object? sender, EventArgs e)
+        {
+            if (_lstKhachHangSuggestions.SelectedItem is KhachHangDTO kh)
+            {
+                _isSelectingKH = true;
+                _selectedKhachHang = kh;
+                txtKhachHangMuon.Text = kh.HoTen;
+                txtKhachHangMuon.SelectionStart = txtKhachHangMuon.Text.Length;
+                _popupKhachHang.Hide();
+                txtKhachHangMuon.Focus();
+                _isSelectingKH = false;
+            }
+        }
+
+        private void CboInputMaBanSaoMuon_TextUpdate(object? sender, EventArgs e)
+        {
+            _typingTimerBS.Stop();
+            _typingTimerBS.Start();
+        }
+
+        private void TypingTimerBS_Tick(object? sender, EventArgs e)
+        {
+            _typingTimerBS.Stop();
+            string search = cboInputMaBanSaoMuon.Text;
+
+            var filtered = string.IsNullOrWhiteSpace(search) 
+                ? _allMaBanSao.Take(10).ToArray()
+                : _allMaBanSao.Where(k => k.Contains(search, StringComparison.OrdinalIgnoreCase)).Take(10).ToArray();
+
+            cboInputMaBanSaoMuon.Items.Clear();
+            cboInputMaBanSaoMuon.Items.AddRange(filtered);
+            
+            if (cboInputMaBanSaoMuon.Text != search)
+            {
+                cboInputMaBanSaoMuon.Text = search;
+            }
+
+            if (filtered.Length > 0)
+            {
+                cboInputMaBanSaoMuon.DroppedDown = true;
+                cboInputMaBanSaoMuon.SelectionStart = cboInputMaBanSaoMuon.Text.Length;
+                Cursor.Current = Cursors.Default;
+            }
+            else
+            {
+                cboInputMaBanSaoMuon.DroppedDown = false;
+            }
         }
 
         private DataGridView SetupGrid()

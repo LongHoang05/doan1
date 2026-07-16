@@ -150,6 +150,83 @@ namespace QuanLyThueBang.BLL
         }
 
         /// <summary>
+        /// Lấy danh sách các mã phiếu mượn đang có băng chưa trả để làm autocomplete
+        /// </summary>
+        public List<string> GetActiveMaPhieuMuonList()
+        {
+            return _context.ChiTietPhieuMuons
+                .Where(ct => !ct.TrangThaiTra)
+                .Select(ct => ct.MaPhieuMuon)
+                .Distinct()
+                .ToList();
+        }
+
+        /// <summary>
+        /// Lấy danh sách các mã bản sao sẵn sàng cho mượn để làm autocomplete
+        /// </summary>
+        public List<string> GetActiveMaBanSaoList(string maCuaHang = "")
+        {
+            var query = _context.BanSaoBangs
+                .Where(b => b.TrangThai == Constants.TrangThaiBang_SanSang);
+                
+            if (!string.IsNullOrEmpty(maCuaHang))
+            {
+                query = query.Where(b => b.MaCuaHangHienTai == maCuaHang);
+            }
+            
+            return query.Select(b => b.MaBanSao).Distinct().ToList();
+        }
+
+        /// <summary>
+        /// Tra cứu toàn bộ băng chưa trả thuộc một phiếu mượn cụ thể
+        /// </summary>
+        public (bool Success, string ErrorMessage, List<ThongTinBangMuonChuaTraDTO>? Data) TraCuuBangMuonChuaTraTheoPhieu(string maPhieuMuon)
+        {
+            maPhieuMuon = maPhieuMuon.Trim();
+            var chiTietList = _context.ChiTietPhieuMuons
+                .Include(ct => ct.PhieuMuon).ThenInclude(pm => pm!.KhachHang)
+                .Include(ct => ct.PhieuMuon).ThenInclude(pm => pm!.CuaHangMuon)
+                .Include(ct => ct.PhieuMuon).ThenInclude(pm => pm!.NhanVienChoMuon)
+                .Include(ct => ct.BanSaoBang).ThenInclude(bs => bs!.Phim).ThenInclude(p => p!.TheLoai)
+                .Where(ct => !ct.TrangThaiTra && ct.MaPhieuMuon == maPhieuMuon)
+                .ToList();
+
+            if (!chiTietList.Any())
+                return (false, $"Không tìm thấy băng chưa trả nào cho Phiếu mượn '{maPhieuMuon}'.", null);
+
+            var today = DateTime.Today;
+            var dtoList = chiTietList.Select(chiTiet =>
+            {
+                int soNgayTre = (today - chiTiet.PhieuMuon!.NgayDuKienTra.Date).Days;
+                bool isTre = soNgayTre > 0;
+
+                return new ThongTinBangMuonChuaTraDTO
+                {
+                    IsSelected = false,
+                    MaPhieuMuon = chiTiet.MaPhieuMuon,
+                    MaBanSao = chiTiet.MaBanSao,
+                    RFID = chiTiet.MaBanSao,
+                    TuaDe = chiTiet.BanSaoBang?.Phim?.TuaDe ?? "N/A",
+                    MaKhachHang = chiTiet.PhieuMuon.MaKhachHang,
+                    HoTenKhachHang = chiTiet.PhieuMuon.KhachHang?.HoTen ?? "Khách vãng lai",
+                    SoDienThoai = chiTiet.PhieuMuon.KhachHang?.SoDienThoai ?? "",
+                    TenTheLoai = chiTiet.BanSaoBang?.Phim?.TheLoai?.TenTheLoai ?? "N/A",
+                    TenChiNhanh = chiTiet.PhieuMuon.CuaHangMuon != null ? $"Chi nhánh {chiTiet.PhieuMuon.CuaHangMuon.MaCuaHang}" : "N/A",
+                    TenNhanVienLap = chiTiet.PhieuMuon.NhanVienChoMuon?.HoTen ?? "N/A",
+                    NgayMuon = chiTiet.PhieuMuon.NgayMuon,
+                    NgayDuKienTra = chiTiet.PhieuMuon.NgayDuKienTra,
+                    SoNgayTreHan = isTre ? soNgayTre : 0,
+                    IsTreHan = isTre,
+                    DonGiaThue = chiTiet.BanSaoBang?.DonGiaThue ?? 0,
+                    TinhTrangKhiTra = Constants.TinhTrangTra_BinhThuong,
+                    TienPhat = 0
+                };
+            }).ToList();
+
+            return (true, string.Empty, dtoList);
+        }
+
+        /// <summary>
         /// Chốt giao dịch nhận trả băng, tính phạt thủ công & Luân chuyển kho liên chi nhánh
         /// </summary>
         public (bool Success, string Message, string MaPhieuTra) ChotNhanTraBang(string maKhachHang, string maCuaHangNhanTra, string maNhanVienNhanTra, List<ThongTinBangMuonChuaTraDTO> listBangTra)

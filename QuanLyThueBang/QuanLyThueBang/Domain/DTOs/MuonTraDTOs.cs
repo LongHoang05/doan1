@@ -13,6 +13,7 @@ namespace QuanLyThueBang.Domain.DTOs
 
     public class ThongTinBangMuonChuaTraDTO
     {
+        public bool IsSelected { get; set; } = false;
         public string MaPhieuMuon { get; set; } = string.Empty;
         public string MaBanSao { get; set; } = string.Empty;
         public string RFID { get; set; } = string.Empty;
@@ -20,6 +21,9 @@ namespace QuanLyThueBang.Domain.DTOs
         public string MaKhachHang { get; set; } = string.Empty;
         public string HoTenKhachHang { get; set; } = string.Empty;
         public string SoDienThoai { get; set; } = string.Empty;
+        public string TenTheLoai { get; set; } = string.Empty;
+        public string TenChiNhanh { get; set; } = string.Empty;
+        public string TenNhanVienLap { get; set; } = string.Empty;
         public DateTime NgayMuon { get; set; }
         public DateTime NgayDuKienTra { get; set; }
         public int SoNgayTreHan { get; set; }

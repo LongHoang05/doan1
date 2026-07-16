@@ -44,6 +44,7 @@ namespace QuanLyThueBang
 
             // Khởi tạo CSDL & tạo 2 tài khoản mặc định admin / quanly với mật khẩu "1"
             DbSeeder.SeedDefaultUsers(host.Services);
+            DbSeeder.SeedSampleData(host.Services);
 
             // Vòng lặp hiển thị Đăng nhập -> Màn hình chính -> Đăng xuất quay lại Đăng nhập
             while (true)
