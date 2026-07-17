@@ -73,7 +73,9 @@ namespace QuanLyThueBang.Presentation.Forms.MuonTra
             {
                 Text = "❌ Hủy Bỏ",
                 Dock = DockStyle.Right,
-                Width = 110,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(14, 5, 14, 5),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(108, 117, 125),
                 ForeColor = Color.White,
@@ -86,7 +88,9 @@ namespace QuanLyThueBang.Presentation.Forms.MuonTra
             {
                 Text = "💾 Xác Nhận Ghi Nhận",
                 Dock = DockStyle.Right,
-                Width = 175,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(14, 5, 14, 5),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(13, 110, 253),
                 ForeColor = Color.White,

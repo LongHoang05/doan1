@@ -66,8 +66,8 @@ namespace QuanLyThueBang.Presentation.Forms.CuaHang
             btnSave = new Button
             {
                 Text = "💾 Lưu thay đổi",
-                Location = new Point(210, 265),
-                Size = new Size(140, 38),
+                Location = new Point(200, 265),
+                Size = new Size(145, 38),
                 BackColor = Color.FromArgb(184, 123, 125),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
@@ -80,8 +80,8 @@ namespace QuanLyThueBang.Presentation.Forms.CuaHang
             btnCancel = new Button
             {
                 Text = "Hủy bỏ",
-                Location = new Point(360, 265),
-                Size = new Size(78, 38),
+                Location = new Point(355, 265),
+                Size = new Size(95, 38),
                 BackColor = Color.FromArgb(240, 242, 245),
                 FlatStyle = FlatStyle.Flat
             };

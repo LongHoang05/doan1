@@ -133,7 +133,7 @@ namespace QuanLyThueBang.Presentation.Forms.BanSao
             {
                 Text = "💾 Lưu bản sao",
                 Location = new Point(230, 420),
-                Size = new Size(150, 38),
+                Size = new Size(145, 38),
                 BackColor = Color.FromArgb(184, 123, 125),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
@@ -146,8 +146,8 @@ namespace QuanLyThueBang.Presentation.Forms.BanSao
             btnCancel = new Button
             {
                 Text = "Hủy bỏ",
-                Location = new Point(395, 420),
-                Size = new Size(83, 38),
+                Location = new Point(385, 420),
+                Size = new Size(95, 38),
                 BackColor = Color.FromArgb(240, 242, 245),
                 ForeColor = Color.FromArgb(73, 80, 87),
                 FlatStyle = FlatStyle.Flat,

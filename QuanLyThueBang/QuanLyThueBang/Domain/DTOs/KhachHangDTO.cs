@@ -11,5 +11,6 @@ namespace QuanLyThueBang.Domain.DTOs
         public string SoDienThoai { get; set; } = string.Empty;
         public DateTime NgayDangKy { get; set; }
         public int SoLuotMuon { get; set; }
+        public string DisplayInfo => $"{HoTen} - SĐT: {SoDienThoai} ({MaKhachHang})";
     }
 }

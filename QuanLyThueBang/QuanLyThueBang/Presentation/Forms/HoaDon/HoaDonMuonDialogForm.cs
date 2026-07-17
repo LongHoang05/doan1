@@ -44,15 +44,15 @@ namespace QuanLyThueBang.Presentation.Forms.HoaDon
             this.BackColor = Color.FromArgb(248, 249, 250);
 
             var pnlBottom = new Panel { Dock = DockStyle.Bottom, Height = 60, BackColor = Color.White, Padding = new Padding(15, 10, 15, 10) };
-            var btnClose = new Button { Text = "Đóng", Dock = DockStyle.Right, Width = 100, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(108, 117, 125), ForeColor = Color.White, Cursor = Cursors.Hand };
+            var btnClose = new Button { Text = "Đóng", Dock = DockStyle.Right, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Padding = new Padding(14, 5, 14, 5), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(108, 117, 125), ForeColor = Color.White, Cursor = Cursors.Hand };
             btnClose.FlatAppearance.BorderSize = 0;
             btnClose.Click += (s, e) => this.Close();
 
-            var btnPrint = new Button { Text = "🖨️ In Hóa Đơn", Dock = DockStyle.Right, Width = 140, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(13, 110, 253), ForeColor = Color.White, Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold), Cursor = Cursors.Hand };
+            var btnPrint = new Button { Text = "🖨️ In Hóa Đơn", Dock = DockStyle.Right, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Padding = new Padding(14, 5, 14, 5), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(13, 110, 253), ForeColor = Color.White, Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold), Cursor = Cursors.Hand };
             btnPrint.FlatAppearance.BorderSize = 0;
             btnPrint.Click += BtnPrint_Click;
 
-            var btnCopy = new Button { Text = "📋 Copy Text", Dock = DockStyle.Left, Width = 130, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(25, 135, 84), ForeColor = Color.White, Cursor = Cursors.Hand };
+            var btnCopy = new Button { Text = "📋 Copy Text", Dock = DockStyle.Left, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Padding = new Padding(14, 5, 14, 5), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(25, 135, 84), ForeColor = Color.White, Cursor = Cursors.Hand };
             btnCopy.FlatAppearance.BorderSize = 0;
             btnCopy.Click += BtnCopy_Click;
 

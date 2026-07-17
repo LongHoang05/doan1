@@ -62,7 +62,9 @@ namespace QuanLyThueBang.Presentation.Forms.HoaDon
             {
                 Text = "Đóng",
                 Dock = DockStyle.Right,
-                Width = 100,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(14, 5, 14, 5),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(108, 117, 125),
                 ForeColor = Color.White,
@@ -75,7 +77,9 @@ namespace QuanLyThueBang.Presentation.Forms.HoaDon
             {
                 Text = "📋 Copy Text",
                 Dock = DockStyle.Right,
-                Width = 120,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(14, 5, 14, 5),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(13, 110, 253),
                 ForeColor = Color.White,
@@ -92,7 +96,9 @@ namespace QuanLyThueBang.Presentation.Forms.HoaDon
             {
                 Text = "🖨️ In Biên Lai",
                 Dock = DockStyle.Right,
-                Width = 130,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(14, 5, 14, 5),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(25, 135, 84),
                 ForeColor = Color.White,

@@ -73,7 +73,7 @@ namespace QuanLyThueBang.Presentation.Forms.KhachHang
             {
                 Text = "💾 Lưu hồ sơ",
                 Location = new Point(220, 380),
-                Size = new Size(140, 38),
+                Size = new Size(135, 38),
                 BackColor = Color.FromArgb(184, 123, 125),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
@@ -86,8 +86,8 @@ namespace QuanLyThueBang.Presentation.Forms.KhachHang
             btnCancel = new Button
             {
                 Text = "Hủy bỏ",
-                Location = new Point(375, 380),
-                Size = new Size(83, 38),
+                Location = new Point(365, 380),
+                Size = new Size(95, 38),
                 BackColor = Color.FromArgb(240, 242, 245),
                 FlatStyle = FlatStyle.Flat
             };

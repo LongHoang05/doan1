@@ -44,7 +44,7 @@ namespace QuanLyThueBang.Presentation.Forms
             pnlSidebar = new Panel
             {
                 Dock = DockStyle.Left,
-                Width = 260,
+                Width = 285,
                 BackColor = Color.White
             };
 
@@ -207,11 +207,12 @@ namespace QuanLyThueBang.Presentation.Forms
             {
                 Text = "   " + text,
                 Location = new Point(15, topPos),
-                Size = new Size(228, 40),
+                Size = new Size(255, 42),
                 FlatStyle = FlatStyle.Flat,
                 TextAlign = ContentAlignment.MiddleLeft,
                 Font = new Font("Segoe UI", 10.5F, FontStyle.Regular),
-                Cursor = Cursors.Hand
+                Cursor = Cursors.Hand,
+                AutoEllipsis = false
             };
             btn.FlatAppearance.BorderSize = 0;
 

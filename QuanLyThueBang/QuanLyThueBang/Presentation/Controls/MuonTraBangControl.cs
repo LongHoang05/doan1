@@ -148,7 +148,7 @@ namespace QuanLyThueBang.Presentation.Controls
             };
             tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
             tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 55F));
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 105F));
+            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 135F));
             tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45F));
 
             tlp.RowStyles.Add(new RowStyle(SizeType.Absolute, 42F));
@@ -206,7 +206,9 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "✅ Chốt Nhận Trả & Luân Chuyển Kho",
                 Dock = DockStyle.Right,
-                Width = 285,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(14, 5, 14, 5),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(140, 74, 82),
                 ForeColor = Color.White,
@@ -221,7 +223,9 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "🖨️ Xem & In Hóa Đơn",
                 Dock = DockStyle.Right,
-                Width = 175,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(14, 5, 14, 5),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(25, 135, 84),
                 ForeColor = Color.White,
@@ -317,7 +321,7 @@ namespace QuanLyThueBang.Presentation.Controls
             dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.TienPhat), HeaderText = "Tiền Phạt", Width = 110, MinimumWidth = 100, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, Format = "N0", ForeColor = Color.Red }, ReadOnly = true });
             dgvDanhSachTra.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(ThongTinBangMuonChuaTraDTO.TongTien), HeaderText = "Thành Tiền", Width = 120, MinimumWidth = 110, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, Format = "N0" }, ReadOnly = true });
 
-            var colPhat = new DataGridViewButtonColumn { Name = "colEditPhat", HeaderText = "Hành Động", Text = "⚙️", UseColumnTextForButtonValue = true, Width = 80, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(13, 110, 253), Alignment = DataGridViewContentAlignment.MiddleCenter } };
+            var colPhat = new DataGridViewButtonColumn { Name = "colEditPhat", HeaderText = "Hành Động", Text = "⚙️", UseColumnTextForButtonValue = true, Width = 95, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(13, 110, 253), Alignment = DataGridViewContentAlignment.MiddleCenter } };
             dgvDanhSachTra.Columns.Add(colPhat);
 
             dgvDanhSachTra.CurrentCellDirtyStateChanged += (s, e) => { if (dgvDanhSachTra.IsCurrentCellDirty) dgvDanhSachTra.CommitEdit(DataGridViewDataErrorContexts.Commit); };
@@ -519,7 +523,9 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "🔄 Quét Lại Danh Sách Quá Hạn",
                 Location = new Point(15, 12),
-                Size = new Size(240, 36),
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(12, 5, 12, 5),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(220, 53, 69),
                 ForeColor = Color.White,

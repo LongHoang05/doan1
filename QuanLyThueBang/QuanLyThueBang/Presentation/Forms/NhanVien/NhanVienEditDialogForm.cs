@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using QuanLyThueBang.Domain.DTOs;
+using QuanLyThueBang.Helpers;
 using QuanLyThueBang.Models;
 
 namespace QuanLyThueBang.Presentation.Forms.NhanVien
@@ -33,13 +35,30 @@ namespace QuanLyThueBang.Presentation.Forms.NhanVien
         {
             InitializeComponent();
 
+            if (!AppSession.IsAdmin)
+            {
+                vaiTros = vaiTros.Where(v => v.TenVaiTro != null && !v.TenVaiTro.Contains("Admin", StringComparison.OrdinalIgnoreCase)).ToList();
+            }
             cboVaiTro.DataSource = vaiTros;
             cboVaiTro.DisplayMember = "TenVaiTro";
             cboVaiTro.ValueMember = "MaVaiTro";
 
-            var listCH = new List<QuanLyThueBang.Models.CuaHang> { new QuanLyThueBang.Models.CuaHang { MaCuaHang = "", DiaChi = "--- Quản lý toàn chuỗi ---" } };
-            listCH.AddRange(cuaHangs);
-            cboCuaHang.DataSource = listCH;
+            if (AppSession.IsAdmin)
+            {
+                var listCH = new List<QuanLyThueBang.Models.CuaHang> { new QuanLyThueBang.Models.CuaHang { MaCuaHang = "", DiaChi = "--- Quản lý toàn chuỗi ---" } };
+                listCH.AddRange(cuaHangs);
+                cboCuaHang.DataSource = listCH;
+            }
+            else
+            {
+                var filteredCH = cuaHangs;
+                if (!string.IsNullOrEmpty(AppSession.CurrentMaCuaHang))
+                {
+                    filteredCH = cuaHangs.Where(c => c.MaCuaHang == AppSession.CurrentMaCuaHang).ToList();
+                }
+                cboCuaHang.DataSource = filteredCH;
+                cboCuaHang.Enabled = false;
+            }
             cboCuaHang.DisplayMember = "DiaChi";
             cboCuaHang.ValueMember = "MaCuaHang";
 

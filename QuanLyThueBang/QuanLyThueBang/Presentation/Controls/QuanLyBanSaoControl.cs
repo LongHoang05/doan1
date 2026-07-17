@@ -15,8 +15,11 @@ namespace QuanLyThueBang.Presentation.Controls
         private readonly PhimService _phimService;
 
         private List<BanSaoBangViewDTO> _allBanSaos = new List<BanSaoBangViewDTO>();
+        private List<PhimDTO> _allPhims = new List<PhimDTO>();
+        private readonly System.Windows.Forms.Timer _timerFilterPhim = new System.Windows.Forms.Timer { Interval = 150 };
         private int _currentPage = 1;
         private int _pageSize = 15;
+        private bool _isInitFilter = false;
 
         private Panel pnlHeader = null!;
         private Panel pnlFilter = null!;
@@ -48,20 +51,26 @@ namespace QuanLyThueBang.Presentation.Controls
 
         private void InitFilterDropdowns()
         {
-            var phims = _phimService.GetAllPhim();
+            _isInitFilter = true;
+            _allPhims = _phimService.GetAllPhim();
             var listPhimFilter = new List<PhimDTO>
             {
                 new PhimDTO { MaPhim = "ALL", TuaDe = "--- Tất cả tựa phim ---" }
             };
-            listPhimFilter.AddRange(phims);
+            listPhimFilter.AddRange(_allPhims);
 
+            cboPhimFilter.BeginUpdate();
+            cboPhimFilter.DataSource = null;
+            cboPhimFilter.DisplayMember = nameof(PhimDTO.TuaDe);
+            cboPhimFilter.ValueMember = nameof(PhimDTO.MaPhim);
             cboPhimFilter.DataSource = listPhimFilter;
-            cboPhimFilter.DisplayMember = "TuaDe";
-            cboPhimFilter.ValueMember = "MaPhim";
+            if (cboPhimFilter.Items.Count > 0) cboPhimFilter.SelectedIndex = 0;
+            cboPhimFilter.EndUpdate();
 
             cboTrangThaiFilter.Items.Clear();
             cboTrangThaiFilter.Items.AddRange(new object[] { "ALL", "Sẵn sàng", "Đang cho mượn", "Bảo trì", "Thất lạc" });
-            cboTrangThaiFilter.SelectedIndex = 0;
+            if (cboTrangThaiFilter.Items.Count > 0) cboTrangThaiFilter.SelectedIndex = 0;
+            _isInitFilter = false;
         }
 
         private void InitializeComponent()
@@ -166,10 +175,28 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Location = new Point(350, 22),
                 Size = new Size(230, 27),
-                DropDownStyle = ComboBoxStyle.DropDownList,
+                DropDownStyle = ComboBoxStyle.DropDown,
+                AutoCompleteMode = AutoCompleteMode.None,
                 Font = new Font("Segoe UI", 10F)
             };
-            cboPhimFilter.SelectedIndexChanged += (s, e) => { LoadData(); };
+            _timerFilterPhim.Tick += (s, e) => { _timerFilterPhim.Stop(); FilterPhimSuggestions(); };
+            cboPhimFilter.TextUpdate += (s, e) => { _timerFilterPhim.Stop(); _timerFilterPhim.Start(); };
+            cboPhimFilter.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    e.SuppressKeyPress = true;
+                    if (cboPhimFilter.DroppedDown) cboPhimFilter.DroppedDown = false;
+                    LoadData();
+                }
+            };
+            cboPhimFilter.SelectionChangeCommitted += (s, e) =>
+            {
+                if (cboPhimFilter.SelectedItem != null && !_isInitFilter)
+                {
+                    LoadData();
+                }
+            };
 
             cboTrangThaiFilter = new ComboBox
             {
@@ -178,13 +205,13 @@ namespace QuanLyThueBang.Presentation.Controls
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Font = new Font("Segoe UI", 10F)
             };
-            cboTrangThaiFilter.SelectedIndexChanged += (s, e) => { LoadData(); };
+            cboTrangThaiFilter.SelectedIndexChanged += (s, e) => { if (!_isInitFilter) LoadData(); };
 
             var btnRefresh = new Button
             {
                 Text = "🔄 Làm mới",
                 Location = new Point(770, 21),
-                Size = new Size(110, 30),
+                Size = new Size(125, 32),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.White,
                 ForeColor = Color.FromArgb(73, 80, 87),
@@ -194,9 +221,12 @@ namespace QuanLyThueBang.Presentation.Controls
             btnRefresh.FlatAppearance.BorderColor = Color.FromArgb(206, 212, 218);
             btnRefresh.Click += (s, e) =>
             {
+                _isInitFilter = true;
                 txtSearch.Clear();
-                if (cboPhimFilter.Items.Count > 0) cboPhimFilter.SelectedIndex = 0;
-                cboTrangThaiFilter.SelectedIndex = 0;
+                InitFilterDropdowns();
+                if (cboPhimFilter.DroppedDown) cboPhimFilter.DroppedDown = false;
+                if (cboTrangThaiFilter.Items.Count > 0) cboTrangThaiFilter.SelectedIndex = 0;
+                _isInitFilter = false;
                 LoadData();
             };
 
@@ -381,7 +411,7 @@ namespace QuanLyThueBang.Presentation.Controls
                 HeaderText = "",
                 Text = "🗑️ Xóa",
                 UseColumnTextForButtonValue = true,
-                Width = 105,
+                Width = 125,
                 FlatStyle = FlatStyle.Flat,
                 DefaultCellStyle = { ForeColor = Color.FromArgb(220, 53, 69), BackColor = Color.White, Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
@@ -394,10 +424,82 @@ namespace QuanLyThueBang.Presentation.Controls
             pnlGridContainer.BringToFront();
         }
 
+        private void FilterPhimSuggestions()
+        {
+            if (_isInitFilter) return;
+            string search = cboPhimFilter.Text;
+            int cursorPos = cboPhimFilter.SelectionStart;
+
+            var filtered = new List<PhimDTO>
+            {
+                new PhimDTO { MaPhim = "ALL", TuaDe = "--- Tất cả tựa phim ---" }
+            };
+
+            if (string.IsNullOrWhiteSpace(search) || search == "--- Tất cả tựa phim ---")
+            {
+                filtered.AddRange(_allPhims.Take(20));
+            }
+            else
+            {
+                string kw = search.Trim().ToLower();
+                var matches = _allPhims.Where(p =>
+                    p.TuaDe.ToLower().Contains(kw) ||
+                    p.MaPhim.ToLower().Contains(kw))
+                    .Take(15)
+                    .ToList();
+                filtered.AddRange(matches);
+            }
+
+            _isInitFilter = true;
+            cboPhimFilter.BeginUpdate();
+            cboPhimFilter.DataSource = null;
+            cboPhimFilter.DisplayMember = nameof(PhimDTO.TuaDe);
+            cboPhimFilter.ValueMember = nameof(PhimDTO.MaPhim);
+            cboPhimFilter.DataSource = filtered;
+            cboPhimFilter.SelectedIndex = -1;
+            cboPhimFilter.Text = search;
+            cboPhimFilter.SelectionStart = cursorPos;
+            cboPhimFilter.EndUpdate();
+            _isInitFilter = false;
+
+            if (filtered.Count > 1 && !string.IsNullOrWhiteSpace(search) && search != "--- Tất cả tựa phim ---")
+            {
+                if (!cboPhimFilter.DroppedDown)
+                {
+                    cboPhimFilter.DroppedDown = true;
+                    cboPhimFilter.Text = search;
+                    cboPhimFilter.SelectionStart = cursorPos;
+                }
+            }
+            else
+            {
+                if (cboPhimFilter.DroppedDown) cboPhimFilter.DroppedDown = false;
+            }
+        }
+
+        private string? GetSelectedMaPhim()
+        {
+            if (cboPhimFilter.SelectedItem is PhimDTO phim)
+            {
+                if (phim.MaPhim == "ALL") return "ALL";
+                return phim.MaPhim;
+            }
+            if (cboPhimFilter.SelectedValue is string strId && !string.IsNullOrWhiteSpace(strId))
+                return strId;
+            string txt = cboPhimFilter.Text.Trim();
+            if (string.IsNullOrEmpty(txt) || txt == "--- Tất cả tựa phim ---")
+                return "ALL";
+            var exactOrPartial = _allPhims.FirstOrDefault(p => p.TuaDe.Equals(txt, StringComparison.OrdinalIgnoreCase) || p.MaPhim.Equals(txt, StringComparison.OrdinalIgnoreCase));
+            if (exactOrPartial != null)
+                return exactOrPartial.MaPhim;
+            return "ALL";
+        }
+
         private void LoadData()
         {
+            if (_isInitFilter) return;
             string? keyword = txtSearch.Text;
-            string? filterPhim = cboPhimFilter.SelectedValue?.ToString();
+            string? filterPhim = GetSelectedMaPhim();
             string? filterTrangThai = cboTrangThaiFilter.SelectedItem?.ToString();
 
             _allBanSaos = _banSaoService.GetAllBanSao(keyword, filterPhim, filterTrangThai);

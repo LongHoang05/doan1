@@ -180,7 +180,7 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "🔄 Làm mới",
                 Location = new Point(650, 21),
-                Size = new Size(110, 30),
+                Size = new Size(125, 32),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.White,
                 ForeColor = Color.FromArgb(73, 80, 87),
@@ -375,7 +375,7 @@ namespace QuanLyThueBang.Presentation.Controls
                 HeaderText = "",
                 Text = "🗑️ Xóa",
                 UseColumnTextForButtonValue = true,
-                Width = 105,
+                Width = 125,
                 FlatStyle = FlatStyle.Flat,
                 DefaultCellStyle = { ForeColor = Color.FromArgb(220, 53, 69), BackColor = Color.White, Alignment = DataGridViewContentAlignment.MiddleCenter }
             });

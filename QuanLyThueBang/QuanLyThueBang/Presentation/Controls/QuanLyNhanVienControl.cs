@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using QuanLyThueBang.BLL;
 using QuanLyThueBang.Domain.DTOs;
+using QuanLyThueBang.Helpers;
 using QuanLyThueBang.Models;
 
 namespace QuanLyThueBang.Presentation.Controls
@@ -82,13 +83,19 @@ namespace QuanLyThueBang.Presentation.Controls
             pnlHeader.Controls.Add(lblTitle);
             pnlHeader.Controls.Add(lblSubTitle);
 
+            var pnlTopRight = new Panel
+            {
+                Dock = DockStyle.Right,
+                AutoSize = true,
+                Padding = new Padding(0, 14, 25, 14)
+            };
             var btnAddTop = new Button
             {
                 Text = "➕ Thêm Nhân Viên",
-                Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                Location = new Point(this.Width - 160, 20), // Will anchor
-                Size = new Size(130, 38),
-                BackColor = Color.FromArgb(17, 17, 17), // #111111
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(16, 6, 16, 6),
+                BackColor = Color.FromArgb(17, 17, 17),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI Semibold", 9.5F, FontStyle.Bold),
@@ -96,7 +103,8 @@ namespace QuanLyThueBang.Presentation.Controls
             };
             btnAddTop.FlatAppearance.BorderSize = 0;
             btnAddTop.Click += (s, e) => StartAddNew();
-            pnlHeader.Controls.Add(btnAddTop);
+            pnlTopRight.Controls.Add(btnAddTop);
+            pnlHeader.Controls.Add(pnlTopRight);
 
             this.Controls.Add(pnlHeader);
 
@@ -182,37 +190,56 @@ namespace QuanLyThueBang.Presentation.Controls
             lblAvatar.Paint += RoundedLabelPaint;
 
             lblHeaderName = new Label { Text = "Chọn một nhân viên", Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold), ForeColor = OnSurface, Location = new Point(100, 25), AutoSize = true };
-            lblHeaderMaNV = new Label { Text = "EMP-000", Font = new Font("Segoe UI", 9.5F), ForeColor = OnSurfaceVariant, Location = new Point(205, 58), AutoSize = true };
+            
+            var flpStatusRow = new FlowLayoutPanel
+            {
+                Location = new Point(96, 56),
+                Size = new Size(500, 32),
+                FlowDirection = FlowDirection.LeftToRight,
+                WrapContents = false,
+                AutoSize = true
+            };
 
-            pnlStatusBadge = new Panel { Location = new Point(100, 56), Size = new Size(95, 22), BackColor = Color.FromArgb(221, 221, 221) };
+            pnlStatusBadge = new Panel
+            {
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(12, 3, 12, 3),
+                Margin = new Padding(4, 0, 10, 0),
+                BackColor = Color.FromArgb(221, 221, 221)
+            };
             pnlStatusBadge.Paint += (s, e) =>
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using var brush = new SolidBrush(pnlStatusBadge.BackColor);
                 e.Graphics.FillPath(brush, RoundedRect(new Rectangle(0, 0, pnlStatusBadge.Width - 1, pnlStatusBadge.Height - 1), 10));
             };
-            lblStatusText = new Label { Text = "Đang làm việc", ForeColor = Color.FromArgb(96, 97, 97), Font = new Font("Segoe UI", 8F, FontStyle.Bold), Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, BackColor = Color.Transparent };
+            lblStatusText = new Label { Text = "Đang làm việc", ForeColor = Color.FromArgb(96, 97, 97), Font = new Font("Segoe UI", 8F, FontStyle.Bold), AutoSize = true, BackColor = Color.Transparent };
             pnlStatusBadge.Controls.Add(lblStatusText);
+
+            lblHeaderMaNV = new Label { Text = "EMP-000", Font = new Font("Segoe UI", 9.5F), ForeColor = OnSurfaceVariant, AutoSize = true, Margin = new Padding(0, 1, 0, 0) };
+
+            flpStatusRow.Controls.Add(pnlStatusBadge);
+            flpStatusRow.Controls.Add(lblHeaderMaNV);
 
             pnlCardHeader.Controls.Add(lblAvatar);
             pnlCardHeader.Controls.Add(lblHeaderName);
-            pnlCardHeader.Controls.Add(lblHeaderMaNV);
-            pnlCardHeader.Controls.Add(pnlStatusBadge);
+            pnlCardHeader.Controls.Add(flpStatusRow);
 
             // Footer of Card
             var pnlCardFooter = new Panel { Dock = DockStyle.Bottom, Height = 75, BackColor = Color.FromArgb(246, 246, 246) };
             var pnlCardFooterBorder = new Panel { Dock = DockStyle.Top, Height = 1, BackColor = OutlineVariant };
             pnlCardFooter.Controls.Add(pnlCardFooterBorder);
 
-            btnDelete = new Button { Text = "🗑️ Xóa Nhân Viên", Location = new Point(25, 20), Size = new Size(160, 36), FlatStyle = FlatStyle.Flat, ForeColor = Error, Font = new Font("Segoe UI Semibold", 9.5F), Cursor = Cursors.Hand };
+            btnDelete = new Button { Text = "🗑️ Xóa Nhân Viên", Location = new Point(25, 20), Size = new Size(165, 36), FlatStyle = FlatStyle.Flat, ForeColor = Error, Font = new Font("Segoe UI Semibold", 9.5F), Cursor = Cursors.Hand };
             btnDelete.FlatAppearance.BorderSize = 0;
             btnDelete.Click += BtnDelete_Click;
 
-            btnCancel = new Button { Text = "Hủy", Anchor = AnchorStyles.Top | AnchorStyles.Right, Location = new Point(pnlRight.Width - 270, 20), Size = new Size(90, 36), FlatStyle = FlatStyle.Flat, BackColor = SurfaceContainer, ForeColor = OnSurfaceVariant, Font = new Font("Segoe UI", 9.5F), Cursor = Cursors.Hand };
+            btnCancel = new Button { Text = "Hủy", Anchor = AnchorStyles.Top | AnchorStyles.Right, Location = new Point(pnlRight.Width - 250, 20), Size = new Size(95, 36), FlatStyle = FlatStyle.Flat, BackColor = SurfaceContainer, ForeColor = OnSurfaceVariant, Font = new Font("Segoe UI", 9.5F), Cursor = Cursors.Hand };
             btnCancel.FlatAppearance.BorderColor = OutlineVariant;
             btnCancel.Click += BtnCancel_Click;
 
-            btnSave = new Button { Text = "Lưu Thay Đổi", Anchor = AnchorStyles.Top | AnchorStyles.Right, Location = new Point(pnlRight.Width - 170, 20), Size = new Size(125, 36), FlatStyle = FlatStyle.Flat, BackColor = PrimaryContainer, ForeColor = Color.FromArgb(40, 23, 26), Font = new Font("Segoe UI Semibold", 9.5F), Cursor = Cursors.Hand };
+            btnSave = new Button { Text = "Lưu Thay Đổi", Anchor = AnchorStyles.Top | AnchorStyles.Right, Location = new Point(pnlRight.Width - 145, 20), Size = new Size(130, 36), FlatStyle = FlatStyle.Flat, BackColor = PrimaryContainer, ForeColor = Color.FromArgb(40, 23, 26), Font = new Font("Segoe UI Semibold", 9.5F), Cursor = Cursors.Hand };
             btnSave.FlatAppearance.BorderSize = 0;
             btnSave.Click += BtnSave_Click;
 
@@ -350,15 +377,30 @@ namespace QuanLyThueBang.Presentation.Controls
         {
             // Load ComboBoxes
             var vaiTros = _nvService.GetAllVaiTro();
+            if (!AppSession.IsAdmin)
+            {
+                vaiTros = vaiTros.Where(v => v.TenVaiTro != null && !v.TenVaiTro.Contains("Admin", StringComparison.OrdinalIgnoreCase)).ToList();
+            }
             cboVaiTro.DataSource = vaiTros;
             cboVaiTro.DisplayMember = "TenVaiTro";
             cboVaiTro.ValueMember = "MaVaiTro";
 
             var cuaHangs = _chService.GetAllCuaHang();
-            cuaHangs.Insert(0, new QuanLyThueBang.Domain.DTOs.CuaHangDTO { MaCuaHang = "", DiaChi = "Toàn hệ thống (Quản trị)" });
+            if (AppSession.IsAdmin)
+            {
+                cuaHangs.Insert(0, new QuanLyThueBang.Domain.DTOs.CuaHangDTO { MaCuaHang = "", DiaChi = "Toàn hệ thống (Quản trị)" });
+            }
+            else if (!string.IsNullOrEmpty(AppSession.CurrentMaCuaHang))
+            {
+                cuaHangs = cuaHangs.Where(c => c.MaCuaHang == AppSession.CurrentMaCuaHang).ToList();
+            }
             cboCuaHang.DataSource = cuaHangs;
             cboCuaHang.DisplayMember = "DiaChi";
             cboCuaHang.ValueMember = "MaCuaHang";
+            if (!AppSession.IsAdmin && !string.IsNullOrEmpty(AppSession.CurrentMaCuaHang))
+            {
+                cboCuaHang.Enabled = false;
+            }
 
             _allNhanVien = _nvService.GetAllNhanVien(txtSearch.Text);
             RenderList();
@@ -457,6 +499,8 @@ namespace QuanLyThueBang.Presentation.Controls
             lblHeaderName.Text = nv.HoTen;
             lblHeaderMaNV.Text = nv.MaNhanVien;
             lblAvatar.Text = GetInitials(nv.HoTen);
+            pnlStatusBadge.Visible = true;
+            lblStatusText.Text = "Đang làm việc";
             
             txtHoTen.Text = nv.HoTen;
             txtMaNV.Text = nv.MaNhanVien;
@@ -471,6 +515,14 @@ namespace QuanLyThueBang.Presentation.Controls
 
             cboVaiTro.SelectedValue = nv.MaVaiTro;
             cboCuaHang.SelectedValue = string.IsNullOrEmpty(nv.MaCuaHang) ? "" : nv.MaCuaHang;
+            if (!AppSession.IsAdmin && !string.IsNullOrEmpty(AppSession.CurrentMaCuaHang))
+            {
+                cboCuaHang.Enabled = false;
+            }
+            else
+            {
+                cboCuaHang.Enabled = true;
+            }
 
             btnDelete.Visible = true;
             pnlRight.Visible = true;
@@ -485,6 +537,7 @@ namespace QuanLyThueBang.Presentation.Controls
             lblHeaderName.Text = "Nhân Viên Mới";
             lblHeaderMaNV.Text = "Mã tự động tạo";
             lblAvatar.Text = "+";
+            pnlStatusBadge.Visible = false;
 
             txtHoTen.Text = "";
             txtMaNV.Text = _nvService.GenerateNextMaNhanVien();
@@ -498,7 +551,19 @@ namespace QuanLyThueBang.Presentation.Controls
             txtPassword.Enabled = true;
 
             if (cboVaiTro.Items.Count > 0) cboVaiTro.SelectedIndex = 0;
-            if (cboCuaHang.Items.Count > 0) cboCuaHang.SelectedIndex = 0;
+            if (cboCuaHang.Items.Count > 0)
+            {
+                if (!AppSession.IsAdmin && !string.IsNullOrEmpty(AppSession.CurrentMaCuaHang))
+                {
+                    cboCuaHang.SelectedValue = AppSession.CurrentMaCuaHang;
+                    cboCuaHang.Enabled = false;
+                }
+                else
+                {
+                    cboCuaHang.SelectedIndex = 0;
+                    cboCuaHang.Enabled = true;
+                }
+            }
 
             btnDelete.Visible = false;
             pnlRight.Visible = true;

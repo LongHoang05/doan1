@@ -127,8 +127,8 @@ namespace QuanLyThueBang.Presentation.Forms.Phim
             btnCancel = new Button
             {
                 Text = "Hủy Bỏ",
-                Location = new Point(265, 335),
-                Size = new Size(90, 38),
+                Location = new Point(240, 335),
+                Size = new Size(95, 38),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(240, 242, 245),
                 ForeColor = Color.FromArgb(70, 75, 80),
@@ -140,8 +140,8 @@ namespace QuanLyThueBang.Presentation.Forms.Phim
             btnSave = new Button
             {
                 Text = "Lưu Thay Đổi",
-                Location = new Point(365, 335),
-                Size = new Size(95, 38),
+                Location = new Point(345, 335),
+                Size = new Size(125, 38),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(184, 123, 125), // Tone màu hồng/đất ấm áp theo giao diện mẫu
                 ForeColor = Color.White,

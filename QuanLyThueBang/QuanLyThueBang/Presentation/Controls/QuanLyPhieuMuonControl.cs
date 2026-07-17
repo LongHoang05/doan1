@@ -22,14 +22,10 @@ namespace QuanLyThueBang.Presentation.Controls
         private TabPage _tabLapPhieu = null!;
 
         // --- TAB 1: DANH SÁCH & TRA CỨU PHIẾU MƯỢN ---
-        private TextBox txtSearchPhieuMuon = null!;
+        private ComboBox cboSearchPhieuMuon = null!;
         private DataGridView dgvPhieuMuon = null!;
         private readonly List<PhieuMuonViewDTO> _phieuMuonList = new();
-        private TextBox txtKhachHangMuon = null!;
-        private KhachHangDTO? _selectedKhachHang = null;
-        private ToolStripDropDown _popupKhachHang = null!;
-        private ListBox _lstKhachHangSuggestions = null!;
-        private bool _isSelectingKH = false;
+        private ComboBox cboKhachHangMuon = null!;
         private ComboBox cboCuaHangMuon = null!;
         private ComboBox cboNhanVienMuon = null!;
         private ComboBox cboInputMaBanSaoMuon = null!;
@@ -39,8 +35,9 @@ namespace QuanLyThueBang.Presentation.Controls
         private List<KhachHangDTO> _allKhachHang = new();
         private List<string> _allMaBanSao = new();
         private DateTimePicker dtpNgayDuKienTra = null!;
-        private System.Windows.Forms.Timer _typingTimerKH = null!;
-        private System.Windows.Forms.Timer _typingTimerBS = null!;
+        private System.Windows.Forms.Timer _timerFilterKH = null!;
+        private System.Windows.Forms.Timer _timerFilterBS = null!;
+        private System.Windows.Forms.Timer _timerFilterSearch = null!;
 
         public QuanLyPhieuMuonControl(MuonTraService muonTraService, KhachHangService khachHangService, CuaHangService cuaHangService, NhanVienService nhanVienService)
         {
@@ -49,14 +46,16 @@ namespace QuanLyThueBang.Presentation.Controls
             _cuaHangService = cuaHangService;
             _nhanVienService = nhanVienService;
 
-            InitializeUI();
-            
-            _typingTimerKH = new System.Windows.Forms.Timer { Interval = 400 };
-            _typingTimerKH.Tick += TypingTimerKH_Tick;
-            
-            _typingTimerBS = new System.Windows.Forms.Timer { Interval = 400 };
-            _typingTimerBS.Tick += TypingTimerBS_Tick;
+            _timerFilterKH = new System.Windows.Forms.Timer { Interval = 150 };
+            _timerFilterKH.Tick += TimerFilterKH_Tick;
 
+            _timerFilterBS = new System.Windows.Forms.Timer { Interval = 150 };
+            _timerFilterBS.Tick += TimerFilterBS_Tick;
+
+            _timerFilterSearch = new System.Windows.Forms.Timer { Interval = 150 };
+            _timerFilterSearch.Tick += TimerFilterSearch_Tick;
+
+            InitializeUI();
             LoadMasterData();
             LoadDanhSachPhieuMuon();
         }
@@ -98,9 +97,9 @@ namespace QuanLyThueBang.Presentation.Controls
             var lblSubtitle = new Label
             {
                 Text = "Tra cứu danh sách hồ sơ phiếu mượn, chi tiết băng đã thuê và lập phiếu mượn mới tại quầy.",
-                Font = new Font("Segoe UI", 9.5F),
+                Font = new Font("Segoe UI", 9.5F, FontStyle.Regular),
                 ForeColor = Color.FromArgb(108, 117, 125),
-                Location = new Point(27, 46),
+                Location = new Point(27, 48),
                 AutoSize = true
             };
 
@@ -112,19 +111,18 @@ namespace QuanLyThueBang.Presentation.Controls
             var pnlBody = new Panel
             {
                 Dock = DockStyle.Fill,
-                Padding = new Padding(20, 10, 20, 15),
+                Padding = new Padding(20, 15, 20, 20),
                 BackColor = Color.FromArgb(248, 249, 250)
             };
 
             _tabControl = new TabControl
             {
                 Dock = DockStyle.Fill,
-                Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
-                Padding = new Point(18, 8)
+                Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold)
             };
 
-            _tabDanhSach = new TabPage("📂 1. Danh Sách & Tra Cứu Phiếu Mượn") { BackColor = Color.FromArgb(248, 249, 250) };
-            _tabLapPhieu = new TabPage("➕ 2. Lập Phiếu Mượn Mới (Tại Quầy)") { BackColor = Color.FromArgb(248, 249, 250) };
+            _tabDanhSach = new TabPage("📋 Danh Sách & Tra Cứu Phiếu Mượn") { BackColor = Color.FromArgb(248, 249, 250), Padding = new Padding(10) };
+            _tabLapPhieu = new TabPage("➕ Lập Phiếu Mượn Mới (Quầy)") { BackColor = Color.FromArgb(248, 249, 250), Padding = new Padding(10) };
 
             BuildTabDanhSachUI(_tabDanhSach);
             BuildTabLapPhieuUI(_tabLapPhieu);
@@ -137,6 +135,10 @@ namespace QuanLyThueBang.Presentation.Controls
                 if (_tabControl.SelectedTab == _tabDanhSach)
                 {
                     LoadDanhSachPhieuMuon();
+                }
+                else if (_tabControl.SelectedTab == _tabLapPhieu)
+                {
+                    LoadMasterData();
                 }
             };
 
@@ -152,14 +154,48 @@ namespace QuanLyThueBang.Presentation.Controls
             var pnlTop = new Panel { Dock = DockStyle.Top, Height = 65, BackColor = Color.White, Padding = new Padding(15) };
 
             var lblSearch = new Label { Text = "Tìm Kiếm:", Location = new Point(15, 22), AutoSize = true };
-            txtSearchPhieuMuon = new TextBox { Location = new Point(95, 18), Width = 280, PlaceholderText = "Nhập mã phiếu mượn hoặc tên KH..." };
-            txtSearchPhieuMuon.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; LoadDanhSachPhieuMuon(); } };
+            cboSearchPhieuMuon = new ComboBox 
+            { 
+                Location = new Point(95, 18), 
+                Width = 280, 
+                DropDownStyle = ComboBoxStyle.DropDown,
+                AutoCompleteMode = AutoCompleteMode.None 
+            };
+            cboSearchPhieuMuon.TextUpdate += (s, e) => { _timerFilterSearch.Stop(); _timerFilterSearch.Start(); };
+            cboSearchPhieuMuon.KeyDown += (s, e) => { 
+                if (e.KeyCode == Keys.Enter) 
+                { 
+                    e.SuppressKeyPress = true; 
+                    if (cboSearchPhieuMuon.DroppedDown) cboSearchPhieuMuon.DroppedDown = false;
+                    LoadDanhSachPhieuMuon(); 
+                } 
+            };
+            cboSearchPhieuMuon.SelectionChangeCommitted += (s, e) => {
+                if (cboSearchPhieuMuon.SelectedItem != null)
+                {
+                    cboSearchPhieuMuon.Text = cboSearchPhieuMuon.SelectedItem.ToString();
+                    LoadDanhSachPhieuMuon();
+                }
+            };
+
+            var pnlActions = new FlowLayoutPanel
+            {
+                Location = new Point(390, 14),
+                Size = new Size(1100, 42),
+                FlowDirection = FlowDirection.LeftToRight,
+                WrapContents = false,
+                AutoSize = true,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            };
 
             var btnSearch = new Button
             {
                 Text = "🔍 Tìm Kiếm",
-                Location = new Point(390, 16),
-                Size = new Size(120, 32),
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(14, 5, 14, 5),
+                Height = 35,
+                Margin = new Padding(0, 2, 8, 2),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(184, 123, 125),
                 ForeColor = Color.White,
@@ -171,8 +207,11 @@ namespace QuanLyThueBang.Presentation.Controls
             var btnReload = new Button
             {
                 Text = "🔄 Làm Mới",
-                Location = new Point(520, 16),
-                Size = new Size(110, 32),
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(14, 5, 14, 5),
+                Height = 35,
+                Margin = new Padding(0, 2, 8, 2),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(108, 117, 125),
                 ForeColor = Color.White,
@@ -181,15 +220,19 @@ namespace QuanLyThueBang.Presentation.Controls
             btnReload.FlatAppearance.BorderSize = 0;
             btnReload.Click += (s, e) =>
             {
-                txtSearchPhieuMuon.Clear();
+                cboSearchPhieuMuon.Text = "";
+                if (cboSearchPhieuMuon.DroppedDown) cboSearchPhieuMuon.DroppedDown = false;
                 LoadDanhSachPhieuMuon();
             };
 
             var btnSwitchLapPhieu = new Button
             {
-                Text = "➕ Lập Phiếu Mới",
-                Location = new Point(640, 16),
-                Size = new Size(135, 32),
+                Text = "➕ Lập Phiếu Mới (Quầy)",
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(14, 5, 14, 5),
+                Height = 35,
+                Margin = new Padding(0, 2, 8, 2),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(40, 167, 69),
                 ForeColor = Color.White,
@@ -201,8 +244,11 @@ namespace QuanLyThueBang.Presentation.Controls
             var btnPrintInvoice = new Button
             {
                 Text = "🖨️ In Hóa Đơn",
-                Location = new Point(785, 16),
-                Size = new Size(125, 32),
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(14, 5, 14, 5),
+                Height = 35,
+                Margin = new Padding(0, 2, 8, 2),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(13, 110, 253),
                 ForeColor = Color.White,
@@ -211,12 +257,14 @@ namespace QuanLyThueBang.Presentation.Controls
             btnPrintInvoice.FlatAppearance.BorderSize = 0;
             btnPrintInvoice.Click += (s, e) =>
             {
-                if (dgvPhieuMuon.CurrentRow?.DataBoundItem is PhieuMuonViewDTO pm)
+                if (dgvPhieuMuon.CurrentRow != null && dgvPhieuMuon.CurrentRow.Index >= 0)
                 {
-                    var details = _muonTraService.GetChiTietByPhieuMuon(pm.MaPhieuMuon);
-                    var dtoList = details.Select(x => new ChiTietGioMuonDTO
+                    var pm = _phieuMuonList[dgvPhieuMuon.CurrentRow.Index];
+                    var chiTiets = _muonTraService.GetChiTietByPhieuMuon(pm.MaPhieuMuon);
+                    var dtoList = chiTiets.Select(x => new ChiTietGioMuonDTO
                     {
                         MaBanSao = x.MaBanSao,
+                        RFID = "",
                         TuaDe = x.TuaDe,
                         TenTheLoai = x.TenTheLoai,
                         DonGiaThue = x.DonGiaThue
@@ -232,8 +280,11 @@ namespace QuanLyThueBang.Presentation.Controls
             var btnExportExcel = new Button
             {
                 Text = "📊 Xuất Excel",
-                Location = new Point(920, 16),
-                Size = new Size(115, 32),
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(14, 5, 14, 5),
+                Height = 35,
+                Margin = new Padding(0, 2, 8, 2),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(25, 135, 84),
                 ForeColor = Color.White,
@@ -242,15 +293,8 @@ namespace QuanLyThueBang.Presentation.Controls
             btnExportExcel.FlatAppearance.BorderSize = 0;
             btnExportExcel.Click += (s, e) => ExportHelper.ExportDataGridViewToExcel(dgvPhieuMuon, "DanhSachPhieuMuon");
 
-            pnlTop.Controls.AddRange(new Control[] { lblSearch, txtSearchPhieuMuon, btnSearch, btnReload, btnSwitchLapPhieu, btnPrintInvoice, btnExportExcel });
-
-            var splitContainer = new SplitContainer
-            {
-                Dock = DockStyle.Fill,
-                Orientation = Orientation.Horizontal,
-                SplitterDistance = 240,
-                BackColor = Color.FromArgb(230, 235, 240)
-            };
+            pnlActions.Controls.AddRange(new Control[] { btnSearch, btnReload, btnSwitchLapPhieu, btnPrintInvoice, btnExportExcel });
+            pnlTop.Controls.AddRange(new Control[] { lblSearch, cboSearchPhieuMuon, pnlActions });
 
             dgvPhieuMuon = SetupGrid();
             dgvPhieuMuon.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(PhieuMuonViewDTO.MaPhieuMuon), HeaderText = "Mã Phiếu", Width = 140, MinimumWidth = 120 });
@@ -262,10 +306,10 @@ namespace QuanLyThueBang.Presentation.Controls
             dgvPhieuMuon.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(PhieuMuonViewDTO.SoLuongBang), HeaderText = "SL Băng", Width = 95, MinimumWidth = 85, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter } });
             dgvPhieuMuon.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(PhieuMuonViewDTO.TrangThaiPhieu), HeaderText = "Trạng Thái", Width = 125, MinimumWidth = 115 });
 
-            var colViewPhieu = new DataGridViewButtonColumn { Name = "colViewPhieu", HeaderText = "", Text = "👁 Chi Tiết", UseColumnTextForButtonValue = true, Width = 100, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(13, 110, 253), Alignment = DataGridViewContentAlignment.MiddleCenter } };
+            var colViewPhieu = new DataGridViewButtonColumn { Name = "colViewPhieu", HeaderText = "", Text = "👁 Chi Tiết", UseColumnTextForButtonValue = true, Width = 125, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(13, 110, 253), Alignment = DataGridViewContentAlignment.MiddleCenter } };
             dgvPhieuMuon.Columns.Add(colViewPhieu);
 
-            var colDelPhieu = new DataGridViewButtonColumn { Name = "colDelPhieu", HeaderText = "Hành Động", Text = "🗑️ Xóa Phiếu", UseColumnTextForButtonValue = true, Width = 100, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(220, 53, 69), Alignment = DataGridViewContentAlignment.MiddleCenter } };
+            var colDelPhieu = new DataGridViewButtonColumn { Name = "colDelPhieu", HeaderText = "Hành Động", Text = "🗑️ Xóa Phiếu", UseColumnTextForButtonValue = true, Width = 135, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(220, 53, 69), Alignment = DataGridViewContentAlignment.MiddleCenter } };
             dgvPhieuMuon.Columns.Add(colDelPhieu);
 
             dgvPhieuMuon.CellClick += (s, e) =>
@@ -308,14 +352,9 @@ namespace QuanLyThueBang.Presentation.Controls
         private void LoadDanhSachPhieuMuon()
         {
             _phieuMuonList.Clear();
-            _phieuMuonList.AddRange(_muonTraService.GetAllPhieuMuon(txtSearchPhieuMuon.Text.Trim()));
+            _phieuMuonList.AddRange(_muonTraService.GetAllPhieuMuon(cboSearchPhieuMuon.Text.Trim()));
             dgvPhieuMuon.DataSource = null;
             dgvPhieuMuon.DataSource = _phieuMuonList;
-
-            if (_phieuMuonList.Count > 0)
-            {
-                // Optional: Select first row implicitly
-            }
         }
 
         private void OpenChiTietDialog(PhieuMuonViewDTO pm)
@@ -340,7 +379,7 @@ namespace QuanLyThueBang.Presentation.Controls
             };
             tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 165F));
             tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 55F));
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110F));
+            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 135F));
             tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45F));
 
             tlp.RowStyles.Add(new RowStyle(SizeType.Absolute, 42F));
@@ -349,42 +388,26 @@ namespace QuanLyThueBang.Presentation.Controls
 
             // Dòng 1: Khách Hàng & Chi Nhánh
             var lblKH = new Label { Text = "Khách Hàng:", Anchor = AnchorStyles.Left, AutoSize = true };
-            txtKhachHangMuon = new TextBox { Dock = DockStyle.Fill, PlaceholderText = "Nhập tên, CMND, SĐT..." };
-            txtKhachHangMuon.TextChanged += (s, e) => {
-                if (_isSelectingKH) return;
-                _selectedKhachHang = null;
-                _typingTimerKH.Stop();
-                _typingTimerKH.Start();
+            cboKhachHangMuon = new ComboBox
+            {
+                Dock = DockStyle.Fill,
+                DropDownStyle = ComboBoxStyle.DropDown,
+                AutoCompleteMode = AutoCompleteMode.None
             };
-            txtKhachHangMuon.KeyDown += (s, e) => {
-                if (e.KeyCode == Keys.Down && _popupKhachHang.Visible)
+            cboKhachHangMuon.TextUpdate += (s, e) => { _timerFilterKH.Stop(); _timerFilterKH.Start(); };
+            cboKhachHangMuon.SelectionChangeCommitted += (s, e) => {
+                if (cboKhachHangMuon.SelectedItem is KhachHangDTO kh)
                 {
-                    _lstKhachHangSuggestions.Focus();
-                    if (_lstKhachHangSuggestions.Items.Count > 0) _lstKhachHangSuggestions.SelectedIndex = 0;
+                    cboKhachHangMuon.Text = kh.DisplayInfo;
+                    cboKhachHangMuon.SelectionStart = cboKhachHangMuon.Text.Length;
                 }
             };
-
-            _lstKhachHangSuggestions = new ListBox
-            {
-                DrawMode = DrawMode.OwnerDrawVariable,
-                BorderStyle = BorderStyle.None,
-                Width = 400,
-                BackColor = Color.FromArgb(245, 245, 245)
-            };
-            _lstKhachHangSuggestions.MeasureItem += (s, e) => e.ItemHeight = 45;
-            _lstKhachHangSuggestions.DrawItem += LstKhachHangSuggestions_DrawItem;
-            _lstKhachHangSuggestions.Click += LstKhachHangSuggestions_Click;
-            _lstKhachHangSuggestions.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) LstKhachHangSuggestions_Click(s, e); };
-
-            var host = new ToolStripControlHost(_lstKhachHangSuggestions) { Margin = Padding.Empty, Padding = Padding.Empty, AutoSize = false };
-            _popupKhachHang = new ToolStripDropDown { Padding = Padding.Empty, Margin = Padding.Empty, AutoSize = false };
-            _popupKhachHang.Items.Add(host);
 
             var lblCH = new Label { Text = "Chi Nhánh:", Anchor = AnchorStyles.Left, AutoSize = true };
             cboCuaHangMuon = new ComboBox { Dock = DockStyle.Fill, DropDownStyle = ComboBoxStyle.DropDownList };
 
             tlp.Controls.Add(lblKH, 0, 0);
-            tlp.Controls.Add(txtKhachHangMuon, 1, 0);
+            tlp.Controls.Add(cboKhachHangMuon, 1, 0);
             tlp.Controls.Add(lblCH, 2, 0);
             tlp.Controls.Add(cboCuaHangMuon, 3, 0);
 
@@ -406,15 +429,33 @@ namespace QuanLyThueBang.Presentation.Controls
             cboInputMaBanSaoMuon = new ComboBox 
             { 
                 Dock = DockStyle.Fill, 
-                DropDownStyle = ComboBoxStyle.DropDown
+                DropDownStyle = ComboBoxStyle.DropDown,
+                AutoCompleteMode = AutoCompleteMode.None
             };
-            cboInputMaBanSaoMuon.TextUpdate += CboInputMaBanSaoMuon_TextUpdate;
+            cboInputMaBanSaoMuon.TextUpdate += (s, e) => { _timerFilterBS.Stop(); _timerFilterBS.Start(); };
+            cboInputMaBanSaoMuon.KeyDown += (s, e) => { 
+                if (e.KeyCode == Keys.Enter) 
+                { 
+                    e.SuppressKeyPress = true; 
+                    if (cboInputMaBanSaoMuon.DroppedDown) cboInputMaBanSaoMuon.DroppedDown = false;
+                    BtnAddGio_Click(s, e); 
+                } 
+            };
+            cboInputMaBanSaoMuon.SelectionChangeCommitted += (s, e) => {
+                if (cboInputMaBanSaoMuon.SelectedItem != null)
+                {
+                    cboInputMaBanSaoMuon.Text = cboInputMaBanSaoMuon.SelectedItem.ToString();
+                    cboInputMaBanSaoMuon.SelectionStart = cboInputMaBanSaoMuon.Text.Length;
+                }
+            };
 
             var btnAddGio = new Button
             {
                 Text = "➕ Thêm Vào Giỏ",
                 Dock = DockStyle.Left,
-                Width = 175,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(14, 5, 14, 5),
                 Height = 35,
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(184, 123, 125),
@@ -423,7 +464,6 @@ namespace QuanLyThueBang.Presentation.Controls
             };
             btnAddGio.FlatAppearance.BorderSize = 0;
             btnAddGio.Click += BtnAddGio_Click;
-            cboInputMaBanSaoMuon.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; BtnAddGio_Click(s, e); } };
 
             tlp.Controls.Add(lblScan, 0, 2);
             tlp.Controls.Add(cboInputMaBanSaoMuon, 1, 2);
@@ -439,7 +479,9 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "💾 Chốt Phiếu Mượn",
                 Dock = DockStyle.Right,
-                Width = 240,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(15, 6, 15, 6),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(40, 167, 69),
                 ForeColor = Color.White,
@@ -497,6 +539,8 @@ namespace QuanLyThueBang.Presentation.Controls
             }
 
             _gioMuonList.Add(item);
+            if (cboInputMaBanSaoMuon.DroppedDown) cboInputMaBanSaoMuon.DroppedDown = false;
+            cboInputMaBanSaoMuon.SelectedIndex = -1;
             cboInputMaBanSaoMuon.Text = "";
             RefreshGioMuonGrid();
         }
@@ -513,7 +557,6 @@ namespace QuanLyThueBang.Presentation.Controls
 
         private string GetSelectedId(ComboBox cbo)
         {
-
             if (cbo.SelectedItem is KhachHangDTO kh)
                 return kh.MaKhachHang;
             if (cbo.SelectedItem is CuaHangDTO ch)
@@ -522,7 +565,17 @@ namespace QuanLyThueBang.Presentation.Controls
                 return nv.MaNhanVien;
             if (cbo.SelectedValue is string strId && !string.IsNullOrWhiteSpace(strId))
                 return strId;
-            return cbo.Text;
+            if (_allKhachHang != null && cbo == cboKhachHangMuon)
+            {
+                string text = cbo.Text.Trim();
+                var matched = _allKhachHang.FirstOrDefault(k =>
+                    k.DisplayInfo.Equals(text, StringComparison.OrdinalIgnoreCase) ||
+                    k.HoTen.Equals(text, StringComparison.OrdinalIgnoreCase) ||
+                    k.MaKhachHang.Equals(text, StringComparison.OrdinalIgnoreCase) ||
+                    k.SoDienThoai.Equals(text, StringComparison.OrdinalIgnoreCase));
+                if (matched != null) return matched.MaKhachHang;
+            }
+            return cbo.Text.Trim();
         }
 
         private void BtnChotMuon_Click(object? sender, EventArgs e)
@@ -533,9 +586,15 @@ namespace QuanLyThueBang.Presentation.Controls
                 return;
             }
 
-            string maKH = _selectedKhachHang?.MaKhachHang ?? txtKhachHangMuon.Text;
+            string maKH = GetSelectedId(cboKhachHangMuon);
             string maCH = GetSelectedId(cboCuaHangMuon);
             string maNV = GetSelectedId(cboNhanVienMuon);
+
+            if (string.IsNullOrWhiteSpace(maKH))
+            {
+                MessageBox.Show("Vui lòng chọn hoặc nhập Khách hàng mượn băng.", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             var (success, msg, maPM) = _muonTraService.LapPhieuMuon(maKH, maCH, maNV, _gioMuonList.Select(g => g.MaBanSao).ToList(), dtpNgayDuKienTra.Value);
             if (success)
@@ -548,13 +607,15 @@ namespace QuanLyThueBang.Presentation.Controls
                 var askPrint = MessageBox.Show("Bạn có muốn xem và in Hóa Đơn Thuê Băng (Đã Thanh Toán) cho khách hàng không?", "In Hóa Đơn Thuê Băng", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (askPrint == DialogResult.Yes)
                 {
-                    using var dlg = new HoaDonMuonDialogForm(maPM, txtKhachHangMuon.Text, cboCuaHangMuon.Text, cboNhanVienMuon.Text, dtpNgayDuKienTra.Value, copyList);
+                    using var dlg = new HoaDonMuonDialogForm(maPM, cboKhachHangMuon.Text, cboCuaHangMuon.Text, cboNhanVienMuon.Text, dtpNgayDuKienTra.Value, copyList);
                     dlg.ShowDialog(this.FindForm());
                 }
 
                 _gioMuonList.Clear();
-                _selectedKhachHang = null;
-                txtKhachHangMuon.Text = "";
+                if (cboKhachHangMuon.DroppedDown) cboKhachHangMuon.DroppedDown = false;
+                cboKhachHangMuon.SelectedIndex = -1;
+                cboKhachHangMuon.Text = "";
+                if (cboInputMaBanSaoMuon.DroppedDown) cboInputMaBanSaoMuon.DroppedDown = false;
                 cboInputMaBanSaoMuon.SelectedIndex = -1;
                 cboInputMaBanSaoMuon.Text = "";
                 RefreshGioMuonGrid();
@@ -573,6 +634,13 @@ namespace QuanLyThueBang.Presentation.Controls
             try
             {
                 _allKhachHang = _khachHangService.GetAllKhachHang();
+                cboKhachHangMuon.BeginUpdate();
+                cboKhachHangMuon.DataSource = null;
+                cboKhachHangMuon.DisplayMember = nameof(KhachHangDTO.DisplayInfo);
+                cboKhachHangMuon.ValueMember = nameof(KhachHangDTO.MaKhachHang);
+                cboKhachHangMuon.DataSource = _allKhachHang.Take(15).ToList();
+                cboKhachHangMuon.SelectedIndex = -1;
+                cboKhachHangMuon.EndUpdate();
 
                 cboCuaHangMuon.DisplayMember = nameof(CuaHangDTO.DiaChi);
                 cboCuaHangMuon.ValueMember = nameof(CuaHangDTO.MaCuaHang);
@@ -583,110 +651,125 @@ namespace QuanLyThueBang.Presentation.Controls
                 cboNhanVienMuon.DataSource = _nhanVienService.GetAllNhanVien();
 
                 _allMaBanSao = _muonTraService.GetActiveMaBanSaoList();
-                cboInputMaBanSaoMuon.Items.Clear();
-                cboInputMaBanSaoMuon.Items.AddRange(_allMaBanSao.Take(10).ToArray());
+                cboInputMaBanSaoMuon.BeginUpdate();
+                cboInputMaBanSaoMuon.DataSource = null;
+                cboInputMaBanSaoMuon.DataSource = _allMaBanSao.Take(15).ToList();
                 cboInputMaBanSaoMuon.SelectedIndex = -1;
+                cboInputMaBanSaoMuon.EndUpdate();
             }
             catch { }
         }
 
-        private void TypingTimerKH_Tick(object? sender, EventArgs e)
+        private void TimerFilterKH_Tick(object? sender, EventArgs e)
         {
-            _typingTimerKH.Stop();
-            string search = txtKhachHangMuon.Text.Trim();
+            _timerFilterKH.Stop();
+            string search = cboKhachHangMuon.Text;
+            int cursorPos = cboKhachHangMuon.SelectionStart;
 
-            var filtered = string.IsNullOrWhiteSpace(search) 
-                ? _allKhachHang.Take(10).ToArray()
-                : _allKhachHang.Where(k => 
-                    k.HoTen.Contains(search, StringComparison.OrdinalIgnoreCase) || 
+            var filtered = string.IsNullOrWhiteSpace(search)
+                ? _allKhachHang.Take(15).ToList()
+                : _allKhachHang.Where(k =>
+                    k.DisplayInfo.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    k.HoTen.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                     k.MaKhachHang.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                    k.CMND.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                    k.SoDienThoai.Contains(search, StringComparison.OrdinalIgnoreCase))
-                .Take(10).ToArray();
+                    k.SoDienThoai.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    k.CMND.Contains(search, StringComparison.OrdinalIgnoreCase))
+                  .Take(15).ToList();
 
-            _lstKhachHangSuggestions.Items.Clear();
-            if (filtered.Length > 0)
+            cboKhachHangMuon.BeginUpdate();
+            cboKhachHangMuon.DataSource = null;
+            cboKhachHangMuon.DisplayMember = nameof(KhachHangDTO.DisplayInfo);
+            cboKhachHangMuon.ValueMember = nameof(KhachHangDTO.MaKhachHang);
+            cboKhachHangMuon.DataSource = filtered;
+            cboKhachHangMuon.SelectedIndex = -1;
+            cboKhachHangMuon.Text = search;
+            cboKhachHangMuon.SelectionStart = cursorPos;
+            cboKhachHangMuon.EndUpdate();
+
+            if (filtered.Count > 0 && !string.IsNullOrWhiteSpace(search))
             {
-                var newSize = new Size(400, filtered.Length * 45);
-                _lstKhachHangSuggestions.Size = newSize;
-                if (_popupKhachHang.Items.Count > 0) 
-                    _popupKhachHang.Items[0].Size = newSize;
-                _popupKhachHang.Size = newSize;
-
-                _lstKhachHangSuggestions.Items.AddRange(filtered);
-                _popupKhachHang.Show(txtKhachHangMuon, new Point(0, txtKhachHangMuon.Height));
+                if (!cboKhachHangMuon.DroppedDown)
+                {
+                    cboKhachHangMuon.DroppedDown = true;
+                    cboKhachHangMuon.Text = search;
+                    cboKhachHangMuon.SelectionStart = cursorPos;
+                }
             }
             else
             {
-                _popupKhachHang.Hide();
+                if (cboKhachHangMuon.DroppedDown) cboKhachHangMuon.DroppedDown = false;
             }
         }
 
-        private void LstKhachHangSuggestions_DrawItem(object? sender, DrawItemEventArgs e)
+        private void TimerFilterBS_Tick(object? sender, EventArgs e)
         {
-            if (e.Index < 0) return;
-            e.DrawBackground();
-
-            var kh = (KhachHangDTO)_lstKhachHangSuggestions.Items[e.Index];
-
-            using var fontBold = new Font(e.Font ?? new Font("Segoe UI", 10F), FontStyle.Bold);
-            using var fontSmall = new Font(e.Font?.FontFamily ?? new FontFamily("Segoe UI"), (e.Font?.Size ?? 10F) - 1F, FontStyle.Regular);
-            
-            var brushText = new SolidBrush(e.ForeColor);
-            var brushGray = new SolidBrush(Color.Gray);
-
-            e.Graphics.DrawString(kh.HoTen, fontBold, brushText, e.Bounds.Left + 5, e.Bounds.Top + 5);
-            e.Graphics.DrawString($"SĐT: {kh.SoDienThoai}  |  CMND: {kh.CMND}  |  ĐC: {kh.DiaChi}", fontSmall, brushGray, e.Bounds.Left + 5, e.Bounds.Top + 25);
-            
-            e.DrawFocusRectangle();
-        }
-
-        private void LstKhachHangSuggestions_Click(object? sender, EventArgs e)
-        {
-            if (_lstKhachHangSuggestions.SelectedItem is KhachHangDTO kh)
-            {
-                _isSelectingKH = true;
-                _selectedKhachHang = kh;
-                txtKhachHangMuon.Text = kh.HoTen;
-                txtKhachHangMuon.SelectionStart = txtKhachHangMuon.Text.Length;
-                _popupKhachHang.Hide();
-                txtKhachHangMuon.Focus();
-                _isSelectingKH = false;
-            }
-        }
-
-        private void CboInputMaBanSaoMuon_TextUpdate(object? sender, EventArgs e)
-        {
-            _typingTimerBS.Stop();
-            _typingTimerBS.Start();
-        }
-
-        private void TypingTimerBS_Tick(object? sender, EventArgs e)
-        {
-            _typingTimerBS.Stop();
+            _timerFilterBS.Stop();
             string search = cboInputMaBanSaoMuon.Text;
+            int cursorPos = cboInputMaBanSaoMuon.SelectionStart;
 
-            var filtered = string.IsNullOrWhiteSpace(search) 
-                ? _allMaBanSao.Take(10).ToArray()
-                : _allMaBanSao.Where(k => k.Contains(search, StringComparison.OrdinalIgnoreCase)).Take(10).ToArray();
+            var filtered = string.IsNullOrWhiteSpace(search)
+                ? _allMaBanSao.Take(15).ToList()
+                : _allMaBanSao.Where(k => k.Contains(search, StringComparison.OrdinalIgnoreCase)).Take(15).ToList();
 
-            cboInputMaBanSaoMuon.Items.Clear();
-            cboInputMaBanSaoMuon.Items.AddRange(filtered);
-            
-            if (cboInputMaBanSaoMuon.Text != search)
+            cboInputMaBanSaoMuon.BeginUpdate();
+            cboInputMaBanSaoMuon.DataSource = null;
+            cboInputMaBanSaoMuon.DataSource = filtered;
+            cboInputMaBanSaoMuon.SelectedIndex = -1;
+            cboInputMaBanSaoMuon.Text = search;
+            cboInputMaBanSaoMuon.SelectionStart = cursorPos;
+            cboInputMaBanSaoMuon.EndUpdate();
+
+            if (filtered.Count > 0 && !string.IsNullOrWhiteSpace(search))
             {
-                cboInputMaBanSaoMuon.Text = search;
-            }
-
-            if (filtered.Length > 0)
-            {
-                cboInputMaBanSaoMuon.DroppedDown = true;
-                cboInputMaBanSaoMuon.SelectionStart = cboInputMaBanSaoMuon.Text.Length;
-                Cursor.Current = Cursors.Default;
+                if (!cboInputMaBanSaoMuon.DroppedDown)
+                {
+                    cboInputMaBanSaoMuon.DroppedDown = true;
+                    cboInputMaBanSaoMuon.Text = search;
+                    cboInputMaBanSaoMuon.SelectionStart = cursorPos;
+                }
             }
             else
             {
-                cboInputMaBanSaoMuon.DroppedDown = false;
+                if (cboInputMaBanSaoMuon.DroppedDown) cboInputMaBanSaoMuon.DroppedDown = false;
+            }
+        }
+
+        private void TimerFilterSearch_Tick(object? sender, EventArgs e)
+        {
+            _timerFilterSearch.Stop();
+            string search = cboSearchPhieuMuon.Text;
+            int cursorPos = cboSearchPhieuMuon.SelectionStart;
+
+            var autoList = new List<string>();
+            foreach (var pm in _phieuMuonList)
+            {
+                if (!string.IsNullOrWhiteSpace(pm.MaPhieuMuon) && pm.MaPhieuMuon.Contains(search, StringComparison.OrdinalIgnoreCase))
+                    if (!autoList.Contains(pm.MaPhieuMuon)) autoList.Add(pm.MaPhieuMuon);
+                if (!string.IsNullOrWhiteSpace(pm.TenKhachHang) && pm.TenKhachHang.Contains(search, StringComparison.OrdinalIgnoreCase))
+                    if (!autoList.Contains(pm.TenKhachHang)) autoList.Add(pm.TenKhachHang);
+            }
+            autoList = autoList.Take(15).ToList();
+
+            cboSearchPhieuMuon.BeginUpdate();
+            cboSearchPhieuMuon.DataSource = null;
+            cboSearchPhieuMuon.DataSource = autoList;
+            cboSearchPhieuMuon.SelectedIndex = -1;
+            cboSearchPhieuMuon.Text = search;
+            cboSearchPhieuMuon.SelectionStart = cursorPos;
+            cboSearchPhieuMuon.EndUpdate();
+
+            if (autoList.Count > 0 && !string.IsNullOrWhiteSpace(search))
+            {
+                if (!cboSearchPhieuMuon.DroppedDown)
+                {
+                    cboSearchPhieuMuon.DroppedDown = true;
+                    cboSearchPhieuMuon.Text = search;
+                    cboSearchPhieuMuon.SelectionStart = cursorPos;
+                }
+            }
+            else
+            {
+                if (cboSearchPhieuMuon.DroppedDown) cboSearchPhieuMuon.DroppedDown = false;
             }
         }
 

@@ -63,7 +63,7 @@ namespace QuanLyThueBang.Presentation.Controls
             txtSearch = new TextBox { Location = new Point(25, 22), Size = new Size(360, 27), PlaceholderText = "Tìm mã cửa hàng, địa chỉ hoặc số điện thoại..." };
             txtSearch.TextChanged += (s, e) => LoadData();
 
-            var btnRefresh = new Button { Text = "🔄 Làm mới", Location = new Point(400, 21), Size = new Size(110, 30), FlatStyle = FlatStyle.Flat, BackColor = Color.White };
+            var btnRefresh = new Button { Text = "🔄 Làm mới", Location = new Point(400, 21), Size = new Size(125, 32), FlatStyle = FlatStyle.Flat, BackColor = Color.White };
             btnRefresh.FlatAppearance.BorderColor = Color.FromArgb(206, 212, 218);
             btnRefresh.Click += (s, e) => { txtSearch.Clear(); LoadData(); };
             pnlFilter.Controls.Add(txtSearch);
@@ -101,7 +101,7 @@ namespace QuanLyThueBang.Presentation.Controls
             dgvCuaHang.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(CuaHangDTO.SoLuongBanSao), HeaderText = "Kho Băng", Width = 130, MinimumWidth = 115, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter } });
 
             dgvCuaHang.Columns.Add(new DataGridViewButtonColumn { Name = "colEdit", HeaderText = "Hành Động", Text = "✏️ Sửa", UseColumnTextForButtonValue = true, Width = 155, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(13, 110, 253), BackColor = Color.White, Alignment = DataGridViewContentAlignment.MiddleCenter } });
-            dgvCuaHang.Columns.Add(new DataGridViewButtonColumn { Name = "colDelete", HeaderText = "", Text = "🗑️ Xóa", UseColumnTextForButtonValue = true, Width = 105, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(220, 53, 69), BackColor = Color.White, Alignment = DataGridViewContentAlignment.MiddleCenter } });
+            dgvCuaHang.Columns.Add(new DataGridViewButtonColumn { Name = "colDelete", HeaderText = "", Text = "🗑️ Xóa", UseColumnTextForButtonValue = true, Width = 125, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { ForeColor = Color.FromArgb(220, 53, 69), BackColor = Color.White, Alignment = DataGridViewContentAlignment.MiddleCenter } });
 
             dgvCuaHang.CellClick += Dgv_CellClick;
 

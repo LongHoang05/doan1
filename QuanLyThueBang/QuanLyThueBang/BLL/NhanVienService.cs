@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using QuanLyThueBang.DAL;
 using QuanLyThueBang.Domain.DTOs;
+using QuanLyThueBang.Helpers;
 using QuanLyThueBang.Models;
 
 namespace QuanLyThueBang.BLL
@@ -28,6 +29,10 @@ namespace QuanLyThueBang.BLL
                 _context.SaveChanges();
                 list.AddRange(new[] { vt1, vt2 });
             }
+            if (!AppSession.IsAdmin)
+            {
+                list = list.Where(v => v.TenVaiTro != null && !v.TenVaiTro.Contains("Admin", StringComparison.OrdinalIgnoreCase)).ToList();
+            }
             return list;
         }
 
@@ -38,6 +43,18 @@ namespace QuanLyThueBang.BLL
                 .Include(n => n.CuaHang)
                 .AsNoTracking()
                 .AsQueryable();
+
+            if (!AppSession.IsAdmin)
+            {
+                // Quản lý cửa hàng không được phép xem các tài khoản Admin
+                query = query.Where(n => n.VaiTro == null || !n.VaiTro.TenVaiTro.Contains("Admin"));
+
+                // Quản lý thuộc chi nhánh nào thì chỉ xem nhân viên của chi nhánh đó
+                if (!string.IsNullOrEmpty(AppSession.CurrentMaCuaHang))
+                {
+                    query = query.Where(n => n.MaCuaHang == AppSession.CurrentMaCuaHang);
+                }
+            }
 
             if (!string.IsNullOrWhiteSpace(keyword))
             {
@@ -87,6 +104,20 @@ namespace QuanLyThueBang.BLL
             if (string.IsNullOrWhiteSpace(hoTen) || string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(pass))
                 return (false, "Họ tên, Tài khoản và Mật khẩu không được để trống.");
 
+            if (!AppSession.IsAdmin)
+            {
+                var targetRole = _context.VaiTros.Find(vaiTro);
+                if (targetRole != null && targetRole.TenVaiTro != null && targetRole.TenVaiTro.Contains("Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    return (false, "Bạn không có quyền tạo tài khoản với chức vụ Admin.");
+                }
+
+                if (!string.IsNullOrEmpty(AppSession.CurrentMaCuaHang))
+                {
+                    cuaHang = AppSession.CurrentMaCuaHang;
+                }
+            }
+
             string ma = !string.IsNullOrWhiteSpace(maNV) ? maNV.Trim() : GenerateNextMaNhanVien();
 
             if (_context.NhanViens.Any(n => n.MaNhanVien.ToLower() == ma.ToLower()))
@@ -114,8 +145,27 @@ namespace QuanLyThueBang.BLL
 
         public (bool Success, string Message) UpdateNhanVien(string maNV, string hoTen, string cmnd, string sdt, int vaiTro, string? cuaHang)
         {
-            var nv = _context.NhanViens.Find(maNV);
+            var nv = _context.NhanViens.Include(n => n.VaiTro).FirstOrDefault(n => n.MaNhanVien == maNV);
             if (nv == null) return (false, "Nhân viên không tồn tại.");
+
+            if (!AppSession.IsAdmin)
+            {
+                if (nv.VaiTro != null && nv.VaiTro.TenVaiTro != null && nv.VaiTro.TenVaiTro.Contains("Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    return (false, "Bạn không có quyền chỉnh sửa tài khoản Admin.");
+                }
+
+                var targetRole = _context.VaiTros.Find(vaiTro);
+                if (targetRole != null && targetRole.TenVaiTro != null && targetRole.TenVaiTro.Contains("Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    return (false, "Bạn không có quyền nâng cấp nhân viên lên chức vụ Admin.");
+                }
+
+                if (!string.IsNullOrEmpty(AppSession.CurrentMaCuaHang))
+                {
+                    cuaHang = AppSession.CurrentMaCuaHang;
+                }
+            }
 
             nv.HoTen = hoTen.Trim();
             nv.CMND = string.IsNullOrWhiteSpace(cmnd) ? "N/A" : cmnd.Trim();
@@ -129,8 +179,16 @@ namespace QuanLyThueBang.BLL
 
         public (bool Success, string Message) DeleteNhanVien(string maNV)
         {
-            var nv = _context.NhanViens.Find(maNV);
+            var nv = _context.NhanViens.Include(n => n.VaiTro).FirstOrDefault(n => n.MaNhanVien == maNV);
             if (nv == null) return (false, "Nhân viên không tồn tại.");
+
+            if (!AppSession.IsAdmin)
+            {
+                if (nv.VaiTro != null && nv.VaiTro.TenVaiTro != null && nv.VaiTro.TenVaiTro.Contains("Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    return (false, "Bạn không có quyền xóa tài khoản Admin.");
+                }
+            }
 
             if (_context.PhieuMuons.Any(p => p.MaNhanVienChoMuon == maNV))
                 return (false, "Không thể xóa nhân viên đã tham gia lập phiếu mượn trả.");
