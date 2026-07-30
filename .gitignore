@@ -1,0 +1,24 @@
+## Ignore Visual Studio & .NET build artifacts
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.pidb
+*.suo
+*.suo.tmp
+*.pdb
+*.cache
+*.bak
+*.log
+*.tmp
+*.temp
+TestResults/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+appsettings.Development.json
