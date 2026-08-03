@@ -78,11 +78,10 @@ namespace QuanLyThueBang.Presentation.Controls
             this.Dock = DockStyle.Fill;
             this.BackColor = Color.FromArgb(248, 249, 250);
             this.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-
-            BuildHeaderPanel();
-            BuildFilterPanel();
-            BuildFooterPanel();
             BuildDataGrid();
+            BuildFilterPanel();
+            BuildHeaderPanel();
+            BuildFooterPanel();
         }
 
         private void BuildHeaderPanel()
@@ -106,7 +105,7 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "+ Nhập Bản Sao Mới",
                 Size = new Size(230, 42),
-                Location = new Point(15, 21),
+                Location = new Point(15, 7),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(184, 123, 125),
                 ForeColor = Color.White,

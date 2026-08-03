@@ -38,22 +38,22 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "+ Đăng Ký Khách Mới",
                 Size = new Size(230, 42),
-                Location = new Point(15, 21),
+                Location = new Point(15, 7),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(184, 123, 125),
                 ForeColor = Color.White,
-                Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold),
+                Font = new Font("Segoe UI Semibold", 10F, FontStyle.Regular),
                 Cursor = Cursors.Hand,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Padding = new Padding(0, 0, 0, 4),
-                UseCompatibleTextRendering = true
+                Padding = new Padding(0),
+                UseCompatibleTextRendering = false
             };
             btnAdd.FlatAppearance.BorderSize = 0;
             btnAdd.Click += (s, e) => AddNew();
             pnlRight.Controls.Add(btnAdd);
 
-            var lblTitle = new Label { Text = "Quản Lý Khách Hàng Thuê Băng", Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold), Location = new Point(25, 15), AutoSize = true };
-            var lblSub = new Label { Text = "Quản lý hồ sơ thành viên, thông tin liên lạc, CMND/CCCD và lịch sử lượt thuê.", ForeColor = Color.FromArgb(108, 117, 125), Location = new Point(27, 47), AutoSize = true };
+            var lblTitle = new Label { Text = "Quản Lý Khách Hàng Thuê Băng", Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold), Location = new Point(25, 15), AutoSize = true, BackColor = Color.Transparent };
+            var lblSub = new Label { Text = "Quản lý hồ sơ thành viên, thông tin liên lạc, CMND/CCCD và lịch sử lượt thuê.", ForeColor = Color.FromArgb(108, 117, 125), Location = new Point(27, 50), AutoSize = true, BackColor = Color.Transparent };
             pnlHeader.Controls.Add(lblTitle);
             pnlHeader.Controls.Add(lblSub);
             pnlHeader.Controls.Add(pnlRight);
@@ -124,8 +124,12 @@ namespace QuanLyThueBang.Presentation.Controls
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 var res = _khService.AddKhachHang(dlg.MaKhachHang, dlg.HoTen, dlg.CMND, dlg.SoDienThoai, dlg.DiaChi);
-                MessageBox.Show(res.Message, res.Success ? "Thành công" : "Lỗi", MessageBoxButtons.OK, res.Success ? MessageBoxIcon.Information : MessageBoxIcon.Error);
-                if (res.Success) LoadData();
+                if (res.Success) {
+                    MessageBox.Show(res.Message, "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadData();
+                } else {
+                    MessageBox.Show("Thêm thất bại yêu cầu nhập lại:\n" + res.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -142,8 +146,12 @@ namespace QuanLyThueBang.Presentation.Controls
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     var res = _khService.UpdateKhachHang(item.MaKhachHang, dlg.HoTen, dlg.CMND, dlg.SoDienThoai, dlg.DiaChi);
-                    MessageBox.Show(res.Message, res.Success ? "Thành công" : "Lỗi", MessageBoxButtons.OK, res.Success ? MessageBoxIcon.Information : MessageBoxIcon.Error);
-                    if (res.Success) LoadData();
+                    if (res.Success) {
+                        MessageBox.Show(res.Message, "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadData();
+                    } else {
+                        MessageBox.Show("Sửa thất bại:\n" + res.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             else if (col == "colDelete")
@@ -158,3 +166,5 @@ namespace QuanLyThueBang.Presentation.Controls
         }
     }
 }
+
+

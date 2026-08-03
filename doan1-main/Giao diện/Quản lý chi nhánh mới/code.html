@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Serene Branch Manager - Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#5d5f5f",
+                      "on-secondary-container": "#656464",
+                      "primary-fixed": "#fadbdf",
+                      "on-primary-fixed-variant": "#574145",
+                      "on-error-container": "#93000a",
+                      "surface-dim": "#dbdad9",
+                      "on-tertiary-container": "#606161",
+                      "surface-tint": "#70585c",
+                      "secondary": "#5f5e5e",
+                      "primary-container": "#f5d6da",
+                      "on-surface": "#1b1c1c",
+                      "error-container": "#ffdad6",
+                      "on-primary": "#ffffff",
+                      "secondary-fixed": "#e5e2e1",
+                      "on-primary-fixed": "#28171a",
+                      "on-tertiary-fixed-variant": "#454747",
+                      "tertiary-fixed-dim": "#c6c6c7",
+                      "secondary-container": "#e5e2e1",
+                      "surface-variant": "#e3e2e2",
+                      "tertiary-fixed": "#e2e2e2",
+                      "surface-container-highest": "#e3e2e2",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "surface": "#fbf9f9",
+                      "error": "#ba1a1a",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container": "#efeded",
+                      "primary-fixed-dim": "#ddbfc3",
+                      "on-secondary": "#ffffff",
+                      "on-primary-container": "#735b5f",
+                      "background": "#fbf9f9",
+                      "primary": "#70585c",
+                      "inverse-primary": "#ddbfc3",
+                      "on-secondary-fixed-variant": "#474646",
+                      "inverse-surface": "#303031",
+                      "outline-variant": "#d2c3c4",
+                      "on-tertiary-fixed": "#1a1c1c",
+                      "on-background": "#1b1c1c",
+                      "surface-bright": "#fbf9f9",
+                      "tertiary-container": "#dddddd",
+                      "surface-container-low": "#f5f3f3",
+                      "on-error": "#ffffff",
+                      "inverse-on-surface": "#f2f0f0",
+                      "surface-container-high": "#e9e8e7",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed": "#1c1b1b",
+                      "on-surface-variant": "#4e4445",
+                      "outline": "#807475"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "stack-sm": "8px",
+                      "stack-md": "16px",
+                      "margin-desktop": "40px",
+                      "gutter": "16px",
+                      "stack-lg": "24px",
+                      "margin-mobile": "20px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Be Vietnam Pro"
+                      ],
+                      "body-lg": [
+                              "Be Vietnam Pro"
+                      ],
+                      "label-lg": [
+                              "Be Vietnam Pro"
+                      ],
+                      "body-md": [
+                              "Be Vietnam Pro"
+                      ],
+                      "headline-lg-mobile": [
+                              "Be Vietnam Pro"
+                      ],
+                      "label-md": [
+                              "Be Vietnam Pro"
+                      ],
+                      "headline-md": [
+                              "Be Vietnam Pro"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.04);
+        }
+        .soft-shadow {
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.04);
+        }
+      </style>
+</head>
+<body class="bg-surface text-on-surface font-body-lg min-h-screen flex flex-col md:flex-row">
+<!-- TopNavBar for Mobile -->
+<header class="md:hidden w-full top-0 sticky z-50 bg-surface dark:bg-surface-container-low shadow-sm flex justify-between items-center px-margin-mobile h-16 bg-surface-container-low dark:bg-surface-container-highest">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed">Serene Branch Manager</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar for Desktop -->
+<aside class="hidden md:flex flex-col h-screen w-64 left-0 sticky z-40 bg-surface-container-low dark:bg-surface-dim border-r border-outline-variant p-stack-md gap-stack-sm flex-shrink-0">
+<div class="flex items-center gap-3 mb-8 px-2">
+<img alt="Serene Boutique Logo" class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A clean, minimalist logo mark for a serene boutique corporate portal. The design features a delicate, abstract botanical shape in soft pastel pink against a crisp white background. High-key lighting emphasizes a modern, high-end lifestyle aesthetic. The image is rendered with smooth, polished vector-like clarity, conveying professionalism and calm elegance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVlD2rZwu2N2RBrtGwTbpF203C1_SyUJSwPiQias7jJijBCc2DmGvGy7cD3j7plyW6O43JBkzzEVZ7uiKbmE-y8KxQ6V-JdEyIIcpesuPQT03BuF3eXr1-GXB1aHcxEYGBDcaeZc3DhYkOZ3ArHoCHMMCwMxC_zz0nxU8-mwhCWS-U_tdkkroLncKKh_W9iso7jiD-dHeXux_3tCoEzCgkkWBisP1Wy3QFGYOj5KfGN70DxFh5QongpddVOG01-6jsJnyC9jwy4TzT"/>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary">Branch Portal</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Corporate Admin</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-2">
+<a aria-current="page" class="flex items-center gap-3 px-4 py-3 bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-lg font-bold scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary dark:text-on-surface-variant hover:bg-secondary-container dark:hover:bg-secondary-fixed-dim rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-label-md text-label-md">Locations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary dark:text-on-surface-variant hover:bg-secondary-container dark:hover:bg-secondary-fixed-dim rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">album</span>
+<span class="font-label-md text-label-md">Rental Catalog</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary dark:text-on-surface-variant hover:bg-secondary-container dark:hover:bg-secondary-fixed-dim rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">badge</span>
+<span class="font-label-md text-label-md">Employee Portal</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary dark:text-on-surface-variant hover:bg-secondary-container dark:hover:bg-secondary-fixed-dim rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-4">
+<button class="w-full py-3 px-4 bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined">help</span>
+                Support
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary dark:text-on-surface-variant hover:bg-secondary-container dark:hover:bg-secondary-fixed-dim rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Log Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 w-full max-w-7xl mx-auto p-margin-mobile md:p-margin-desktop space-y-stack-lg">
+<!-- Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Overview</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">High-level metrics and branch management.</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors text-on-surface relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<img alt="Manager Profile" class="w-10 h-10 rounded-full object-cover border-2 border-primary-container" data-alt="A professional headshot of a corporate manager in a bright, modern office setting. The individual is dressed in polished, minimalist business attire, exuding confidence and approachability. The background features soft, blurred natural light and light neutral tones, consistent with a serene, high-end brand aesthetic. The lighting is flattering and even, emphasizing a pristine light-mode look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5SnUMGapSz_oESHs9k5-q8X21sKcyuXVBB8aVNJtREgeIz7VjLe7xspyv_WyRC3WGsiPEGbjeik6WNHuYyS0cTegh3KGygTN3oysgC2E1Hj1ZTrYYdcJj1SZT_omNgYWWjw6lqe1_FcjnswIOOrU4zV0a6rQv3g1FtHJeHAsbptlEAMABKXCS4XQzlG7SYz6i5xk-t1oey1g8mpKSr71yal_GA51AjiimvXWKesluIVCQBVJ-lbnQKQ_VIJEPUp37j5YF_KnU3UW8"/>
+</div>
+</div>
+<!-- High-level Stats (Bento Grid Style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Stat Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-md soft-shadow border border-surface-variant relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-primary-container rounded-full opacity-20 group-hover:scale-110 transition-transform duration-500"></div>
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-label-lg text-label-lg text-on-surface-variant">Total Branches</h3>
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">store</span>
+</div>
+</div>
+<div class="flex items-end gap-3">
+<span class="font-headline-lg text-headline-lg text-on-surface text-4xl font-bold">14</span>
+<span class="font-label-md text-label-md text-tertiary mb-1">+2 this quarter</span>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-md soft-shadow border border-surface-variant relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-tertiary-container rounded-full opacity-20 group-hover:scale-110 transition-transform duration-500"></div>
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-label-lg text-label-lg text-on-surface-variant">Total Discs Cataloged</h3>
+<div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined">album</span>
+</div>
+</div>
+<div class="flex items-end gap-3">
+<span class="font-headline-lg text-headline-lg text-on-surface text-4xl font-bold">12,450</span>
+<span class="font-label-md text-label-md text-tertiary mb-1">98% in stock</span>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-md soft-shadow border border-surface-variant relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-secondary-container rounded-full opacity-20 group-hover:scale-110 transition-transform duration-500"></div>
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-label-lg text-label-lg text-on-surface-variant">Total Staff Members</h3>
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">group</span>
+</div>
+</div>
+<div class="flex items-end gap-3">
+<span class="font-headline-lg text-headline-lg text-on-surface text-4xl font-bold">86</span>
+<span class="font-label-md text-label-md text-tertiary mb-1">Across all locations</span>
+</div>
+</div>
+</section>
+<!-- Complex Layout: Branch List + Detail View -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Branch List (Compact Table/List) -->
+<div class="lg:col-span-1 bg-surface-container-lowest rounded-xl border border-surface-variant soft-shadow overflow-hidden flex flex-col h-[600px]">
+<div class="p-4 border-b border-surface-variant bg-surface flex justify-between items-center sticky top-0 z-10">
+<h3 class="font-headline-md text-headline-md text-on-surface">Branches</h3>
+<button class="w-8 h-8 rounded-full bg-primary-container text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<div class="p-3 border-b border-surface-variant bg-surface">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg text-body-md focus:ring-1 focus:ring-primary focus:outline-none placeholder-outline text-on-surface" placeholder="Search branches..." type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto overflow-x-hidden">
+<ul class="divide-y divide-surface-variant">
+<!-- Active Item -->
+<li>
+<button class="w-full text-left p-4 hover:bg-surface-container transition-colors bg-surface-container-low border-l-4 border-primary">
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Downtown Central</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container text-[10px] font-bold uppercase tracking-wider">Active</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mb-2">124 Main St, Metropolis</p>
+<div class="flex items-center gap-4 text-xs text-tertiary">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span> 12</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">album</span> 1.2k</span>
+</div>
+</button>
+</li>
+<!-- Inactive Items -->
+<li>
+<button class="w-full text-left p-4 hover:bg-surface-container transition-colors border-l-4 border-transparent">
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Westside Pavilion</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container text-[10px] font-bold uppercase tracking-wider">Active</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mb-2">890 West Ave, Metropolis</p>
+<div class="flex items-center gap-4 text-xs text-tertiary">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span> 8</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">album</span> 850</span>
+</div>
+</button>
+</li>
+<li>
+<button class="w-full text-left p-4 hover:bg-surface-container transition-colors border-l-4 border-transparent">
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Northridge Mall</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-variant text-on-surface-variant text-[10px] font-bold uppercase tracking-wider">Renovation</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mb-2">450 North Blvd, Metropolis</p>
+<div class="flex items-center gap-4 text-xs text-tertiary">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span> 0</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">album</span> 0</span>
+</div>
+</button>
+</li>
+<li>
+<button class="w-full text-left p-4 hover:bg-surface-container transition-colors border-l-4 border-transparent">
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">East Bay Plaza</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container text-[10px] font-bold uppercase tracking-wider">Active</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mb-2">22 Marina Way, Metropolis</p>
+<div class="flex items-center gap-4 text-xs text-tertiary">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span> 6</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">album</span> 620</span>
+</div>
+</button>
+</li>
+</ul>
+</div>
+</div>
+<!-- Rich Detail Section (Glassmorphism / Bento) -->
+<div class="lg:col-span-2 flex flex-col gap-gutter">
+<!-- Branch Header Info -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-lg soft-shadow border border-surface-variant flex flex-col md:flex-row gap-6 items-start md:items-center relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-container/20 to-transparent pointer-events-none"></div>
+<div class="w-24 h-24 rounded-xl bg-surface-container-high overflow-hidden shrink-0 border border-outline-variant">
+<div class="bg-cover bg-center w-full h-full" data-alt="A bright, modern interior view of a boutique rental store. The space is minimalist, featuring light wood shelving neatly displaying discs, soft pastel accents on the walls, and high-key, diffused natural light streaming in from large windows. The atmosphere is serene, organized, and inviting, perfectly aligning with a premium lifestyle brand." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC6RBRNGP3x7AvdrlqkGyu3CLRtUzjqd0NDini6T0QR6KNfwi0GNdgmtqjJArJzh6jk3qR4zKBzyYchNb2CoNGiJLxgM1Nij1tyoMIaPOjGczincNx9PEscYZ_bav6eoOv_zJPpz4EYfiOAtbKj_ytzjYt8SsxOPyHMu-pV_doDUTSwfObVSs2G6gjOpCxkcCqW0wFcJ0uUO89_jsi7iuqRbFnVn-AyGtrECmfO-IamyJUkCzMMZJF6O8SKjHo2GkSLAZxxw2c6Bkvz')"></div>
+</div>
+<div class="flex-1 z-10">
+<div class="flex items-center gap-3 mb-1">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Downtown Central</h2>
+<span class="px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-xs font-bold uppercase tracking-wider">Active</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                             124 Main St, Metropolis, NY 10001
+                         </p>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-primary-container text-on-primary-container rounded-md font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">edit</span> Edit Details
+                             </button>
+<button class="px-4 py-2 border border-outline text-on-surface rounded-md font-label-md text-label-md hover:bg-surface-container transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">mail</span> Contact Manager
+                             </button>
+</div>
+</div>
+</div>
+<!-- Bento Grid Details -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Quick Stats Chart Placeholder -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-md soft-shadow border border-surface-variant col-span-1 md:col-span-2 h-48 relative overflow-hidden flex flex-col justify-between">
+<h4 class="font-label-lg text-label-lg text-on-surface font-semibold z-10">Monthly Performance</h4>
+<!-- Abstract Chart Representation -->
+<div class="absolute bottom-0 left-0 w-full h-32 flex items-end px-4 gap-2 opacity-60">
+<div class="w-full bg-primary-container rounded-t-sm h-[40%]"></div>
+<div class="w-full bg-primary-container rounded-t-sm h-[55%]"></div>
+<div class="w-full bg-primary-container rounded-t-sm h-[30%]"></div>
+<div class="w-full bg-primary-container rounded-t-sm h-[70%]"></div>
+<div class="w-full bg-primary-container rounded-t-sm h-[85%]"></div>
+<div class="w-full bg-primary text-on-primary rounded-t-sm h-[60%] flex justify-center items-start pt-2 text-xs font-bold shadow-lg transform -translate-y-2"></div>
+<div class="w-full bg-primary-container rounded-t-sm h-[45%]"></div>
+</div>
+</div>
+<!-- Manager Info -->
+<div class="glass-card rounded-xl p-stack-md flex items-center gap-4 relative overflow-hidden bg-surface-container-lowest">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<img alt="Store Manager" class="w-14 h-14 rounded-full object-cover border border-outline-variant" data-alt="A portrait of an organized, friendly store manager standing in a bright, modern boutique setting. The manager is wearing a neat, minimalist uniform in soft, neutral tones. The background is slightly out of focus, showing neatly arranged shelves. The lighting is high-key and flattering, creating a professional yet warm and serene mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLRM-HKHD-I77e7qwgJUOqWSnZEN5iYS0QgLDmo8RklSNvHD9sNI5xZjnBOxFLIwTMGib-tubb2Q7UOQGKVtV5QJg-hVM39OS-lFX8TdYxcATjqfHdyU1wAskzDAnU0Pd3v4JkqgLjx_8mYARvunh7torAj_Y6Obk2AgK0Yjt8y0z1w5KVy1c9mO6x_zydLiXy0a17-YnsaLOHuodEr21Fzv8gHUHoKfxvPwxnejEoe-9mvRWi0uCdbojCDtAEL_07tXm1c_lyxnHv"/>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-xs mb-1">Store Manager</h4>
+<p class="font-label-lg text-label-lg text-on-surface font-semibold">Sarah Jenkins</p>
+<p class="font-body-md text-body-md text-tertiary text-sm">s.jenkins@serene.com</p>
+</div>
+</div>
+<!-- Operational Hours -->
+<div class="glass-card rounded-xl p-stack-md bg-surface-container-lowest">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-xs mb-3">Operating Hours</h4>
+<ul class="space-y-2 font-body-md text-body-md text-on-surface text-sm">
+<li class="flex justify-between border-b border-surface-variant pb-1"><span>Mon - Fri</span> <span class="font-medium">9:00 AM - 8:00 PM</span></li>
+<li class="flex justify-between border-b border-surface-variant pb-1"><span>Saturday</span> <span class="font-medium">10:00 AM - 6:00 PM</span></li>
+<li class="flex justify-between text-tertiary"><span>Sunday</span> <span>Closed</span></li>
+</ul>
+</div>
+<!-- CRUD Form Snippet (Mini Settings) -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-md soft-shadow border border-surface-variant col-span-1 md:col-span-2">
+<h4 class="font-label-lg text-label-lg text-on-surface font-semibold mb-4">Quick Adjustments</h4>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Capacity Limit</label>
+<input class="w-full px-4 py-2 border border-surface-variant rounded-md bg-surface text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none" type="number" value="150"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Status</label>
+<select class="w-full px-4 py-2 border border-surface-variant rounded-md bg-surface text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none">
+<option selected="" value="active">Active</option>
+<option value="maintenance">Maintenance</option>
+<option value="closed">Closed</option>
+</select>
+</div>
+<div class="md:col-span-2 flex justify-end mt-2">
+<button class="px-6 py-2 bg-secondary text-on-secondary rounded-md font-label-md text-label-md hover:bg-on-surface transition-colors" type="button">
+                                    Save Changes
+                                </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</section>
+</main>
+</body></html>

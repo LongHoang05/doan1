@@ -119,6 +119,20 @@ namespace QuanLyThueBang.Presentation.Forms.KhachHang
                 MessageBox.Show("Vui lòng nhập đầy đủ Họ tên và Số điện thoại.", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            if (!System.Text.RegularExpressions.Regex.IsMatch(txtCMND.Text.Trim(), @"^\d{12}$"))
+            {
+                MessageBox.Show("CCCD/CMND phải là chuỗi gồm đúng 12 chữ số.", "Lỗi Xác Thực", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                string cleanedCmnd = System.Text.RegularExpressions.Regex.Replace(txtCMND.Text, @"\D", "");
+                txtCMND.Text = cleanedCmnd.Length > 12 ? cleanedCmnd.Substring(0, 12) : cleanedCmnd;
+                return;
+            }
+            if (!System.Text.RegularExpressions.Regex.IsMatch(txtSDT.Text.Trim(), @"^\d{10}$"))
+            {
+                MessageBox.Show("Số điện thoại phải là chuỗi gồm đúng 10 chữ số.", "Lỗi Xác Thực", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                string cleanedSdt = System.Text.RegularExpressions.Regex.Replace(txtSDT.Text, @"\D", "");
+                txtSDT.Text = cleanedSdt.Length > 10 ? cleanedSdt.Substring(0, 10) : cleanedSdt;
+                return;
+            }
             MaKhachHang = txtMaKH.Text.Trim();
             HoTen = txtHoTen.Text.Trim();
             SoDienThoai = txtSDT.Text.Trim();

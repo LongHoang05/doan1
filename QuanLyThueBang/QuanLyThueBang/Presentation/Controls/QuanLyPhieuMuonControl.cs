@@ -118,7 +118,7 @@ namespace QuanLyThueBang.Presentation.Controls
             _tabControl = new TabControl
             {
                 Dock = DockStyle.Fill,
-                Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold)
+                Font = new Font("Segoe UI Semibold", 10F, FontStyle.Regular)
             };
 
             _tabDanhSach = new TabPage("📋 Danh Sách & Tra Cứu Phiếu Mượn") { BackColor = Color.FromArgb(248, 249, 250), Padding = new Padding(10) };
@@ -151,12 +151,12 @@ namespace QuanLyThueBang.Presentation.Controls
         #region TAB 1: DANH SÁCH & TRA CỨU PHIẾU MƯỢN
         private void BuildTabDanhSachUI(TabPage tab)
         {
-            var pnlTop = new Panel { Dock = DockStyle.Top, Height = 65, BackColor = Color.White, Padding = new Padding(15) };
+            var pnlTop = new Panel { Dock = DockStyle.Top, Height = 130, BackColor = Color.White, Padding = new Padding(15) };
 
             var lblSearch = new Label { Text = "Tìm Kiếm:", Location = new Point(15, 22), AutoSize = true };
             cboSearchPhieuMuon = new ComboBox 
             { 
-                Location = new Point(95, 18), 
+                Location = new Point(115, 18), 
                 Width = 280, 
                 DropDownStyle = ComboBoxStyle.DropDown,
                 AutoCompleteMode = AutoCompleteMode.None 
@@ -180,20 +180,22 @@ namespace QuanLyThueBang.Presentation.Controls
 
             var pnlActions = new FlowLayoutPanel
             {
-                Location = new Point(390, 14),
-                Size = new Size(1100, 42),
+                Location = new Point(15, 65),
                 FlowDirection = FlowDirection.LeftToRight,
-                WrapContents = false,
+                WrapContents = true,
                 AutoSize = true,
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                Width = 1100
             };
 
             var btnSearch = new Button
             {
                 Text = "🔍 Tìm Kiếm",
                 AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Padding = new Padding(14, 5, 14, 5),
+                AutoSizeMode = AutoSizeMode.GrowOnly,
+                MinimumSize = new Size(0, 38),
+                Padding = new Padding(14, 0, 14, 0),
                 Height = 35,
                 Margin = new Padding(0, 2, 8, 2),
                 FlatStyle = FlatStyle.Flat,
@@ -208,8 +210,9 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "🔄 Làm Mới",
                 AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Padding = new Padding(14, 5, 14, 5),
+                AutoSizeMode = AutoSizeMode.GrowOnly,
+                MinimumSize = new Size(0, 38),
+                Padding = new Padding(14, 0, 14, 0),
                 Height = 35,
                 Margin = new Padding(0, 2, 8, 2),
                 FlatStyle = FlatStyle.Flat,
@@ -229,8 +232,9 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "➕ Lập Phiếu Mới (Quầy)",
                 AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Padding = new Padding(14, 5, 14, 5),
+                AutoSizeMode = AutoSizeMode.GrowOnly,
+                MinimumSize = new Size(0, 38),
+                Padding = new Padding(14, 0, 14, 0),
                 Height = 35,
                 Margin = new Padding(0, 2, 8, 2),
                 FlatStyle = FlatStyle.Flat,
@@ -245,8 +249,9 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "🖨️ In Hóa Đơn",
                 AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Padding = new Padding(14, 5, 14, 5),
+                AutoSizeMode = AutoSizeMode.GrowOnly,
+                MinimumSize = new Size(0, 38),
+                Padding = new Padding(14, 0, 14, 0),
                 Height = 35,
                 Margin = new Padding(0, 2, 8, 2),
                 FlatStyle = FlatStyle.Flat,
@@ -281,8 +286,9 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "📊 Xuất Excel",
                 AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Padding = new Padding(14, 5, 14, 5),
+                AutoSizeMode = AutoSizeMode.GrowOnly,
+                MinimumSize = new Size(0, 38),
+                Padding = new Padding(14, 0, 14, 0),
                 Height = 35,
                 Margin = new Padding(0, 2, 8, 2),
                 FlatStyle = FlatStyle.Flat,
@@ -454,8 +460,9 @@ namespace QuanLyThueBang.Presentation.Controls
                 Text = "➕ Thêm Vào Giỏ",
                 Dock = DockStyle.Left,
                 AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Padding = new Padding(14, 5, 14, 5),
+                AutoSizeMode = AutoSizeMode.GrowOnly,
+                MinimumSize = new Size(0, 38),
+                Padding = new Padding(14, 0, 14, 0),
                 Height = 35,
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(184, 123, 125),
@@ -480,7 +487,8 @@ namespace QuanLyThueBang.Presentation.Controls
                 Text = "💾 Chốt Phiếu Mượn",
                 Dock = DockStyle.Right,
                 AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                AutoSizeMode = AutoSizeMode.GrowOnly,
+                MinimumSize = new Size(0, 38),
                 Padding = new Padding(15, 6, 15, 6),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(40, 167, 69),
@@ -801,3 +809,4 @@ namespace QuanLyThueBang.Presentation.Controls
         }
     }
 }
+

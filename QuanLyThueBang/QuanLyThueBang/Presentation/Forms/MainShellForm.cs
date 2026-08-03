@@ -271,8 +271,19 @@ namespace QuanLyThueBang.Presentation.Forms
 
         private void MainShellForm_Load(object? sender, EventArgs e)
         {
-            // Mặc định khởi chạy vào màn hình Bảng điều khiển (Dashboard)
-            BtnMenuDashboard_Click(this, EventArgs.Empty);
+            string username = AppSession.CurrentUser?.TenDangNhap?.ToLower() ?? "";
+            string vaiTro = AppSession.CurrentUser?.VaiTro?.TenVaiTro ?? "";
+            bool isAdmin = AppSession.IsAdmin || username == "admin";
+            bool isQuanLy = vaiTro.Contains("Quản lý", StringComparison.OrdinalIgnoreCase) || username == "quanly";
+
+            if (isAdmin || isQuanLy)
+            {
+                BtnMenuDashboard_Click(this, EventArgs.Empty);
+            }
+            else
+            {
+                BtnMenuKhachHang_Click(this, EventArgs.Empty);
+            }
         }
 
         private void BtnMenuDashboard_Click(object? sender, EventArgs e)

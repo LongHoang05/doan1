@@ -190,10 +190,8 @@ namespace QuanLyThueBang.Presentation.Controls
             var lblTopTitle = new Label { Text = "🔥 TOP 5 BỘ PHIM THUÊ NHIỀU NHẤT", Font = new Font("Segoe UI Semibold", 11F, FontStyle.Bold), ForeColor = Color.FromArgb(50, 50, 50), Dock = DockStyle.Top, Height = 32 };
             dgvTopTrending = BuildDgv(rowH: 44);
             dgvTopTrending.Columns.Add("colSTT", "TOP"); dgvTopTrending.Columns[0].Width = 55;
-            var colImg = new DataGridViewImageColumn { Name = "colAnh", HeaderText = "Ảnh", Width = 44, ImageLayout = DataGridViewImageCellLayout.Zoom };
-            dgvTopTrending.Columns.Add(colImg);
-            dgvTopTrending.Columns.Add("colTuaDe", "Tựa Đề Phim"); dgvTopTrending.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dgvTopTrending.Columns.Add("colLuot", "Lượt Thuê"); dgvTopTrending.Columns[3].Width = 100;
+            dgvTopTrending.Columns.Add("colTuaDe", "Tựa Đề Phim"); dgvTopTrending.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dgvTopTrending.Columns.Add("colLuot", "Lượt Thuê"); dgvTopTrending.Columns[2].Width = 100;
             pnlTop.Controls.Add(dgvTopTrending);
             pnlTop.Controls.Add(lblTopTitle);
 
@@ -357,9 +355,8 @@ namespace QuanLyThueBang.Presentation.Controls
 
                 dgvTopTrending.Rows.Clear();
                 int idx = 1;
-                var imgPlaceholder = MakePlaceholderImage();
                 foreach (var item in topPhim)
-                    dgvTopTrending.Rows.Add($"#{idx++}", imgPlaceholder, item.TuaDe, $"{item.Luot} lượt");
+                    dgvTopTrending.Rows.Add($"#{idx++}", item.TuaDe, $"{item.Luot} lượt");
 
                 // Quá Hạn
                 var odQ = ctx.ChiTietPhieuMuons
@@ -653,14 +650,6 @@ namespace QuanLyThueBang.Presentation.Controls
             return parts[0].Trim().Length > 28 ? parts[0].Trim()[..28] + "…" : parts[0].Trim();
         }
 
-        private Image MakePlaceholderImage()
-        {
-            var bmp = new Bitmap(32, 44);
-            using var g = Graphics.FromImage(bmp);
-            g.Clear(Color.FromArgb(220, 225, 235));
-            g.DrawRectangle(Pens.LightGray, 0, 0, 31, 43);
-            g.DrawString("🎬", new Font("Segoe UI", 10F), Brushes.Gray, new PointF(4, 12));
-            return bmp;
-        }
+
     }
 }

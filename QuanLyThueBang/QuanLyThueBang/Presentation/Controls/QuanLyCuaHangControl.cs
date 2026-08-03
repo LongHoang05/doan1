@@ -38,15 +38,15 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "+ Thêm Cửa Hàng Mới",
                 Size = new Size(230, 42),
-                Location = new Point(15, 21),
+                Location = new Point(15, 7),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(184, 123, 125),
                 ForeColor = Color.White,
-                Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold),
+                Font = new Font("Segoe UI Semibold", 10F, FontStyle.Regular),
                 Cursor = Cursors.Hand,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Padding = new Padding(0, 0, 0, 4),
-                UseCompatibleTextRendering = true
+                Padding = new Padding(0),
+                UseCompatibleTextRendering = false
             };
             btnAdd.FlatAppearance.BorderSize = 0;
             btnAdd.Click += (s, e) => AddNew();
@@ -158,3 +158,5 @@ namespace QuanLyThueBang.Presentation.Controls
         }
     }
 }
+
+

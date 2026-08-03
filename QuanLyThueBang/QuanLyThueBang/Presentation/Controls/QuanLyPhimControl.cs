@@ -52,11 +52,13 @@ namespace QuanLyThueBang.Presentation.Controls
             this.Dock = DockStyle.Fill;
             this.BackColor = Color.FromArgb(248, 249, 250);
             this.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-
-            BuildHeaderPanel();
-            BuildFilterPanel();
-            BuildFooterPanel();
+            this.AutoScaleMode = AutoScaleMode.Dpi;
+            this.AutoScaleDimensions = new SizeF(96F, 96F);
+            
             BuildDataGrid();
+            BuildFilterPanel();
+            BuildHeaderPanel();
+            BuildFooterPanel();
         }
 
         #region BỐ CỤC GIAO DIỆN
@@ -83,15 +85,15 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "📊 Xuất Excel",
                 Size = new Size(130, 42),
-                Location = new Point(10, 21),
+                Location = new Point(10, 7),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(25, 135, 84),
                 ForeColor = Color.White,
-                Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold),
+                Font = new Font("Segoe UI Semibold", 10F, FontStyle.Regular),
                 Cursor = Cursors.Hand,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Padding = new Padding(0, 0, 0, 4),
-                UseCompatibleTextRendering = true
+                Padding = new Padding(0),
+                UseCompatibleTextRendering = false
             };
             btnExportExcel.FlatAppearance.BorderSize = 0;
             btnExportExcel.Click += (s, e) => QuanLyThueBang.Helpers.ExportHelper.ExportDataGridViewToExcel(dgvPhim, "DanhSachPhim");
@@ -100,15 +102,15 @@ namespace QuanLyThueBang.Presentation.Controls
             {
                 Text = "+ Thêm Phim Mới",
                 Size = new Size(210, 42),
-                Location = new Point(150, 21),
+                Location = new Point(150, 7),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(184, 123, 125), // Tone màu hồng đất sang trọng
                 ForeColor = Color.White,
-                Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold),
+                Font = new Font("Segoe UI Semibold", 10F, FontStyle.Regular),
                 Cursor = Cursors.Hand,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Padding = new Padding(0, 0, 0, 4),
-                UseCompatibleTextRendering = true
+                Padding = new Padding(0),
+                UseCompatibleTextRendering = false
             };
             btnAddMovie.FlatAppearance.BorderSize = 0;
             btnAddMovie.Click += BtnAddMovie_Click;
@@ -541,3 +543,5 @@ namespace QuanLyThueBang.Presentation.Controls
         #endregion
     }
 }
+
+

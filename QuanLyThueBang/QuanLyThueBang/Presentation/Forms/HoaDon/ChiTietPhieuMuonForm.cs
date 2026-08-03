@@ -78,8 +78,8 @@ namespace QuanLyThueBang.Presentation.Forms.HoaDon
                 e.Graphics.DrawString(lblLogo.Text, lblLogo.Font, textBrush, new Rectangle(0, 0, lblLogo.Width, lblLogo.Height), format);
             };
 
-            var lblTitle = new Label { Text = "Serene Boutique", Font = new Font("Segoe UI", 18F, FontStyle.Bold), ForeColor = Primary, Location = new Point(65, 10), AutoSize = true };
-            var lblSubtitle = new Label { Text = "Hóa Đơn Thuê Băng Đĩa", Font = new Font("Segoe UI", 10F), ForeColor = OnSurfaceVariant, Location = new Point(68, 42), AutoSize = true };
+            var lblTitle = new Label { Text = "Rental Manager", Font = new Font("Segoe UI", 18F, FontStyle.Bold), ForeColor = Primary, Location = new Point(65, 10), AutoSize = true, BackColor = Color.Transparent };
+            var lblSubtitle = new Label { Text = "Hóa Đơn Thuê Băng Đĩa", Font = new Font("Segoe UI", 10F), ForeColor = OnSurfaceVariant, Location = new Point(68, 46), AutoSize = true, BackColor = Color.Transparent };
 
             var lblMaPhieuTitle = new Label { Text = "MÃ PHIẾU MƯỢN", Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold), ForeColor = OnSurfaceVariant, Location = new Point(mainPanel.Width - 250, 15), AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right };
             var lblMaPhieu = new Label { Text = _phieuMuon.MaPhieuMuon, Font = new Font("Consolas", 14F, FontStyle.Bold), ForeColor = OnSurface, Location = new Point(mainPanel.Width - 250, 35), AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right, BackColor = Brand50, Padding = new Padding(5) };
@@ -92,10 +92,10 @@ namespace QuanLyThueBang.Presentation.Forms.HoaDon
             };
 
             // Customer Section
-            var pnlCustomer = new Panel { Dock = DockStyle.Top, Height = 100, Padding = new Padding(0, 20, 0, 10) };
+            var pnlCustomer = new Panel { Dock = DockStyle.Top, Height = 120, Padding = new Padding(0, 20, 0, 10) };
             var lblCusTitle = new Label { Text = "THÔNG TIN KHÁCH HÀNG", Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold), ForeColor = OnSurfaceVariant, Location = new Point(0, 20), AutoSize = true };
             
-            var pnlCusBox = new Panel { Location = new Point(0, 45), Size = new Size(300, 65), BackColor = Brand50 };
+            var pnlCusBox = new Panel { Location = new Point(0, 45), Size = new Size(300, 65), BackColor = SurfaceLowest };
             pnlCusBox.Paint += (s, e) => {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using var pen = new Pen(OutlineVariant, 1);
@@ -170,10 +170,10 @@ namespace QuanLyThueBang.Presentation.Forms.HoaDon
             var pnlSumTopBorder = new Panel { Dock = DockStyle.Top, Height = 2, BackColor = Brand200 };
             pnlSummary.Controls.Add(pnlSumTopBorder);
 
-            var lblThanks1 = new Label { Text = "Cảm ơn quý khách đã sử dụng dịch vụ tại Serene Boutique.", Font = new Font("Segoe UI", 10F), ForeColor = OnSurfaceVariant, Location = new Point(0, 20), AutoSize = true };
+            var lblThanks1 = new Label { Text = "Cảm ơn quý khách đã sử dụng dịch vụ tại Rental Manager.", Font = new Font("Segoe UI", 10F), ForeColor = OnSurfaceVariant, Location = new Point(0, 20), AutoSize = true };
             var lblThanks2 = new Label { Text = "Vui lòng hoàn trả băng đĩa đúng hạn để tránh phí phạt.", Font = new Font("Segoe UI", 10F), ForeColor = OnSurfaceVariant, Location = new Point(0, 45), AutoSize = true };
 
-            var pnlSumBox = new Panel { Size = new Size(300, 90), Location = new Point(mainPanel.Width - 340, 20), BackColor = Brand50, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            var pnlSumBox = new Panel { Size = new Size(300, 90), Location = new Point(mainPanel.Width - 340, 20), BackColor = SurfaceLowest, Anchor = AnchorStyles.Top | AnchorStyles.Right };
             pnlSumBox.Paint += (s, e) => {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using var pen = new Pen(Brand200, 1);

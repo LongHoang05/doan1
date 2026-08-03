@@ -78,8 +78,8 @@ namespace QuanLyThueBang.Presentation.Controls
             var pnlHeaderBorder = new Panel { Dock = DockStyle.Bottom, Height = 1, BackColor = OutlineVariant };
             pnlHeader.Controls.Add(pnlHeaderBorder);
 
-            var lblTitle = new Label { Text = "Quản Lý Nhân Viên", Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold), ForeColor = OnSurface, Location = new Point(30, 15), AutoSize = true };
-            var lblSubTitle = new Label { Text = "Quản lý hồ sơ nhân viên và phân quyền truy cập.", Font = new Font("Segoe UI", 9.5F), ForeColor = OnSurfaceVariant, Location = new Point(32, 45), AutoSize = true };
+            var lblTitle = new Label { Text = "Quản Lý Nhân Viên", Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold), ForeColor = OnSurface, Location = new Point(30, 15), AutoSize = true, BackColor = Color.Transparent };
+            var lblSubTitle = new Label { Text = "Quản lý hồ sơ nhân viên và phân quyền truy cập.", Font = new Font("Segoe UI", 9.5F), ForeColor = OnSurfaceVariant, Location = new Point(30, 50), AutoSize = true, BackColor = Color.Transparent };
             pnlHeader.Controls.Add(lblTitle);
             pnlHeader.Controls.Add(lblSubTitle);
 
@@ -91,9 +91,10 @@ namespace QuanLyThueBang.Presentation.Controls
             };
             var btnAddTop = new Button
             {
-                Text = "➕ Thêm Nhân Viên",
+                Text = "+ Thêm Nhân Viên",
                 AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                AutoSizeMode = AutoSizeMode.GrowOnly,
+                MinimumSize = new Size(0, 38),
                 Padding = new Padding(16, 6, 16, 6),
                 BackColor = Color.FromArgb(17, 17, 17),
                 ForeColor = Color.White,
@@ -202,10 +203,9 @@ namespace QuanLyThueBang.Presentation.Controls
 
             pnlStatusBadge = new Panel
             {
-                AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Padding = new Padding(12, 3, 12, 3),
-                Margin = new Padding(4, 0, 10, 0),
+                AutoSize = false,
+                Size = new Size(110, 28),
+                Margin = new Padding(4, 2, 10, 0),
                 BackColor = Color.FromArgb(221, 221, 221)
             };
             pnlStatusBadge.Paint += (s, e) =>
@@ -213,8 +213,12 @@ namespace QuanLyThueBang.Presentation.Controls
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using var brush = new SolidBrush(pnlStatusBadge.BackColor);
                 e.Graphics.FillPath(brush, RoundedRect(new Rectangle(0, 0, pnlStatusBadge.Width - 1, pnlStatusBadge.Height - 1), 10));
+                // Draw centered text
+                using var textBrush = new SolidBrush(Color.FromArgb(96, 97, 97));
+                var fmt = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+                e.Graphics.DrawString(lblStatusText.Text, lblStatusText.Font, textBrush, new RectangleF(0, 0, pnlStatusBadge.Width, pnlStatusBadge.Height), fmt);
             };
-            lblStatusText = new Label { Text = "Đang làm việc", ForeColor = Color.FromArgb(96, 97, 97), Font = new Font("Segoe UI", 8F, FontStyle.Bold), AutoSize = true, BackColor = Color.Transparent };
+            lblStatusText = new Label { Text = "Đang làm việc", ForeColor = Color.FromArgb(96, 97, 97), Font = new Font("Segoe UI", 8F, FontStyle.Bold), AutoSize = true, BackColor = Color.Transparent, Visible = false };
             pnlStatusBadge.Controls.Add(lblStatusText);
 
             lblHeaderMaNV = new Label { Text = "EMP-000", Font = new Font("Segoe UI", 9.5F), ForeColor = OnSurfaceVariant, AutoSize = true, Margin = new Padding(0, 1, 0, 0) };
@@ -603,6 +607,22 @@ namespace QuanLyThueBang.Presentation.Controls
                 return;
             }
 
+            if (!System.Text.RegularExpressions.Regex.IsMatch(cmnd, @"^\d{12}$"))
+            {
+                MessageBox.Show("CCCD/CMND phải là chuỗi gồm đúng 12 chữ số.", "Lỗi Xác Thực", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                string cleanedCmnd = System.Text.RegularExpressions.Regex.Replace(cmnd, @"\D", "");
+                txtCCCD.Text = cleanedCmnd.Length > 12 ? cleanedCmnd.Substring(0, 12) : cleanedCmnd;
+                return;
+            }
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(sdt, @"^\d{10}$"))
+            {
+                MessageBox.Show("Số điện thoại phải là chuỗi gồm đúng 10 chữ số.", "Lỗi Xác Thực", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                string cleanedSdt = System.Text.RegularExpressions.Regex.Replace(sdt, @"\D", "");
+                txtSDT.Text = cleanedSdt.Length > 10 ? cleanedSdt.Substring(0, 10) : cleanedSdt;
+                return;
+            }
+
             if (_isAddNew)
             {
                 string user = txtUsername.Text.Trim();
@@ -619,7 +639,7 @@ namespace QuanLyThueBang.Presentation.Controls
                 }
                 else
                 {
-                    MessageBox.Show(res.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Thêm thất bại yêu cầu nhập lại:\n" + res.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else if (_selectedNhanVien != null)
@@ -634,7 +654,7 @@ namespace QuanLyThueBang.Presentation.Controls
                 }
                 else
                 {
-                    MessageBox.Show(res.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Sửa thất bại:\n" + res.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

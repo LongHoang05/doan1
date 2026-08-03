@@ -17,6 +17,7 @@ namespace QuanLyThueBang
         [STAThread]
         static void Main()
         {
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             ApplicationConfiguration.Initialize();
 
             // Cấu hình N-Tier Dependency Injection Container (Microsoft.Extensions.Hosting)

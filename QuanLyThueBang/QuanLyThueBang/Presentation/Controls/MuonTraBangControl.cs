@@ -207,12 +207,13 @@ namespace QuanLyThueBang.Presentation.Controls
                 Text = "✅ Chốt Nhận Trả & Luân Chuyển Kho",
                 Dock = DockStyle.Right,
                 AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Padding = new Padding(14, 5, 14, 5),
+                AutoSizeMode = AutoSizeMode.GrowOnly,
+                MinimumSize = new Size(0, 38),
+                Padding = new Padding(14, 0, 14, 0),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(140, 74, 82),
                 ForeColor = Color.White,
-                Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold),
+                Font = new Font("Segoe UI Semibold", 10F, FontStyle.Regular),
                 Cursor = Cursors.Hand,
                 TextAlign = ContentAlignment.MiddleCenter,
             };
@@ -224,8 +225,9 @@ namespace QuanLyThueBang.Presentation.Controls
                 Text = "🖨️ Xem & In Hóa Đơn",
                 Dock = DockStyle.Right,
                 AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Padding = new Padding(14, 5, 14, 5),
+                AutoSizeMode = AutoSizeMode.GrowOnly,
+                MinimumSize = new Size(0, 38),
+                Padding = new Padding(14, 0, 14, 0),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(25, 135, 84),
                 ForeColor = Color.White,
@@ -524,7 +526,8 @@ namespace QuanLyThueBang.Presentation.Controls
                 Text = "🔄 Quét Lại Danh Sách Quá Hạn",
                 Location = new Point(15, 12),
                 AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                AutoSizeMode = AutoSizeMode.GrowOnly,
+                MinimumSize = new Size(0, 38),
                 Padding = new Padding(12, 5, 12, 5),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(220, 53, 69),
@@ -537,13 +540,77 @@ namespace QuanLyThueBang.Presentation.Controls
             pnlTop.Controls.Add(btnReload);
 
             dgvQuaHan = SetupGrid();
-            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.MaPhieuMuon), HeaderText = "Mã Phiếu Mượn", Width = 140, MinimumWidth = 125 });
-            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.HoTenKhachHang), HeaderText = "Khách Hàng", AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, MinimumWidth = 180 });
-            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.SoDienThoai), HeaderText = "Số Điện Thoại", Width = 150, MinimumWidth = 135 });
-            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.MaBanSao), HeaderText = "Mã Bản Sao", Width = 135, MinimumWidth = 120 });
-            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.TuaDe), HeaderText = "Tựa Đề Phim", Width = 200, MinimumWidth = 170 });
-            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.NgayDuKienTra), HeaderText = "Ngày Hẹn Trả", Width = 140, MinimumWidth = 125, DefaultCellStyle = { Format = "dd/MM/yyyy", Alignment = DataGridViewContentAlignment.MiddleCenter } });
-            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.SoNgayTreHan), HeaderText = "Số Ngày Trễ", Width = 130, MinimumWidth = 115, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter, ForeColor = Color.Red, Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold) } });
+            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.MaPhieuMuon), HeaderText = "Mã Phiếu Mượn", Width = 130, MinimumWidth = 110 });
+            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.HoTenKhachHang), HeaderText = "Khách Hàng", AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, MinimumWidth = 150 });
+            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.SoDienThoai), HeaderText = "Số Điện Thoại", Width = 130, MinimumWidth = 110 });
+            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.MaBanSao), HeaderText = "Mã Bản Sao", Width = 120, MinimumWidth = 100 });
+            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.TuaDe), HeaderText = "Tựa Đề Phim", Width = 180, MinimumWidth = 140 });
+            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.NgayDuKienTra), HeaderText = "Ngày Hẹn Trả", Width = 130, MinimumWidth = 110, DefaultCellStyle = { Format = "dd/MM/yyyy", Alignment = DataGridViewContentAlignment.MiddleCenter } });
+            dgvQuaHan.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(BangQuaHanDTO.SoNgayTreHan), HeaderText = "Số Ngày Trễ", Width = 115, MinimumWidth = 90, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter, ForeColor = Color.Red, Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold) } });
+
+            var btnWarnCol = new DataGridViewButtonColumn { Name = "colWarn", HeaderText = "Hành Động", Text = "⚠️ Cảnh báo", UseColumnTextForButtonValue = true, Width = 140, FlatStyle = FlatStyle.Flat, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter } };
+            dgvQuaHan.Columns.Add(btnWarnCol);
+
+            dgvQuaHan.CellPainting += (s, e) =>
+            {
+                if (e.RowIndex < 0) return;
+                
+                if (e.ColumnIndex == 6 && e.Value != null)
+                {
+                    e.PaintBackground(e.CellBounds, true);
+                    using var gp = new System.Drawing.Drawing2D.GraphicsPath();
+                    const int r = 10;
+                    var rect = new Rectangle(e.CellBounds.X + 20, e.CellBounds.Y + 8, e.CellBounds.Width - 40, e.CellBounds.Height - 16);
+                    gp.AddArc(rect.X, rect.Y, r, r, 180, 90);
+                    gp.AddArc(rect.Right - r, rect.Y, r, r, 270, 90);
+                    gp.AddArc(rect.Right - r, rect.Bottom - r, r, r, 0, 90);
+                    gp.AddArc(rect.X, rect.Bottom - r, r, r, 90, 90);
+                    gp.CloseFigure();
+                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    using var brush = new SolidBrush(Color.FromArgb(220, 53, 69));
+                    e.Graphics.FillPath(brush, gp);
+                    TextRenderer.DrawText(e.Graphics, e.Value.ToString(), e.CellStyle.Font, e.CellBounds, Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                    e.Handled = true;
+                }
+                else if (e.ColumnIndex == dgvQuaHan.Columns["colWarn"].Index)
+                {
+                    e.PaintBackground(e.CellBounds, true);
+                    using var gp = new System.Drawing.Drawing2D.GraphicsPath();
+                    const int r = 8;
+                    var rect = new Rectangle(e.CellBounds.X + 15, e.CellBounds.Y + 6, e.CellBounds.Width - 30, e.CellBounds.Height - 12);
+                    gp.AddArc(rect.X, rect.Y, r, r, 180, 90);
+                    gp.AddArc(rect.Right - r, rect.Y, r, r, 270, 90);
+                    gp.AddArc(rect.Right - r, rect.Bottom - r, r, r, 0, 90);
+                    gp.AddArc(rect.X, rect.Bottom - r, r, r, 90, 90);
+                    gp.CloseFigure();
+                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    
+                    using var brush = new SolidBrush(Color.FromArgb(220, 53, 69));
+                    e.Graphics.FillPath(brush, gp);
+                    
+                    string text = e.FormattedValue?.ToString() ?? "⚠️ Cảnh báo";
+                    TextRenderer.DrawText(e.Graphics, text, e.CellStyle.Font, e.CellBounds, Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                    e.Handled = true;
+                }
+            };
+
+            dgvQuaHan.CellClick += (s, e) =>
+            {
+                if (e.RowIndex >= 0 && e.ColumnIndex == dgvQuaHan.Columns["colWarn"].Index)
+                {
+                    var item = dgvQuaHan.Rows[e.RowIndex].DataBoundItem as BangQuaHanDTO;
+                    if (item != null)
+                    {
+                        using var dlg = new QuanLyThueBang.Presentation.Forms.MuonTra.CanhBaoDialogForm(item);
+                        if (dlg.ShowDialog(this.FindForm()) == DialogResult.OK)
+                        {
+                            MessageBox.Show("Đã gửi thông báo nhắc nhở đến khách hàng thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                }
+            };
+
+
 
             var pnlGrid = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0, 10, 0, 10) };
             pnlGrid.Controls.Add(dgvQuaHan);
@@ -605,3 +672,4 @@ namespace QuanLyThueBang.Presentation.Controls
         }
     }
 }
+
