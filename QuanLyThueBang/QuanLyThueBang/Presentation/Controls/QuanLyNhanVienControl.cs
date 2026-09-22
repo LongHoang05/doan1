@@ -78,7 +78,7 @@ namespace QuanLyThueBang.Presentation.Controls
             var pnlHeaderBorder = new Panel { Dock = DockStyle.Bottom, Height = 1, BackColor = OutlineVariant };
             pnlHeader.Controls.Add(pnlHeaderBorder);
 
-            var lblTitle = new Label { Text = "Quản Lý Nhân Viên", Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold), ForeColor = OnSurface, Location = new Point(30, 15), AutoSize = true, BackColor = Color.Transparent };
+            var lblTitle = new Label { Text = "🧑‍💼 Cập nhật Nhân viên", Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold), ForeColor = OnSurface, Location = new Point(30, 15), AutoSize = true, BackColor = Color.Transparent };
             var lblSubTitle = new Label { Text = "Quản lý hồ sơ nhân viên và phân quyền truy cập.", Font = new Font("Segoe UI", 9.5F), ForeColor = OnSurfaceVariant, Location = new Point(30, 50), AutoSize = true, BackColor = Color.Transparent };
             pnlHeader.Controls.Add(lblTitle);
             pnlHeader.Controls.Add(lblSubTitle);

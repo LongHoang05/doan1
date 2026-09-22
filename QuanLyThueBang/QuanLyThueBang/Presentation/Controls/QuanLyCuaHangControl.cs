@@ -52,7 +52,7 @@ namespace QuanLyThueBang.Presentation.Controls
             btnAdd.Click += (s, e) => AddNew();
             pnlRight.Controls.Add(btnAdd);
 
-            var lblTitle = new Label { Text = "Quản Lý Hệ Thống Cửa Hàng", Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold), Location = new Point(25, 15), AutoSize = true };
+            var lblTitle = new Label { Text = "🏪 Cập nhật Cửa hàng", Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold), Location = new Point(25, 15), AutoSize = true };
             var lblSub = new Label { Text = "Quản lý danh sách chi nhánh, địa chỉ, số điện thoại liên hệ và số lượng nhân sự trực thuộc.", ForeColor = Color.FromArgb(108, 117, 125), Location = new Point(27, 47), AutoSize = true };
             pnlHeader.Controls.Add(lblTitle);
             pnlHeader.Controls.Add(lblSub);

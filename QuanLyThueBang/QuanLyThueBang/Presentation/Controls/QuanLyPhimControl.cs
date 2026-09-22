@@ -119,7 +119,7 @@ namespace QuanLyThueBang.Presentation.Controls
 
             var lblTitle = new Label
             {
-                Text = "Quản Lý Danh Mục Phim",
+                Text = "🎬 Cập nhật Phim",
                 Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(33, 37, 41),
                 Location = new Point(25, 15),

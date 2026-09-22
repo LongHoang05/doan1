@@ -76,7 +76,7 @@ namespace QuanLyThueBang.Presentation.Controls
 
             var lblTitle = new Label
             {
-                Text = "Nghiệp Vụ Nhận Trả Băng & Luân Chuyển Kho",
+                Text = "📥 Thực hiện Nhận Trả",
                 Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(33, 37, 41),
                 Location = new Point(25, 12),

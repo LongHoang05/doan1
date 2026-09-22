@@ -121,7 +121,7 @@ namespace QuanLyThueBang.Presentation.Controls
 
             var lblTitle = new Label
             {
-                Text = "Quản Lý Bản Sao Băng (Kho Băng)",
+                Text = "📼 Cập nhật Bản sao",
                 Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(33, 37, 41),
                 Location = new Point(25, 15),

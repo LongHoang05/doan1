@@ -120,22 +120,22 @@ namespace QuanLyThueBang.Presentation.Forms
             if (isAdmin || isQuanLy)
             {
                 AddSectionHeader(pnlMenu, "QUẢN LÝ PHIM & KHO", ref topPos);
-                topPos = AddMenuButton(pnlMenu, "🎬 Quản lý Phim", topPos, BtnMenuPhim_Click, isDefaultActive: !hasDefault);
+                topPos = AddMenuButton(pnlMenu, "🎬 Cập nhật Phim", topPos, BtnMenuPhim_Click, isDefaultActive: !hasDefault);
                 if (!hasDefault) hasDefault = true;
-                topPos = AddMenuButton(pnlMenu, "🏷️ Quản lý Danh mục", topPos, BtnMenuDanhMuc_Click);
-                topPos = AddMenuButton(pnlMenu, "📼 Quản lý Bản sao", topPos, BtnMenuBanSao_Click);
+                topPos = AddMenuButton(pnlMenu, "🏷️ Cập nhật Thể loại", topPos, BtnMenuDanhMuc_Click);
+                topPos = AddMenuButton(pnlMenu, "📼 Cập nhật Bản sao", topPos, BtnMenuBanSao_Click);
                 if (isAdmin)
-                    topPos = AddMenuButton(pnlMenu, "🏪 Quản lý Cửa hàng", topPos, BtnMenuCuaHang_Click);
+                    topPos = AddMenuButton(pnlMenu, "🏪 Cập nhật Cửa hàng", topPos, BtnMenuCuaHang_Click);
             }
 
             // Nhóm 3: NGHIỆP VỤ
             AddSectionHeader(pnlMenu, "NGHIỆP VỤ THUÊ BĂNG", ref topPos);
-            topPos = AddMenuButton(pnlMenu, "👥 Quản lý Khách hàng", topPos, BtnMenuKhachHang_Click, isDefaultActive: !hasDefault);
+            topPos = AddMenuButton(pnlMenu, "👥 Cập nhật Khách hàng", topPos, BtnMenuKhachHang_Click, isDefaultActive: !hasDefault);
             if (!hasDefault) hasDefault = true;
             if (isAdmin || isQuanLy)
-                topPos = AddMenuButton(pnlMenu, "🧑‍💼 Quản lý Nhân viên", topPos, BtnMenuNhanVien_Click);
-            topPos = AddMenuButton(pnlMenu, "📋 Quản lý Phiếu mượn", topPos, BtnMenuPhieuMuon_Click);
-            topPos = AddMenuButton(pnlMenu, "📥 Nhận Trả & Luân Chuyển", topPos, BtnMenuMuonTra_Click);
+                topPos = AddMenuButton(pnlMenu, "🧑‍💼 Cập nhật Nhân viên", topPos, BtnMenuNhanVien_Click);
+            topPos = AddMenuButton(pnlMenu, "📋 Lập Phiếu Mượn", topPos, BtnMenuPhieuMuon_Click);
+            topPos = AddMenuButton(pnlMenu, "📥 Thực hiện Nhận Trả", topPos, BtnMenuMuonTra_Click);
 
             tlpSidebar.Controls.Add(pnlMenu, 0, 1);
 

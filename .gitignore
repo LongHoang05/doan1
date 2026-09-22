@@ -22,3 +22,7 @@ TestResults/
 x64/
 x86/
 appsettings.Development.json
+
+# Ignore zip archives
+*.zip
+*.docx

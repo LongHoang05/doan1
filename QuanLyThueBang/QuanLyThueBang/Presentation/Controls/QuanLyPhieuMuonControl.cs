@@ -87,7 +87,7 @@ namespace QuanLyThueBang.Presentation.Controls
 
             var lblTitle = new Label
             {
-                Text = "Quản Lý Phiếu Mượn & Lập Phiếu Mượn Băng",
+                Text = "📋 Lập Phiếu Mượn",
                 Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(33, 37, 41),
                 Location = new Point(25, 12),

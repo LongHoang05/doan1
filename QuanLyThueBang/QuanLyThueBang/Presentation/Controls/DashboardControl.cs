@@ -68,7 +68,7 @@ namespace QuanLyThueBang.Presentation.Controls
             var pnlHeader = new Panel { Dock = DockStyle.Top, Height = 65, BackColor = Color.White };
             var lblTitle = new Label
             {
-                Text = "📊 TỔNG QUAN BÁO CÁO & THỐNG KÊ",
+                Text = "📊 Tổng quan",
                 Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(184, 123, 125),
                 Location = new Point(20, 15),

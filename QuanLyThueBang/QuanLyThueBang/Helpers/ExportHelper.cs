@@ -56,21 +56,23 @@ namespace QuanLyThueBang.Helpers
                 sb.AppendLine("  </table>");
 
                 sb.AppendLine("  <table class='items-table'>");
-                sb.AppendLine("    <thead><tr><th>STT</th><th>Mã Bản Sao</th><th>Tựa Đề Phim</th><th>Thể Loại</th><th style='text-align: right;'>Đơn Giá Thuê</th></tr></thead>");
+                sb.AppendLine("    <thead><tr><th>STT</th><th>Mã Bản Sao</th><th>Tựa Đề Phim</th><th>Đơn Giá/Ngày</th><th>Số Ngày</th><th style='text-align: right;'>Thành Tiền</th></tr></thead>");
                 sb.AppendLine("    <tbody>");
 
                 int stt = 1;
                 decimal total = 0;
+                int soNgayThue = Math.Max(1, (phieu.NgayDuKienTra.Date - phieu.NgayMuon.Date).Days);
                 foreach (var item in chiTietList)
                 {
-                    sb.AppendLine($"      <tr><td>{stt++}</td><td><strong>{item.MaBanSao}</strong></td><td>{item.TuaDe}</td><td>{item.TenTheLoai}</td><td style='text-align: right;'>{item.DonGiaThue:N0} VNĐ</td></tr>");
-                    total += item.DonGiaThue;
+                    decimal thanhTien = item.DonGiaThue * soNgayThue;
+                    sb.AppendLine($"      <tr><td>{stt++}</td><td><strong>{item.MaBanSao}</strong></td><td>{item.TuaDe}</td><td>{item.DonGiaThue:N0}</td><td>{soNgayThue}</td><td style='text-align: right;'>{thanhTien:N0} VNĐ</td></tr>");
+                    total += thanhTien;
                 }
 
                 sb.AppendLine("    </tbody>");
                 sb.AppendLine("  </table>");
 
-                sb.AppendLine($"  <div class='total-row'>TỔNG CỘNG: {total:N0} VNĐ</div>");
+                sb.AppendLine($"  <div class='total-row'>TỔNG CỘNG ({soNgayThue} ngày): {total:N0} VNĐ</div>");
 
                 sb.AppendLine("  <div class='signatures'>");
                 sb.AppendLine("    <div class='sig-block'><strong>KHÁCH HÀNG</strong><br><small>(Ký và ghi rõ họ tên)</small><br><br><br><br></div>");
