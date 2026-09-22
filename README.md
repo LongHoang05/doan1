@@ -196,12 +196,16 @@ KhachHang ────────> PhieuMuon / PhieuTra
 
 ## 👥 Tác giả
 
-- **LongHoang05** — [GitHub](https://github.com/LongHoang05)
+- **Nguyễn Hoàng Long** — *Leader, Backend*
+- **Nguyễn Đức Linh** — *Database, Frontend*
+- **Vũ Đình Trường** — *Tester, Tài liệu báo cáo đồ án*
 
 ---
 
 ## 📄 Giấy phép
 
 Dự án phục vụ mục đích học tập (đồ án môn học).
+
+
 
 
